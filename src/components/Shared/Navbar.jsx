@@ -16,31 +16,33 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [theme, setTheme] = useState("dark"); // Default State
+  const [theme, setTheme] = useState(null);
 
-  // Browser load hobar por theme synch kora
   useEffect(() => {
-    const savedTheme = localStorage.getItem("gymnest-theme") || "dark";
-    setTheme(savedTheme);
+    const currentTheme = document.documentElement.classList.contains("dark")
+      ? "dark"
+      : "light";
+
+    setTheme(currentTheme);
   }, []);
 
-  // Theme Toggle function via Pure JS
   const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-    localStorage.setItem("gymnest-theme", newTheme);
+    const currentTheme = document.documentElement.classList.contains("dark")
+      ? "dark"
+      : "light";
 
-    if (newTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
+    localStorage.setItem("gymnest-theme", newTheme);
+    setTheme(newTheme);
   };
+
+  const currentTheme = theme || "dark";
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-black/10 bg-white/90 backdrop-blur-xl dark:border-white/10 dark:bg-[#070b14]/95">
       <header className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Logo Section */}
         <NextLink href="/" className="flex items-center">
           <div className="transition-transform duration-300 hover:scale-105">
             <Image
@@ -61,7 +63,6 @@ export default function Navbar() {
           </h1>
         </NextLink>
 
-        {/* Desktop Links */}
         <ul className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => {
             const isActive =
@@ -85,7 +86,6 @@ export default function Navbar() {
           })}
         </ul>
 
-        {/* Desktop Right Actions */}
         <div className="hidden items-center gap-4 lg:flex">
           <button
             type="button"
@@ -93,7 +93,7 @@ export default function Navbar() {
             className="flex h-11 w-11 items-center justify-center rounded-xl border border-black/10 bg-slate-100 text-pink-500 transition hover:bg-pink-500 hover:text-white dark:border-white/10 dark:bg-[#0c1220] dark:text-orange-300 dark:hover:bg-pink-500"
             aria-label="Toggle theme"
           >
-            {theme === "dark" ? (
+            {currentTheme === "dark" ? (
               <Sun className="h-5 w-5" />
             ) : (
               <Moon className="h-5 w-5" />
@@ -116,7 +116,6 @@ export default function Navbar() {
           </Button>
         </div>
 
-        {/* Mobile Hamburguer Icon */}
         <button
           type="button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -131,7 +130,6 @@ export default function Navbar() {
         </button>
       </header>
 
-      {/* Mobile Sidebar/Menu Panel */}
       {isMenuOpen && (
         <div className="border-t border-black/10 bg-white px-4 py-5 lg:hidden dark:border-white/10 dark:bg-[#070b14]">
           <ul className="flex flex-col gap-2">
@@ -164,13 +162,15 @@ export default function Navbar() {
               onClick={toggleTheme}
               className="flex items-center justify-center gap-2 rounded-xl border border-black/10 px-4 py-3 text-sm font-semibold text-slate-900 dark:border-white/10 dark:text-white"
             >
-              {theme === "dark" ? (
+              {currentTheme === "dark" ? (
                 <>
-                  <Sun className="h-4 w-4" /> Light Mode
+                  <Sun className="h-4 w-4" />
+                  Light Mode
                 </>
               ) : (
                 <>
-                  <Moon className="h-4 w-4" /> Dark Mode
+                  <Moon className="h-4 w-4" />
+                  Dark Mode
                 </>
               )}
             </button>

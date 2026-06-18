@@ -1,40 +1,53 @@
-// app/layout.js
-import Navbar from "@/components/Shared/Navbar";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Navbar from "@/components/Shared/Navbar";
 
-// 1. Ei metadata object-ti tab-er naam ebong description control korbe
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
 export const metadata = {
   title: "GymNest",
-  description:
-    "Welcome to GymNest, the ultimate community platform for fitness enthusiasts.",
-  icons: {
-    icon: "/assets/logox.png", // Apnar tab-er ba browser-er choto logo icon (Favicon)
-  },
+  description: "Fitness & Gym Management Platform",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
       <head>
-        {/* Ei script-ti prothomei run hoye white flash bondho korbe */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              try {
-                const savedTheme = localStorage.getItem("gymnest-theme") || "dark";
-                if (savedTheme === "dark") {
+              (function () {
+                try {
+                  var theme = localStorage.getItem("gymnest-theme") || "dark";
+                  if (theme === "dark") {
+                    document.documentElement.classList.add("dark");
+                  } else {
+                    document.documentElement.classList.remove("dark");
+                  }
+                } catch (e) {
                   document.documentElement.classList.add("dark");
-                } else {
-                  document.documentElement.classList.remove("dark");
                 }
-              } catch (_) {}
+              })();
             `,
           }}
         />
       </head>
-      <body>
+
+      <body className="flex min-h-full flex-col">
         <Navbar />
-        <main>{children}</main>
+        <main className="flex-1">{children}</main>
       </body>
     </html>
   );
