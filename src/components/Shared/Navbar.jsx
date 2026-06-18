@@ -44,13 +44,33 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-black/10 bg-white/90 backdrop-blur-xl dark:border-white/10 dark:bg-[#070b14]/95">
       <header className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <NextLink href="/" className="flex items-center gap-3">
+        {/* <NextLink href="/" className="flex items-center gap-3">
           <div className="relative h-14 w-14 transition-transform duration-300 hover:scale-105">
             <Image
               src="/assets/logof.png"
               alt="GymNest Logo"
               fill
               sizes="56px"
+              className="object-contain"
+              priority
+            />
+          </div>
+
+          <h1 className="text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
+            Gym
+            <span className="bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
+              Nest
+            </span>
+          </h1>
+        </NextLink> */}
+
+        <NextLink href="/" className="flex items-center">
+          <div className="transition-transform duration-300 hover:scale-105">
+            <Image
+              src="/assets/logox.png"
+              alt="GymNest Logo"
+              width={56} // h-14 mane 56px
+              height={56} // w-14 mane 56px
               className="object-contain"
               priority
             />
