@@ -9,7 +9,7 @@ import { Moon, Sun, Bars, Xmark } from "@gravity-ui/icons";
 
 const navLinks = [
   { label: "Home", href: "/" },
-  { label: "All Classes", href: "/classes" },
+  { label: "All Classes", href: "/all-classes" },
   { label: "Community Forum", href: "/community-forum" },
 ];
 
