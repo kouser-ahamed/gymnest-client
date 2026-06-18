@@ -16,19 +16,15 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("dark"); // Default State
 
+  // Browser load hobar por theme synch kora
   useEffect(() => {
     const savedTheme = localStorage.getItem("gymnest-theme") || "dark";
     setTheme(savedTheme);
-
-    if (savedTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
   }, []);
 
+  // Theme Toggle function via Pure JS
   const toggleTheme = () => {
     const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
@@ -44,33 +40,14 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-black/10 bg-white/90 backdrop-blur-xl dark:border-white/10 dark:bg-[#070b14]/95">
       <header className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* <NextLink href="/" className="flex items-center gap-3">
-          <div className="relative h-14 w-14 transition-transform duration-300 hover:scale-105">
-            <Image
-              src="/assets/logof.png"
-              alt="GymNest Logo"
-              fill
-              sizes="56px"
-              className="object-contain"
-              priority
-            />
-          </div>
-
-          <h1 className="text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
-            Gym
-            <span className="bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
-              Nest
-            </span>
-          </h1>
-        </NextLink> */}
-
+        {/* Logo Section */}
         <NextLink href="/" className="flex items-center">
           <div className="transition-transform duration-300 hover:scale-105">
             <Image
               src="/assets/logox.png"
               alt="GymNest Logo"
-              width={56} // h-14 mane 56px
-              height={56} // w-14 mane 56px
+              width={56}
+              height={56}
               className="object-contain"
               priority
             />
@@ -84,6 +61,7 @@ export default function Navbar() {
           </h1>
         </NextLink>
 
+        {/* Desktop Links */}
         <ul className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => {
             const isActive =
@@ -107,6 +85,7 @@ export default function Navbar() {
           })}
         </ul>
 
+        {/* Desktop Right Actions */}
         <div className="hidden items-center gap-4 lg:flex">
           <button
             type="button"
@@ -137,6 +116,7 @@ export default function Navbar() {
           </Button>
         </div>
 
+        {/* Mobile Hamburguer Icon */}
         <button
           type="button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -151,6 +131,7 @@ export default function Navbar() {
         </button>
       </header>
 
+      {/* Mobile Sidebar/Menu Panel */}
       {isMenuOpen && (
         <div className="border-t border-black/10 bg-white px-4 py-5 lg:hidden dark:border-white/10 dark:bg-[#070b14]">
           <ul className="flex flex-col gap-2">
@@ -185,13 +166,11 @@ export default function Navbar() {
             >
               {theme === "dark" ? (
                 <>
-                  <Sun className="h-4 w-4" />
-                  Light Mode
+                  <Sun className="h-4 w-4" /> Light Mode
                 </>
               ) : (
                 <>
-                  <Moon className="h-4 w-4" />
-                  Dark Mode
+                  <Moon className="h-4 w-4" /> Dark Mode
                 </>
               )}
             </button>
