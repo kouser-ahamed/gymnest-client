@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import NextLink from "next/link";
-import { usePathname} from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Avatar, Button } from "@heroui/react";
 import Image from "next/image";
 import { Moon, Sun, Bars, Xmark } from "@gravity-ui/icons";
@@ -51,7 +51,7 @@ export default function Navbar() {
 
   const currentTheme = theme || "dark";
 
-  if(pathname.includes("/dashboard")) {
+  if (pathname.includes("/dashboard")) {
     return null; // Don't render the Navbar on dashboard routes
   }
 
@@ -122,6 +122,12 @@ export default function Navbar() {
                 <Avatar.Fallback>{user.name.charAt(0)}</Avatar.Fallback>
               </Avatar>
               <span>Hi, {user.name}!</span>
+              <NextLink
+                href={`/dashboard/${user?.role}`}
+                className="h-9 px-4 text-sm font-bold text-pink-500 hover:text-white bg-transparent hover:bg-pink-500 border border-pink-500/30 hover:border-pink-500 rounded-xl transition-all duration-200 active:scale-95 flex items-center justify-center"
+              >
+                Dashboard
+              </NextLink>
               <Button
                 variant="bordered"
                 onClick={handleLogout}

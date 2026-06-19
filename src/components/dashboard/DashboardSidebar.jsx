@@ -26,7 +26,7 @@ export function DashboardSidebar({ user }) {
   route.push("/");
 };
 
-  const menuItems = {
+  const dashboardItems = {
     admin: [
 
       {
@@ -98,7 +98,7 @@ export function DashboardSidebar({ user }) {
     ],
   };
 
-  const navItems = menuItems[role] || menuItems.member;
+  const navItems = dashboardItems[user?.role]
 
   return (
     <aside className="flex h-screen w-72 flex-col border-r border-white/10 bg-[#070b14]">
