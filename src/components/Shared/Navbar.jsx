@@ -6,17 +6,26 @@ import { usePathname } from "next/navigation";
 import { Button } from "@heroui/react";
 import Image from "next/image";
 import { Moon, Sun, Bars, Xmark } from "@gravity-ui/icons";
+import { useSession, signOut } from "@/lib/auth-client";
 
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "All Classes", href: "/all-classes" },
   { label: "Community Forum", href: "/community-forum" },
 ];
+const handleLogout = async () => {
+  await signOut();
+};
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [theme, setTheme] = useState(null);
+
+  const { data: session, isPending } = useSession();
+  const user = session?.user;
+
+  // console.log("Session data in Navbar:", session, " Is Pending:", isPending);
 
   useEffect(() => {
     const currentTheme = document.documentElement.classList.contains("dark")
@@ -99,19 +108,33 @@ export default function Navbar() {
               <Moon className="h-5 w-5" />
             )}
           </button>
+          {user ? (
+            <div className="flex items-center gap-3 text-sm font-semibold text-slate-900 dark:text-white">
+              <span>Hi, {user.name}!</span>
 
-          <NextLink
-            href="/auth/signin"
-            className="text-sm font-semibold text-slate-900 transition hover:text-pink-500 dark:text-white dark:hover:text-pink-400"
-          >
-            Login
-          </NextLink>
+              <Button variant="ghost" onClick={handleLogout}>
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <>
+              <NextLink
+                href="/auth/signin"
+                className="text-sm font-semibold text-slate-900 transition hover:text-pink-500 dark:text-white dark:hover:text-pink-400"
+              >
+                Login
+              </NextLink>
 
-          <NextLink href="/auth/signup" onClick={() => setIsMenuOpen(false)}>
-            <Button className="h-11 rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-7 font-bold text-white shadow-lg shadow-pink-500/30 hover:opacity-90">
-              Register
-            </Button>
-          </NextLink>
+              <NextLink
+                href="/auth/signup"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Button className="h-11 rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-7 font-bold text-white shadow-lg shadow-pink-500/30 hover:opacity-90">
+                  Register
+                </Button>
+              </NextLink>
+            </>
+          )}
         </div>
 
         <button
