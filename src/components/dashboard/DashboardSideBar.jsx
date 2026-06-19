@@ -5,7 +5,6 @@ import {
   Bell,
   Envelope,
   Gear,
-  House,
   Magnifier,
   Person,
 } from "@gravity-ui/icons";
@@ -13,70 +12,239 @@ import { Button, Drawer } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
 
+import {
+  House,
+  SquareChartBar,
+  Persons,
+  PersonWorker,
+  ArrowRightFromSquare,
+  FilePlus,
+  Heart,
+  Paperclip,
+  PersonPlus,
+  PersonsLock,
+  ShieldCheck,
+  GearDot,
+  CircleDollar,
+  Comment,
+  Calendar,
+  Star,
+  BookOpen,
+  BadgeCheck,
+} from "@gravity-ui/icons";
+import { usePathname, useRouter } from "next/navigation";
+import { signOut } from "@/lib/auth-client";
+
 export default function DashboardSideBar({ user }) {
-  const navItems = [
-    { icon: House, label: "Home" },
-    { icon: Magnifier, label: "Search" },
-    { icon: Bell, label: "Notifications" },
-    { icon: Envelope, label: "Messages" },
-    { icon: Person, label: "Profile" },
-    { icon: Gear, label: "Settings" },
-  ];
+  const pathname = usePathname();
+
+  const route = useRouter();
+
+  // const navItems = [
+  //   { icon: House, label: "Home" },
+  //   { icon: Magnifier, label: "Search" },
+  //   { icon: Bell, label: "Notifications" },
+  //   { icon: Envelope, label: "Messages" },
+  //   { icon: Person, label: "Profile" },
+  //   { icon: Gear, label: "Settings" },
+  // ];
+
+  const roll = user?.role || "member";
+
+  const handleLogout = async () => {
+    await signOut();
+    route.push("/");
+  };
+
+  const dashboardItems = {
+    member: [
+      {
+        label: "Home",
+        href: "/",
+        icon: House,
+      },
+      {
+        label: "Overview",
+        href: "/dashboard/member",
+        icon: SquareChartBar,
+      },
+      {
+        label: "Booked Classes",
+        href: "/dashboard/member/booked-classes",
+        icon: Calendar,
+      },
+      {
+        label: "Apply as Trainer",
+        href: "/dashboard/member/apply-trainer",
+        icon: PersonPlus,
+      },
+      {
+        label: "Favorite Classes",
+        href: "/dashboard/member/favorite-classes",
+        icon: Star,
+      },
+    ],
+
+    trainer: [
+      {
+        label: "Home",
+        href: "/",
+        icon: House,
+      },
+      {
+        label: "Overview",
+        href: "/dashboard/trainer",
+        icon: SquareChartBar,
+      },
+      {
+        label: "Add Class",
+        href: "/dashboard/trainer/add-class",
+        icon: FilePlus,
+      },
+      {
+        label: "My Classes",
+        href: "/dashboard/trainer/my-classes",
+        icon: Paperclip,
+      },
+      {
+        label: "Add Forum Post",
+        href: "/dashboard/trainer/add-forum",
+        icon: Comment,
+      },
+      {
+        label: "My Forum Posts",
+        href: "/dashboard/trainer/my-posts",
+        icon: BookOpen,
+      },
+    ],
+
+    admin: [
+      {
+        label: "Home",
+        href: "/",
+        icon: House,
+      },
+      {
+        label: "Overview",
+        href: "/dashboard/admin",
+        icon: ShieldCheck,
+      },
+
+      {
+        label: "Manage Users",
+        href: "/dashboard/admin/users",
+        icon: PersonsLock,
+      },
+      {
+        label: "Applied Trainers",
+        href: "/dashboard/admin/applied-trainers",
+        icon: PersonPlus,
+      },
+      {
+        label: "Manage Trainers",
+        href: "/dashboard/admin/trainers",
+        icon: PersonWorker,
+      },
+
+      {
+        label: "Manage Classes",
+        href: "/dashboard/admin/classes",
+        icon: Paperclip,
+      },
+
+      {
+        label: "Transactions",
+        href: "/dashboard/admin/transactions",
+        icon: CircleDollar,
+      },
+
+      {
+        label: "Forum Management",
+        href: "/dashboard/admin/forum",
+        icon: Comment,
+      },
+
+      {
+        label: "Settings",
+        href: "/dashboard/admin/settings",
+        icon: GearDot,
+      },
+    ],
+  };
+
+  const navItems = dashboardItems[roll];
 
   const navContent = (
     <nav className="flex flex-col gap-1">
       <Link href="/" className="flex items-center">
-          <div className="transition-transform duration-300 hover:scale-105">
-            <Image
-              src="/assets/logox.png"
-              alt="GymNest Logo"
-              width={48}
-              height={48}
-              className="object-contain"
-              priority
-            />
-          </div>
+        <div className="transition-transform duration-300 hover:scale-105">
+          <Image
+            src="/assets/logox.png"
+            alt="GymNest Logo"
+            width={48}
+            height={48}
+            className="object-contain"
+            priority
+          />
+        </div>
 
-          <h1 className="text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
-            Gym
-            <span className="bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
-              Nest
+        <h1 className="text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
+          Gym
+          <span className="bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
+            Nest
+          </span>
+        </h1>
+      </Link>
+
+      {/* User */}
+      <div className="border-b border-t border-white/10 p-4">
+        <div className="flex items-center gap-3">
+          <Image
+            src={user?.image || "/assets/default-user.png"}
+            alt={user?.name || "User"}
+            width={48}
+            height={48}
+            className="rounded-full border border-pink-500 object-cover"
+          />
+
+          <div>
+            <h3 className="font-semibold text-white">{user?.name}</h3>
+
+            <span className="rounded-full bg-pink-500/20 px-2 py-1 text-xs text-pink-400">
+              {user?.role}
             </span>
-          </h1>
-        </Link>
+          </div>
+        </div>
+      </div>
+      {navItems.map((item) => {
+        const isActive = pathname === item.href;
 
-         {/* User */}
-              <div className="border-b border-t border-white/10 p-4">
-                <div className="flex items-center gap-3">
-                  <Image
-                    src={user?.image || "/assets/default-user.png"}
-                    alt={user?.name || "User"}
-                    width={48}
-                    height={48}
-                    className="rounded-full border border-pink-500 object-cover"
-                  />
-        
-                  <div>
-                    <h3 className="font-semibold text-white">
-                      {user?.name}
-                    </h3>
-        
-                    <span className="rounded-full bg-pink-500/20 px-2 py-1 text-xs text-pink-400">
-                      {user?.role}
-                    </span>
-                  </div>
-                </div>
-              </div>
-      {navItems.map((item) => (
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`flex items-center gap-3 rounded-xl px-4 py-3 transition ${
+              isActive
+                ? "bg-gradient-to-r from-fuchsia-500/20 to-orange-500/20 text-pink-400"
+                : "text-neutral-400 hover:bg-white/5 hover:text-white"
+            }`}
+          >
+            <item.icon className="h-5 w-5" />
+
+            <span>{item.label}</span>
+          </Link>
+        );
+      })}
+      {/* Logout */}
+      <div className="border-t border-white/10 p-4">
         <button
-          key={item.label}
-          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-default"
-          type="button"
+          onClick={handleLogout}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 px-4 py-3 text-red-400 transition hover:bg-red-500/10"
         >
-          <item.icon className="size-5 text-muted" />
-          {item.label}
+          <ArrowRightFromSquare className="h-5 w-5" />
+          Logout
         </button>
-      ))}
+      </div>
     </nav>
   );
 
@@ -94,8 +262,7 @@ export default function DashboardSideBar({ user }) {
           <Drawer.Content placement="left">
             <Drawer.Dialog>
               <Drawer.CloseTrigger />
-              <Drawer.Header>
-              </Drawer.Header>
+              <Drawer.Header></Drawer.Header>
               <Drawer.Body>{navContent}</Drawer.Body>
             </Drawer.Dialog>
           </Drawer.Content>
