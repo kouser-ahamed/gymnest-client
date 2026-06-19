@@ -1,6 +1,7 @@
 "use client";
 
 import NextLink from "next/link";
+import Image from "next/image";
 import { 
   MapPinIcon, 
   PhoneIcon, 
@@ -12,79 +13,95 @@ export default function Footer() {
 
   return (
     <footer className="w-full border-t border-slate-100 bg-white text-slate-600 dark:border-white/5 dark:bg-[#0c1220] dark:text-neutral-400">
-      <div className="mx-auto max-w-7xl px-4 py-12 md:px-8">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
+      {/* Container: Properly scales padding and max-width across all screens */}
+      <div className="mx-auto max-w-7xl px-6 py-12 md:px-8 md:py-14 lg:px-12">
+        
+        {/* 
+          Grid Breakpoints:
+          - Mobile (default): 1 Column, centered text
+          - Tablet (sm): 2 Columns, left-aligned text
+          - Medium Desktop (md): 3 Columns
+          - Large Desktop (lg): 4 Columns
+        */}
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 text-center sm:grid-cols-2 sm:text-left md:grid-cols-3 lg:grid-cols-4">
           
-          {/* Section 1: Brand Logo & Short About Description */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-slate-950 dark:text-white">
-              {/* Decorative dynamic background container for custom brand representation */}
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white">
-                <span className="font-bold text-lg">G</span>
+          {/* Section 1: Brand Logo & About */}
+          <div className="flex flex-col items-center sm:items-start gap-3">
+            <div className="flex items-center gap-3 text-slate-950 dark:text-white">
+              <div className="transition-transform duration-300 hover:scale-105 shrink-0">
+                <Image
+                  src="/assets/logox.png"
+                  alt="GymNest Logo"
+                  width={52}
+                  height={52}
+                  className="object-contain"
+                  priority
+                />
               </div>
               <span className="text-xl font-bold tracking-tight">
                 Gym<span className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Nest</span>
               </span>
             </div>
-            <p className="text-sm mt-2 leading-relaxed">
+            <p className="text-sm mt-2 leading-relaxed max-w-sm mx-auto sm:mx-0">
               Join GymNest and start your ultimate fitness journey today. Achieve your goals with expert guidance.
             </p>
           </div>
 
-          {/* Section 2: Internal Application Navigation Links */}
+          {/* Section 2: Quick Links */}
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-950 dark:text-white">
               Quick Links
             </h3>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-2.5 text-sm">
               <li>
-                <NextLink href="/" className="hover:text-pink-500 transition-colors">Home</NextLink>
+                <NextLink href="/" className="hover:text-pink-500 transition-colors block py-0.5">Home</NextLink>
               </li>
               <li>
-                <NextLink href="/about" className="hover:text-pink-500 transition-colors">About Us</NextLink>
+                <NextLink href="/about" className="hover:text-pink-500 transition-colors block py-0.5">About Us</NextLink>
               </li>
               <li>
-                <NextLink href="/classes" className="hover:text-pink-500 transition-colors">Classes</NextLink>
+                <NextLink href="/classes" className="hover:text-pink-500 transition-colors block py-0.5">Classes</NextLink>
               </li>
               <li>
-                <NextLink href="/pricing" className="hover:text-pink-500 transition-colors">Pricing</NextLink>
+                <NextLink href="/pricing" className="hover:text-pink-500 transition-colors block py-0.5">Pricing</NextLink>
               </li>
             </ul>
           </div>
 
-          {/* Section 3: Gym Location and Communication Details */}
-          <div>
+          {/* Section 3: Contact Info */}
+          <div className="flex flex-col items-center sm:items-start">
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-950 dark:text-white">
               Contact Info
             </h3>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2">
+            <ul className="space-y-3 text-sm w-full max-w-xs sm:max-w-none flex flex-col items-center sm:items-start">
+              <li className="flex items-start gap-2.5 text-left">
                 <MapPinIcon className="h-5 w-5 text-slate-400 dark:text-neutral-500 mt-0.5 shrink-0" />
-                <span>123 Fitness Street, Dhaka, Bangladesh</span>
+                <span className="leading-relaxed">123 Fitness Street, Dhaka, Bangladesh</span>
               </li>
-              <li className="flex items-center gap-2">
+              <li className="flex items-center gap-2.5 text-left">
                 <PhoneIcon className="h-5 w-5 text-slate-400 dark:text-neutral-500 shrink-0" />
                 <span>+880 1234-567890</span>
               </li>
-              <li className="flex items-center gap-2">
+              <li className="flex items-center gap-2.5 text-left w-full justify-center sm:justify-start">
                 <EnvelopeIcon className="h-5 w-5 text-slate-400 dark:text-neutral-500 shrink-0" />
-                <span>support@gymnest.com</span>
+                <span className="break-all">support@gymnest.com</span>
               </li>
             </ul>
           </div>
 
-          {/* Section 4: Social Media Integrations */}
-          <div>
+          {/* Section 4: Social Media Icons */}
+          {/* md:col-span-full pushes this to a clean row on medium screens, lg:col-span-1 brings it back to the grid */}
+          <div className="sm:col-span-2 md:col-span-full lg:col-span-1">
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-950 dark:text-white">
               Follow Us
             </h3>
-            <div className="flex items-center gap-4">
-              {/* X / Twitter Platform Integration */}
+            <div className="flex items-center justify-center sm:justify-start gap-4">
+              {/* X / Twitter */}
               <a 
                 href="https://x.com" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:border-pink-500 hover:text-pink-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-pink-500 transition-all"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:border-pink-500 hover:text-pink-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-pink-500 transition-all"
                 aria-label="X (formerly Twitter)"
               >
                 <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
@@ -92,12 +109,12 @@ export default function Footer() {
                 </svg>
               </a>
 
-              {/* Facebook Platform Integration */}
+              {/* Facebook */}
               <a 
                 href="https://facebook.com" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:border-pink-500 hover:text-pink-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-pink-500 transition-all"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:border-pink-500 hover:text-pink-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-pink-500 transition-all"
                 aria-label="Facebook"
               >
                 <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
@@ -105,12 +122,12 @@ export default function Footer() {
                 </svg>
               </a>
 
-              {/* Instagram Platform Integration */}
+              {/* Instagram */}
               <a 
                 href="https://instagram.com" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:border-pink-500 hover:text-pink-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-pink-500 transition-all"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:border-pink-500 hover:text-pink-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-pink-500 transition-all"
                 aria-label="Instagram"
               >
                 <svg className="h-4 w-4 fill-none stroke-current" strokeWidth="2" viewBox="0 0 24 24">
@@ -123,7 +140,7 @@ export default function Footer() {
 
         </div>
 
-        {/* Bottom Bar: Copyright Information Banner */}
+        {/* Bottom Bar: Copyright */}
         <div className="mt-12 border-t border-slate-100 pt-6 text-center text-xs dark:border-white/5">
           <p>© {currentYear} GymNest. All rights reserved.</p>
         </div>
