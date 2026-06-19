@@ -12,7 +12,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full border-t border-slate-100 bg-white text-slate-600 dark:border-white/5 dark:bg-[#0c1220] dark:text-neutral-400">
+    <footer className="w-full border-t border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-800 dark:bg-[#0c1220] dark:text-slate-300">
       {/* Container: Properly scales padding and max-width across all screens */}
       <div className="mx-auto max-w-7xl px-6 py-12 md:px-8 md:py-14 lg:px-12">
         
@@ -27,7 +27,7 @@ export default function Footer() {
           
           {/* Section 1: Brand Logo & About */}
           <div className="flex flex-col items-center sm:items-start gap-3">
-            <div className="flex items-center gap-3 text-slate-950 dark:text-white">
+            <div className="flex items-center gap-3 text-slate-900 dark:text-slate-100">
               <div className="transition-transform duration-300 hover:scale-105 shrink-0">
                 <Image
                   src="/assets/logox.png"
@@ -42,57 +42,56 @@ export default function Footer() {
                 Gym<span className="bg-gradient-to-r from-pink-500 to-orange-400 bg-clip-text text-transparent">Nest</span>
               </span>
             </div>
-            <p className="text-sm mt-2 leading-relaxed max-w-sm mx-auto sm:mx-0">
+            <p className="text-sm mt-2 leading-relaxed max-w-sm mx-auto sm:mx-0 text-slate-600 dark:text-slate-400">
               Join GymNest and start your ultimate fitness journey today. Achieve your goals with expert guidance.
             </p>
           </div>
 
           {/* Section 2: Quick Links */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-950 dark:text-white">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-900 dark:text-slate-100">
               Quick Links
             </h3>
-            <ul className="space-y-2.5 text-sm">
+            <ul className="space-y-2.5 text-sm font-medium">
               <li>
-                <NextLink href="/" className="hover:text-pink-500 transition-colors block py-0.5">Home</NextLink>
+                <NextLink href="/" className="hover:text-pink-500 dark:hover:text-orange-400 transition-colors block py-0.5">Home</NextLink>
               </li>
               <li>
-                <NextLink href="/about" className="hover:text-pink-500 transition-colors block py-0.5">About Us</NextLink>
+                <NextLink href="/about" className="hover:text-pink-500 dark:hover:text-orange-400 transition-colors block py-0.5">About Us</NextLink>
               </li>
               <li>
-                <NextLink href="/classes" className="hover:text-pink-500 transition-colors block py-0.5">Classes</NextLink>
+                <NextLink href="/classes" className="hover:text-pink-500 dark:hover:text-orange-400 transition-colors block py-0.5">Classes</NextLink>
               </li>
               <li>
-                <NextLink href="/pricing" className="hover:text-pink-500 transition-colors block py-0.5">Pricing</NextLink>
+                <NextLink href="/pricing" className="hover:text-pink-500 dark:hover:text-orange-400 transition-colors block py-0.5">Pricing</NextLink>
               </li>
             </ul>
           </div>
 
           {/* Section 3: Contact Info */}
           <div className="flex flex-col items-center sm:items-start">
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-950 dark:text-white">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-900 dark:text-slate-100">
               Contact Info
             </h3>
             <ul className="space-y-3 text-sm w-full max-w-xs sm:max-w-none flex flex-col items-center sm:items-start">
               <li className="flex items-start gap-2.5 text-left">
-                <MapPinIcon className="h-5 w-5 text-slate-400 dark:text-neutral-500 mt-0.5 shrink-0" />
+                <MapPinIcon className="h-5 w-5 text-pink-500 dark:text-orange-400 mt-0.5 shrink-0" />
                 <span className="leading-relaxed">123 Fitness Street, Dhaka, Bangladesh</span>
               </li>
               <li className="flex items-center gap-2.5 text-left">
-                <PhoneIcon className="h-5 w-5 text-slate-400 dark:text-neutral-500 shrink-0" />
+                <PhoneIcon className="h-5 w-5 text-pink-500 dark:text-orange-400 shrink-0" />
                 <span>+880 1234-567890</span>
               </li>
               <li className="flex items-center gap-2.5 text-left w-full justify-center sm:justify-start">
-                <EnvelopeIcon className="h-5 w-5 text-slate-400 dark:text-neutral-500 shrink-0" />
+                <EnvelopeIcon className="h-5 w-5 text-pink-500 dark:text-orange-400 shrink-0" />
                 <span className="break-all">support@gymnest.com</span>
               </li>
             </ul>
           </div>
 
           {/* Section 4: Social Media Icons */}
-          {/* md:col-span-full pushes this to a clean row on medium screens, lg:col-span-1 brings it back to the grid */}
           <div className="sm:col-span-2 md:col-span-full lg:col-span-1">
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-950 dark:text-white">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-900 dark:text-slate-100">
               Follow Us
             </h3>
             <div className="flex items-center justify-center sm:justify-start gap-4">
@@ -101,7 +100,7 @@ export default function Footer() {
                 href="https://x.com" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:border-pink-500 hover:text-pink-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-pink-500 transition-all"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 hover:border-pink-500 hover:text-pink-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:border-orange-400 dark:hover:text-orange-400 transition-all shadow-sm"
                 aria-label="X (formerly Twitter)"
               >
                 <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
@@ -114,7 +113,7 @@ export default function Footer() {
                 href="https://facebook.com" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:border-pink-500 hover:text-pink-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-pink-500 transition-all"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 hover:border-pink-500 hover:text-pink-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:border-orange-400 dark:hover:text-orange-400 transition-all shadow-sm"
                 aria-label="Facebook"
               >
                 <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
@@ -127,7 +126,7 @@ export default function Footer() {
                 href="https://instagram.com" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:border-pink-500 hover:text-pink-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-pink-500 transition-all"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 hover:border-pink-500 hover:text-pink-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:border-orange-400 dark:hover:text-orange-400 transition-all shadow-sm"
                 aria-label="Instagram"
               >
                 <svg className="h-4 w-4 fill-none stroke-current" strokeWidth="2" viewBox="0 0 24 24">
@@ -141,7 +140,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar: Copyright */}
-        <div className="mt-12 border-t border-slate-100 pt-6 text-center text-xs dark:border-white/5">
+        <div className="mt-12 border-t border-slate-200 pt-6 text-center text-xs dark:border-slate-800 text-slate-500 dark:text-slate-400">
           <p>© {currentYear} GymNest. All rights reserved.</p>
         </div>
       </div>
