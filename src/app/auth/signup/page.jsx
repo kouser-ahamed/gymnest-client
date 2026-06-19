@@ -5,11 +5,19 @@ import NextLink from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button, Input } from "@heroui/react";
-import { CircleCheck, CircleXmark, Picture } from "@gravity-ui/icons";
+import {
+  CircleCheck,
+  CircleXmark,
+  Picture,
+  Eye,
+  EyeSlash,
+} from "@gravity-ui/icons";
 import { authClient } from "@/lib/auth-client";
-import PasswordRules from "@/components/PasswordRules"; 
+import PasswordRules from "@/components/PasswordRules";
+
 export default function SignupPage() {
   const router = useRouter();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,11 +29,13 @@ export default function SignupPage() {
   const [message, setMessage] = useState({ type: "", text: "" });
   const [isLoading, setIsLoading] = useState(false);
 
+  // password toggle
+  const [showPassword, setShowPassword] = useState(false);
+
   const validatePassword = (password) => {
     const hasMinLength = password.length >= 6;
     const hasUppercase = /[A-Z]/.test(password);
     const hasLowercase = /[a-z]/.test(password);
-
     return hasMinLength && hasUppercase && hasLowercase;
   };
 
@@ -94,7 +104,7 @@ export default function SignupPage() {
         email: formData.email,
         password: formData.password,
         image: imageUrl || undefined,
-        role: "user", 
+        role: "user",
       });
 
       if (result?.error) {
@@ -115,13 +125,13 @@ export default function SignupPage() {
         email: "",
         password: "",
       });
+
       setImageFile(null);
       setImagePreview("");
 
       setTimeout(() => {
         router.push("/auth/signin");
       }, 2000);
-
     } catch (error) {
       setMessage({
         type: "error",
@@ -135,6 +145,8 @@ export default function SignupPage() {
   return (
     <section className="flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-10">
       <div className="w-full max-w-md rounded-3xl border border-black/10 bg-white p-6 shadow-2xl shadow-black/10 dark:border-white/10 dark:bg-[#0c1220] dark:shadow-black/40">
+        
+        {/* TITLE */}
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-bold text-slate-950 dark:text-white">
             Create Account
@@ -144,6 +156,7 @@ export default function SignupPage() {
           </p>
         </div>
 
+        {/* MESSAGE */}
         {message.text && (
           <div
             className={`mb-5 flex items-center gap-2 rounded-xl px-4 py-3 text-sm transition-all ${
@@ -161,9 +174,11 @@ export default function SignupPage() {
           </div>
         )}
 
+        {/* FORM */}
         <form onSubmit={handleSignup} className="space-y-4">
+
           <Input
-          className="w-full"
+            className="w-full"
             required
             label="Name"
             type="text"
@@ -176,7 +191,7 @@ export default function SignupPage() {
           />
 
           <Input
-          className="w-full"
+            className="w-full"
             required
             label="Email"
             type="email"
@@ -188,11 +203,13 @@ export default function SignupPage() {
             }
           />
 
-          <div>
-            <Input className="w-full"
+          {/* PASSWORD FIXED (same style preserved) */}
+          <div className="relative">
+            <Input
+              className="w-full"
               required
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               variant="bordered"
               placeholder="Enter your password"
               value={formData.password}
@@ -200,10 +217,23 @@ export default function SignupPage() {
                 setFormData({ ...formData, password: e.target.value })
               }
             />
-            
-            <PasswordRules password={formData.password} />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-default-400"
+            >
+              {showPassword ? (
+                <EyeSlash className="h-5 w-5" />
+              ) : (
+                <Eye className="h-5 w-5" />
+              )}
+            </button>
           </div>
 
+          <PasswordRules password={formData.password} />
+
+          {/* IMAGE UPLOAD (same style) */}
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-neutral-300">
               Profile Image
@@ -248,6 +278,7 @@ export default function SignupPage() {
           </Button>
         </form>
 
+        {/* FOOTER */}
         <div className="mt-6 text-center text-sm text-slate-600 dark:text-neutral-400 border-t border-slate-100 dark:border-white/5 pt-4">
           Already have an account?{" "}
           <NextLink
