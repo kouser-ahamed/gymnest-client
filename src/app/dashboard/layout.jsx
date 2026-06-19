@@ -14,20 +14,22 @@ const DashboardLayout = async({children}) => {
 
     
     return (
-        <div className=" flex h-screen bg-background">
-            <div className="flex flex-1 overflow-hidden">
+       <div className="flex h-screen bg-white dark:bg-[#070b14]">
+  
+  <DashboardSidebar user={user} />
 
+  <div className="flex flex-1 flex-col overflow-hidden">
 
-                <div><DashboardSidebar user={user} /></div>
+    <div className="border-b border-white/10 p-4">
+      Dashboard Navbar
+    </div>
 
-                <div className="flex flex-1 flex-col overflow-y-auto">
-                    <div>Navbar</div>
+    <main className="flex-1 overflow-y-auto p-6">
+      {children}
+    </main>
 
-                    <main className="p-5"> {children} </main>
-                </div>
-
-            </div>
-        </div>
+  </div>
+</div>
     );
 };
 

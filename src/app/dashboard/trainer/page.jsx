@@ -1,11 +1,11 @@
 import React from 'react';
 
-const TrainerPage = () => {
+const TrainerDashboard = () => {
     return (
         <div>
-            <h2> Trainer Page</h2>
+            <h2> Trainer Dashboard</h2>
         </div>
     );
 };
 
-export default TrainerPage;
+export default TrainerDashboard;
