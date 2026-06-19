@@ -8,9 +8,19 @@ const db = client.db(process.env.DATABASE_NAME);
 export const auth = betterAuth({
   database: mongodbAdapter(db, {
     // Optional: if you don't provide a client, database transactions won't be enabled.
-    client
+    client,
   }),
-   emailAndPassword: { 
-    enabled: true, 
+  emailAndPassword: {
+    enabled: true,
+  },
+  user: {
+    additionalFields: {
+      role: {
+        defaultvalue: "member",
+      },
+      plan: {
+        defaultvalue: "free",
+      }
+    },
   },
 });
