@@ -101,19 +101,17 @@ export default function Navbar() {
           </button>
 
           <NextLink
-            href="/login"
+            href="/auth/signin"
             className="text-sm font-semibold text-slate-900 transition hover:text-pink-500 dark:text-white dark:hover:text-pink-400"
           >
             Login
           </NextLink>
 
-          <Button
-            as={NextLink}
-            href="/register"
-            className="h-11 rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-7 font-bold text-white shadow-lg shadow-pink-500/30 hover:opacity-90"
-          >
-            Register
-          </Button>
+          <NextLink href="/auth/signup" onClick={() => setIsMenuOpen(false)}>
+            <Button className="h-11 rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-7 font-bold text-white shadow-lg shadow-pink-500/30 hover:opacity-90">
+              Register
+            </Button>
+          </NextLink>
         </div>
 
         <button
@@ -176,21 +174,18 @@ export default function Navbar() {
             </button>
 
             <NextLink
-              href="/login"
+              href="/auth/signin"
               onClick={() => setIsMenuOpen(false)}
               className="rounded-xl border border-black/10 px-4 py-3 text-center text-sm font-semibold text-slate-900 dark:border-white/10 dark:text-white"
             >
               Login
             </NextLink>
 
-            <Button
-              as={NextLink}
-              href="/register"
-              onClick={() => setIsMenuOpen(false)}
-              className="h-12 rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 font-bold text-white shadow-lg shadow-pink-500/30"
-            >
-              Register
-            </Button>
+            <NextLink href="/auth/signup" onClick={() => setIsMenuOpen(false)}>
+              <Button className="h-11 rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-7 font-bold text-white shadow-lg shadow-pink-500/30 hover:opacity-90">
+                Register
+              </Button>
+            </NextLink>
           </div>
         </div>
       )}
