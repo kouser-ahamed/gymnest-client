@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import NextLink from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname} from "next/navigation";
 import { Avatar, Button } from "@heroui/react";
 import Image from "next/image";
 import { Moon, Sun, Bars, Xmark } from "@gravity-ui/icons";
@@ -24,6 +24,8 @@ export default function Navbar() {
 
   const { data: session, isPending } = useSession();
   const user = session?.user;
+
+  console.log("Current pathname in Navbar:", pathname);
 
   // console.log("Session data in Navbar:", session, " Is Pending:", isPending);
 
@@ -48,6 +50,10 @@ export default function Navbar() {
   };
 
   const currentTheme = theme || "dark";
+
+  if(pathname.includes("/dashboard")) {
+    return null; // Don't render the Navbar on dashboard routes
+  }
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-black/10 bg-white/90 backdrop-blur-xl dark:border-white/10 dark:bg-[#070b14]/95">

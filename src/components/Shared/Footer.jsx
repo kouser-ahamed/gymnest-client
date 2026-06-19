@@ -7,9 +7,14 @@ import {
   PhoneIcon, 
   EnvelopeIcon 
 } from "@heroicons/react/24/outline";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const  pathname = usePathname();
+  if(pathname.includes("/dashboard")) {
+    return null; // Don't render the Navbar on dashboard routes
+  }
 
   return (
     <footer className="w-full border-t border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-800 dark:bg-[#0c1220] dark:text-slate-300">
