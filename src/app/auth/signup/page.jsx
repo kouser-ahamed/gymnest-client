@@ -3,11 +3,14 @@
 import { useState } from "react";
 import NextLink from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import { CircleCheck, CircleXmark, Picture } from "@gravity-ui/icons";
 import { authClient } from "@/lib/auth-client";
+import PasswordRules from "@/components/PasswordRules"; // আপনার সঠিক পাথ অনুযায়ী অ্যাডজাস্ট করুন
 
 export default function SignupPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -77,7 +80,7 @@ export default function SignupPage() {
     if (!validatePassword(formData.password)) {
       setMessage({
         type: "error",
-        text: "Password must be at least 6 characters and include one uppercase and one lowercase letter.",
+        text: "Please fulfill all password requirements.",
       });
       return;
     }
@@ -91,8 +94,8 @@ export default function SignupPage() {
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        image: imageUrl,
-        role: "user",
+        image: imageUrl || undefined,
+        role: "user", // ডিফল্টভাবে স্ট্যান্ডার্ড ইউজার হিসেবে রেজিস্টার হবে
       });
 
       if (result?.error) {
@@ -105,7 +108,7 @@ export default function SignupPage() {
 
       setMessage({
         type: "success",
-        text: "Account created successfully. Please sign in now.",
+        text: "Account created successfully! Redirecting to sign in...",
       });
 
       setFormData({
@@ -115,6 +118,12 @@ export default function SignupPage() {
       });
       setImageFile(null);
       setImagePreview("");
+
+      // ২ সেকেন্ড পর সফলভাবে লগইন পেজে রিডাইরেক্ট হবে
+      setTimeout(() => {
+        router.push("/auth/signin");
+      }, 2000);
+
     } catch (error) {
       setMessage({
         type: "error",
@@ -139,16 +148,16 @@ export default function SignupPage() {
 
         {message.text && (
           <div
-            className={`mb-5 flex items-center gap-2 rounded-xl px-4 py-3 text-sm ${
+            className={`mb-5 flex items-center gap-2 rounded-xl px-4 py-3 text-sm transition-all ${
               message.type === "success"
-                ? "bg-emerald-500/10 text-emerald-500"
-                : "bg-red-500/10 text-red-500"
+                ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                : "bg-red-500/10 text-red-500 border border-red-500/20"
             }`}
           >
             {message.type === "success" ? (
-              <CircleCheck className="h-5 w-5" />
+              <CircleCheck className="h-5 w-5 shrink-0" />
             ) : (
-              <CircleXmark className="h-5 w-5" />
+              <CircleXmark className="h-5 w-5 shrink-0" />
             )}
             <span>{message.text}</span>
           </div>
@@ -159,6 +168,7 @@ export default function SignupPage() {
             required
             label="Name"
             type="text"
+            variant="bordered"
             placeholder="Enter your name"
             value={formData.name}
             onChange={(e) =>
@@ -170,6 +180,7 @@ export default function SignupPage() {
             required
             label="Email"
             type="email"
+            variant="bordered"
             placeholder="Enter your email"
             value={formData.email}
             onChange={(e) =>
@@ -177,21 +188,21 @@ export default function SignupPage() {
             }
           />
 
-          <Input
-            required
-            label="Password"
-            type="password"
-            placeholder="Enter your password"
-            value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-          />
-
-          <p className="text-xs text-slate-500 dark:text-neutral-400">
-            Password must be minimum 6 characters with one uppercase and one
-            lowercase letter.
-          </p>
+          <div>
+            <Input
+              required
+              label="Password"
+              type="password"
+              variant="bordered"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+            />
+            {/* পাসওয়ার্ড রুলস এখানে একটি একটি করে রিয়েল-টাইমে চেক দেখাবে */}
+            <PasswordRules password={formData.password} />
+          </div>
 
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-neutral-300">
@@ -217,13 +228,13 @@ export default function SignupPage() {
           </div>
 
           {imagePreview && (
-            <div className="flex justify-center">
+            <div className="flex justify-center pt-1">
               <Image
                 src={imagePreview}
                 alt="Profile Preview"
                 width={90}
                 height={90}
-                className="h-[90px] w-[90px] rounded-full border border-pink-500 object-cover"
+                className="h-[90px] w-[90px] rounded-full border border-pink-500 object-cover p-0.5 shadow-md shadow-pink-500/10"
               />
             </div>
           )}
@@ -231,17 +242,17 @@ export default function SignupPage() {
           <Button
             type="submit"
             isLoading={isLoading}
-            className="h-12 w-full rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 font-bold text-white shadow-lg shadow-pink-500/30"
+            className="h-12 w-full rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 font-bold text-white shadow-lg shadow-pink-500/30 hover:opacity-90 transition-opacity mt-4"
           >
             {isLoading ? "Creating Account..." : "Create Account"}
           </Button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-slate-600 dark:text-neutral-400">
+        <div className="mt-6 text-center text-sm text-slate-600 dark:text-neutral-400 border-t border-slate-100 dark:border-white/5 pt-4">
           Already have an account?{" "}
           <NextLink
             href="/auth/signin"
-            className="font-semibold text-pink-500 hover:underline"
+            className="font-semibold text-pink-500 hover:underline transition-all"
           >
             Sign In
           </NextLink>
