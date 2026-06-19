@@ -7,8 +7,7 @@ import { useRouter } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import { CircleCheck, CircleXmark, Picture } from "@gravity-ui/icons";
 import { authClient } from "@/lib/auth-client";
-import PasswordRules from "@/components/PasswordRules"; // আপনার সঠিক পাথ অনুযায়ী অ্যাডজাস্ট করুন
-
+import PasswordRules from "@/components/PasswordRules"; 
 export default function SignupPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -95,7 +94,7 @@ export default function SignupPage() {
         email: formData.email,
         password: formData.password,
         image: imageUrl || undefined,
-        role: "user", // ডিফল্টভাবে স্ট্যান্ডার্ড ইউজার হিসেবে রেজিস্টার হবে
+        role: "user", 
       });
 
       if (result?.error) {
@@ -119,7 +118,6 @@ export default function SignupPage() {
       setImageFile(null);
       setImagePreview("");
 
-      // ২ সেকেন্ড পর সফলভাবে লগইন পেজে রিডাইরেক্ট হবে
       setTimeout(() => {
         router.push("/auth/signin");
       }, 2000);
@@ -165,6 +163,7 @@ export default function SignupPage() {
 
         <form onSubmit={handleSignup} className="space-y-4">
           <Input
+          className="w-full"
             required
             label="Name"
             type="text"
@@ -177,6 +176,7 @@ export default function SignupPage() {
           />
 
           <Input
+          className="w-full"
             required
             label="Email"
             type="email"
@@ -189,7 +189,7 @@ export default function SignupPage() {
           />
 
           <div>
-            <Input
+            <Input className="w-full"
               required
               label="Password"
               type="password"
@@ -200,7 +200,7 @@ export default function SignupPage() {
                 setFormData({ ...formData, password: e.target.value })
               }
             />
-            {/* পাসওয়ার্ড রুলস এখানে একটি একটি করে রিয়েল-টাইমে চেক দেখাবে */}
+            
             <PasswordRules password={formData.password} />
           </div>
 
