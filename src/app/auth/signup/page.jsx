@@ -28,8 +28,6 @@ export default function SignupPage() {
   const [imagePreview, setImagePreview] = useState("");
   const [message, setMessage] = useState({ type: "", text: "" });
   const [isLoading, setIsLoading] = useState(false);
-
-  // password toggle
   const [showPassword, setShowPassword] = useState(false);
 
   const validatePassword = (password) => {
@@ -50,7 +48,7 @@ export default function SignupPage() {
       {
         method: "POST",
         body: imageData,
-      }
+      },
     );
 
     const data = await res.json();
@@ -82,7 +80,10 @@ export default function SignupPage() {
     setMessage({ type: "", text: "" });
 
     if (!formData.name || !formData.email || !formData.password) {
-      setMessage({ type: "error", text: "Please fill in all required fields." });
+      setMessage({
+        type: "error",
+        text: "Please fill in all required fields.",
+      });
       return;
     }
 
@@ -120,12 +121,7 @@ export default function SignupPage() {
         text: "Account created successfully! Redirecting to sign in...",
       });
 
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-      });
-
+      setFormData({ name: "", email: "", password: "" });
       setImageFile(null);
       setImagePreview("");
 
@@ -144,8 +140,8 @@ export default function SignupPage() {
 
   return (
     <section className="flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-10">
+      {/* CONTAINER (AGAIN ORIGINAL LOOK) */}
       <div className="w-full max-w-md rounded-3xl border border-black/10 bg-white p-6 shadow-2xl shadow-black/10 dark:border-white/10 dark:bg-[#0c1220] dark:shadow-black/40">
-        
         {/* TITLE */}
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-bold text-slate-950 dark:text-white">
@@ -159,16 +155,16 @@ export default function SignupPage() {
         {/* MESSAGE */}
         {message.text && (
           <div
-            className={`mb-5 flex items-center gap-2 rounded-xl px-4 py-3 text-sm transition-all ${
+            className={`mb-5 flex items-center gap-2 rounded-xl px-4 py-3 text-sm ${
               message.type === "success"
                 ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
                 : "bg-red-500/10 text-red-500 border border-red-500/20"
             }`}
           >
             {message.type === "success" ? (
-              <CircleCheck className="h-5 w-5 shrink-0" />
+              <CircleCheck className="h-5 w-5" />
             ) : (
-              <CircleXmark className="h-5 w-5 shrink-0" />
+              <CircleXmark className="h-5 w-5" />
             )}
             <span>{message.text}</span>
           </div>
@@ -176,42 +172,36 @@ export default function SignupPage() {
 
         {/* FORM */}
         <form onSubmit={handleSignup} className="space-y-4">
-
           <Input
             className="w-full"
-            required
+            placeholder="Enter your full name"
             label="Name"
             type="text"
             variant="bordered"
-            placeholder="Enter your name"
             value={formData.name}
-            onChange={(e) =>
-              setFormData({ ...formData, name: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
 
           <Input
             className="w-full"
-            required
+            placeholder="Enter your email"
             label="Email"
             type="email"
             variant="bordered"
-            placeholder="Enter your email"
             value={formData.email}
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
           />
 
-          {/* PASSWORD FIXED (same style preserved) */}
+          {/* PASSWORD (FIXED ONLY ICON, DESIGN SAME) */}
           <div className="relative">
             <Input
               className="w-full"
-              required
+              placeholder="Enter your password"
               label="Password"
               type={showPassword ? "text" : "password"}
               variant="bordered"
-              placeholder="Enter your password"
               value={formData.password}
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
@@ -233,46 +223,51 @@ export default function SignupPage() {
 
           <PasswordRules password={formData.password} />
 
-          {/* IMAGE UPLOAD (same style) */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-neutral-300">
-              Profile Image
-            </label>
+          {/* IMAGE (ONLY FIX INSIDE BOX, OLD STYLE RESTORED) */}
+          <label className="flex cursor-pointer items-center justify-between rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center transition hover:border-pink-500 hover:bg-pink-500/5 dark:border-white/10 dark:bg-white/5">
+            {/* LEFT SIDE */}
+            <div className="flex flex-col items-start">
+              <div className="flex items-center gap-2">
+                <Picture className="h-6 w-6 text-pink-500" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-white">
+                  Upload profile image
+                </span>
+              </div>
 
-            <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center transition hover:border-pink-500 hover:bg-pink-500/5 dark:border-white/10 dark:bg-white/5">
-              <Picture className="mb-2 h-6 w-6 text-pink-500" />
-              <span className="text-sm font-semibold text-slate-700 dark:text-white">
-                Upload profile image
-              </span>
               <span className="mt-1 text-xs text-slate-500 dark:text-neutral-400">
                 PNG, JPG, JPEG supported
               </span>
-
-              <input
-                type="file"
-                accept="image/png,image/jpeg,image/jpg,image/webp"
-                onChange={handleImageChange}
-                className="hidden"
-              />
-            </label>
-          </div>
-
-          {imagePreview && (
-            <div className="flex justify-center pt-1">
-              <Image
-                src={imagePreview}
-                alt="Profile Preview"
-                width={90}
-                height={90}
-                className="h-[90px] w-[90px] rounded-full border border-pink-500 object-cover p-0.5 shadow-md shadow-pink-500/10"
-              />
             </div>
-          )}
+
+            {/* RIGHT SIDE IMAGE */}
+            <div className="flex items-center justify-center">
+              {imagePreview ? (
+                <Image
+                  src={imagePreview}
+                  alt="preview"
+                  width={56}
+                  height={56}
+                  className="h-14 w-14 rounded-full border border-pink-500 object-cover shadow-sm"
+                />
+              ) : (
+                <div className="h-14 w-14 rounded-full border border-dashed flex items-center justify-center text-xs text-gray-400">
+                  +
+                </div>
+              )}
+            </div>
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+            />
+          </label>
 
           <Button
             type="submit"
             isLoading={isLoading}
-            className="h-12 w-full rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 font-bold text-white shadow-lg shadow-pink-500/30 hover:opacity-90 transition-opacity mt-4"
+            className="h-12 w-full rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 font-bold text-white shadow-lg shadow-pink-500/30 hover:opacity-90"
           >
             {isLoading ? "Creating Account..." : "Create Account"}
           </Button>
@@ -281,10 +276,7 @@ export default function SignupPage() {
         {/* FOOTER */}
         <div className="mt-6 text-center text-sm text-slate-600 dark:text-neutral-400 border-t border-slate-100 dark:border-white/5 pt-4">
           Already have an account?{" "}
-          <NextLink
-            href="/auth/signin"
-            className="font-semibold text-pink-500 hover:underline transition-all"
-          >
+          <NextLink href="/auth/signin" className="text-pink-500 font-semibold">
             Sign In
           </NextLink>
         </div>
