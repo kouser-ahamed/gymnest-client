@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "@heroui/react";
+import { Avatar, Button } from "@heroui/react";
 import Image from "next/image";
 import { Moon, Sun, Bars, Xmark } from "@gravity-ui/icons";
 import { useSession, signOut } from "@/lib/auth-client";
@@ -108,11 +108,19 @@ export default function Navbar() {
               <Moon className="h-5 w-5" />
             )}
           </button>
+
           {user ? (
             <div className="flex items-center gap-3 text-sm font-semibold text-slate-900 dark:text-white">
+              <Avatar>
+                <Avatar.Image alt={user.name} src={user.image} />
+                <Avatar.Fallback>{user.name.charAt(0)}</Avatar.Fallback>
+              </Avatar>
               <span>Hi, {user.name}!</span>
-
-              <Button variant="ghost" onClick={handleLogout}>
+              <Button
+                variant="bordered"
+                onClick={handleLogout}
+                className="h-9 px-4 text-md font-bold text-red-500 hover:text-white bg-transparent hover:bg-red-500 border-red-500/30 hover:border-red-500 rounded-xl transition-all duration-200 active:scale-95"
+              >
                 Logout
               </Button>
             </div>
