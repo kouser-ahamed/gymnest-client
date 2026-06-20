@@ -31,12 +31,16 @@ export default function RootLayout({ children }) {
             __html: `
               (function () {
                 try {
-                  var theme = localStorage.getItem("gymnest-theme") || "dark";
-                  if (theme === "dark") {
-                    document.documentElement.classList.add("dark");
-                  } else {
-                    document.documentElement.classList.remove("dark");
+                  var theme = localStorage.getItem("gymnest-theme");
+
+                  if (!theme) {
+                    theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+                      ? "dark"
+                      : "light";
+                    localStorage.setItem("gymnest-theme", theme);
                   }
+
+                  document.documentElement.classList.toggle("dark", theme === "dark");
                 } catch (e) {
                   document.documentElement.classList.add("dark");
                 }
@@ -46,7 +50,7 @@ export default function RootLayout({ children }) {
         />
       </head>
 
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col transition-colors duration-300">
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

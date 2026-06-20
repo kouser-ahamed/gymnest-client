@@ -3,6 +3,7 @@ import React from "react";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import DashboardSideBar from "@/components/dashboard/DashboardSideBar";
+import DashboardNavbar from "@/components/dashboard/DashboardNavbar";
 
 const DashboardLayout = async ({ children }) => {
   const session = await auth.api.getSession({
@@ -16,7 +17,7 @@ const DashboardLayout = async ({ children }) => {
       <div className="flex flex-1 overflow-hidden">
         <DashboardSideBar user={user} />
         <div className="flex-1 overflow-y-auto p-6">
-          <div>Navbar</div>
+          <DashboardNavbar user={user} />
 
           <main className="p-5">{children}</main>
         </div>

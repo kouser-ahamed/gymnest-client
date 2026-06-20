@@ -1,18 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import { Avatar, Button } from "@heroui/react";
 import Image from "next/image";
 import { Moon, Sun, Bars, Xmark } from "@gravity-ui/icons";
 import { useSession, signOut } from "@/lib/auth-client";
+import { useTheme } from "@/hooks/useTheme"; // ✅ NEW ADD
 
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "All Classes", href: "/all-classes" },
   { label: "Community Forum", href: "/community-forum" },
 ];
+
 const handleLogout = async () => {
   await signOut();
 };
@@ -20,44 +22,22 @@ const handleLogout = async () => {
 export default function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [theme, setTheme] = useState(null);
 
-  const { data: session, isPending } = useSession();
+  const { data: session } = useSession();
   const user = session?.user;
 
-  console.log("Current pathname in Navbar:", pathname);
-
-  // console.log("Session data in Navbar:", session, " Is Pending:", isPending);
-
-  useEffect(() => {
-    const currentTheme = document.documentElement.classList.contains("dark")
-      ? "dark"
-      : "light";
-
-    setTheme(currentTheme);
-  }, []);
-
-  const toggleTheme = () => {
-    const currentTheme = document.documentElement.classList.contains("dark")
-      ? "dark"
-      : "light";
-
-    const newTheme = currentTheme === "dark" ? "light" : "dark";
-
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
-    localStorage.setItem("gymnest-theme", newTheme);
-    setTheme(newTheme);
-  };
-
-  const currentTheme = theme || "dark";
+  // ✅ GLOBAL THEME HOOK
+  const { theme, toggleTheme } = useTheme();
 
   if (pathname.includes("/dashboard")) {
-    return null; // Don't render the Navbar on dashboard routes
+    return null;
   }
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-black/10 bg-white/90 backdrop-blur-xl dark:border-white/10 dark:bg-[#070b14]/95">
       <header className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+
+        {/* LOGO */}
         <NextLink href="/" className="flex items-center">
           <div className="transition-transform duration-300 hover:scale-105">
             <Image
@@ -78,6 +58,7 @@ export default function Navbar() {
           </h1>
         </NextLink>
 
+        {/* NAV LINKS */}
         <ul className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => {
             const isActive =
@@ -101,33 +82,40 @@ export default function Navbar() {
           })}
         </ul>
 
+        {/* RIGHT SIDE */}
         <div className="hidden items-center gap-4 lg:flex">
+
+          {/* THEME TOGGLE (UPDATED) */}
           <button
             type="button"
             onClick={toggleTheme}
             className="flex h-11 w-11 items-center justify-center rounded-xl border border-black/10 bg-slate-100 text-pink-500 transition hover:bg-pink-500 hover:text-white dark:border-white/10 dark:bg-[#0c1220] dark:text-orange-300 dark:hover:bg-pink-500"
             aria-label="Toggle theme"
           >
-            {currentTheme === "dark" ? (
+            {theme === "dark" ? (
               <Sun className="h-5 w-5" />
             ) : (
               <Moon className="h-5 w-5" />
             )}
           </button>
 
+          {/* AUTH */}
           {user ? (
             <div className="flex items-center gap-3 text-sm font-semibold text-slate-900 dark:text-white">
               <Avatar>
                 <Avatar.Image alt={user.name} src={user.image} />
                 <Avatar.Fallback>{user.name.charAt(0)}</Avatar.Fallback>
               </Avatar>
+
               <span>Hi, {user.name}!</span>
+
               <NextLink
                 href={`/dashboard/${user?.role}`}
                 className="h-9 px-4 text-sm font-bold text-pink-500 hover:text-white bg-transparent hover:bg-pink-500 border border-pink-500/30 hover:border-pink-500 rounded-xl transition-all duration-200 active:scale-95 flex items-center justify-center"
               >
                 Dashboard
               </NextLink>
+
               <Button
                 variant="bordered"
                 onClick={handleLogout}
@@ -145,10 +133,7 @@ export default function Navbar() {
                 Login
               </NextLink>
 
-              <NextLink
-                href="/auth/signup"
-                onClick={() => setIsMenuOpen(false)}
-              >
+              <NextLink href="/auth/signup" onClick={() => setIsMenuOpen(false)}>
                 <Button className="h-11 rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-7 font-bold text-white shadow-lg shadow-pink-500/30 hover:opacity-90">
                   Register
                 </Button>
@@ -157,6 +142,7 @@ export default function Navbar() {
           )}
         </div>
 
+        {/* MOBILE MENU BUTTON */}
         <button
           type="button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -171,6 +157,7 @@ export default function Navbar() {
         </button>
       </header>
 
+      {/* MOBILE MENU */}
       {isMenuOpen && (
         <div className="border-t border-black/10 bg-white px-4 py-5 lg:hidden dark:border-white/10 dark:bg-[#070b14]">
           <ul className="flex flex-col gap-2">
@@ -197,13 +184,14 @@ export default function Navbar() {
             })}
           </ul>
 
+          {/* THEME BUTTON MOBILE */}
           <div className="mt-5 flex flex-col gap-3 border-t border-black/10 pt-5 dark:border-white/10">
             <button
               type="button"
               onClick={toggleTheme}
               className="flex items-center justify-center gap-2 rounded-xl border border-black/10 px-4 py-3 text-sm font-semibold text-slate-900 dark:border-white/10 dark:text-white"
             >
-              {currentTheme === "dark" ? (
+              {theme === "dark" ? (
                 <>
                   <Sun className="h-4 w-4" />
                   Light Mode

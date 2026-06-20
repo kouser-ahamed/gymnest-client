@@ -1,11 +1,18 @@
 @import "tailwindcss";
 @import "@heroui/styles";
 
+/* Smooth transition */
+html, body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light Mode */
 html {
   background: #ffffff;
   color-scheme: light;
 }
 
+/* Dark Mode */
 html.dark {
   background: #070b14;
   color-scheme: dark;
