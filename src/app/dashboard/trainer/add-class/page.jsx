@@ -39,6 +39,7 @@ const difficultyLevels = [
 
 const hours = Array.from({ length: 12 }, (_, index) => {
   const value = index + 1;
+
   return {
     id: String(value).padStart(2, "0"),
     label: String(value).padStart(2, "0"),
@@ -73,6 +74,18 @@ const AddClassPage = () => {
   }, [imageFile]);
 
   const classTime = `${selectedHour}:${selectedMinute} ${period}`;
+
+  const resetFormState = () => {
+    setImageFile(null);
+    setSelectedDays(["Mon", "Wed", "Fri"]);
+    setCategory("weights");
+    setDifficulty("beginner");
+    setSelectedHour("08");
+    setSelectedMinute("00");
+    setPeriod("AM");
+    setDayError("");
+    setImageError("");
+  };
 
   const handleDayToggle = (day) => {
     setDayError("");
@@ -127,6 +140,9 @@ const AddClassPage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const formElement = event.currentTarget;
+    const formData = new FormData(formElement);
+
     if (selectedDays.length === 0) {
       setDayError("Please select at least one class day.");
       return;
@@ -139,8 +155,6 @@ const AddClassPage = () => {
 
     try {
       setIsSubmitting(true);
-
-      const formData = new FormData(event.currentTarget);
 
       const imageUrl = await uploadImageToImgbb();
 
@@ -173,14 +187,8 @@ const AddClassPage = () => {
 
       alert("Class added successfully with Pending status.");
 
-      event.currentTarget.reset();
-      setImageFile(null);
-      setSelectedDays(["Mon", "Wed", "Fri"]);
-      setCategory("weights");
-      setDifficulty("beginner");
-      setSelectedHour("08");
-      setSelectedMinute("00");
-      setPeriod("AM");
+      formElement.reset();
+      resetFormState();
     } catch (error) {
       console.error(error);
       alert(error.message || "Something went wrong.");
@@ -225,7 +233,8 @@ const AddClassPage = () => {
                 </Fieldset.Legend>
 
                 <Description className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                  Fill all required information to submit your class for admin review.
+                  Fill all required information to submit your class for admin
+                  review.
                 </Description>
               </div>
 
@@ -281,7 +290,8 @@ const AddClassPage = () => {
                     />
 
                     <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                      Image will be uploaded to Imgbb first, then the image URL will be saved.
+                      Image will be uploaded to Imgbb first, then the image URL
+                      will be saved.
                     </p>
 
                     {imageError && (
@@ -587,17 +597,7 @@ const AddClassPage = () => {
 
               <Button
                 type="reset"
-                onClick={() => {
-                  setImageFile(null);
-                  setSelectedDays(["Mon", "Wed", "Fri"]);
-                  setCategory("weights");
-                  setDifficulty("beginner");
-                  setSelectedHour("08");
-                  setSelectedMinute("00");
-                  setPeriod("AM");
-                  setDayError("");
-                  setImageError("");
-                }}
+                onClick={resetFormState}
                 className="w-full rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:bg-[#070b14] dark:text-slate-200 dark:hover:bg-white/5 sm:w-fit"
               >
                 Reset
