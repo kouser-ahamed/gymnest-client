@@ -2,6 +2,7 @@
 import { getSession } from 'better-auth/api';
 import React from 'react';
 import { useSession } from "@/lib/auth-client";
+import TrainerOverview from '@/components/dashboard/TrainerOverview';
 
 
 
@@ -18,7 +19,7 @@ const TrainerDashboardPage = () => {
 
     return (
         <div>
-            <h2 className="text-2xl font-bold">Welcome Back, {user?.name}!</h2>
+            <TrainerOverview user={user} />
         </div>
     );
 };

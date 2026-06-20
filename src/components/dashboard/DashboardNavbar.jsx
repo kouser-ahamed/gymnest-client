@@ -1,3 +1,5 @@
+"use client";
+
 const DashboardNavbar = ({ user }) => {
   const currentHour = new Date().getHours();
 
@@ -8,23 +10,41 @@ const DashboardNavbar = ({ user }) => {
       ? "Good Afternoon"
       : "Good Evening";
 
+  const role = user?.role || "member";
+
+  const roleTitle =
+    role === "admin"
+      ? "Admin"
+      : role === "trainer"
+      ? "Trainer"
+      : "Member";
+
   return (
-    <header className="border-b border-divider bg-content1 px-6 py-5">
-      <div>
-        <p className="text-sm text-default-500">
-          {greeting}
+    <header className="border-b border-slate-200 bg-white px-6 py-6 dark:border-white/10 dark:bg-[#070b14]">
+      <div className="mx-auto flex max-w-5xl flex-col items-center justify-center text-center">
+        
+        {/* Small Greeting */}
+        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+          {greeting}, {user?.name || "User"}!
         </p>
 
-        <h1 className="mt-1 text-3xl font-bold text-foreground">
-          Welcome back,{" "}
-          <span className="text-primary">
-            {user?.name || "User"}
+        {/* Big Dashboard Title */}
+        <h1 className="mt-2 text-md font-extrabold tracking-tight text-slate-900 dark:text-white md:text-xl">
+          {roleTitle}{" "}
+          <span className="bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
+            Dashboard
           </span>
         </h1>
 
-        <p className="mt-2 text-default-500">
+        {/* Small Subtitle */}
+        <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600 dark:text-neutral-300">
           Here's what's happening in your dashboard today.
         </p>
+
+        {/* Small Role Badge */}
+        <div className="mt-4 rounded-full border border-pink-500/20 bg-pink-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-pink-600 dark:text-pink-400">
+          {role} panel
+        </div>
       </div>
     </header>
   );
