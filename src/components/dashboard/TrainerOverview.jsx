@@ -12,27 +12,27 @@ import Image from "next/image";
 
 const TrainerOverview = ({ user }) => {
   const stats = [
-   {
-    title: "Total Classes Created",
-    value: 5,
-    icon: BookOpen,
-    iconBox: "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400",
-    glow: "hover:border-fuchsia-500/40",
-  },
-  {
-    title: "Total Students Enrolled",
-    value: 2,
-    icon: PersonPlus,
-    iconBox: "bg-pink-500/10 text-pink-600 dark:text-pink-400",
-    glow: "hover:border-pink-500/40",
-  },
-  {
-    title: "Forum Posts",
-    value: 3,
-    icon: Comment,
-    iconBox: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
-    glow: "hover:border-orange-500/40",
-  },
+    {
+      title: "Total Classes Created",
+      value: 5,
+      icon: BookOpen,
+      iconBox: "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400",
+      glow: "hover:border-fuchsia-500/40",
+    },
+    {
+      title: "Total Students Enrolled",
+      value: 2,
+      icon: PersonPlus,
+      iconBox: "bg-pink-500/10 text-pink-600 dark:text-pink-400",
+      glow: "hover:border-pink-500/40",
+    },
+    {
+      title: "Forum Posts",
+      value: 3,
+      icon: Comment,
+      iconBox: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+      glow: "hover:border-orange-500/40",
+    },
   ];
 
   return (
@@ -70,79 +70,84 @@ const TrainerOverview = ({ user }) => {
       </div>
 
       {/* Profile Details */}
-<Card className="border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#101624]">
-  <div className="p-6">
-    <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-          Profile Details
-        </h2>
+      <Card className="border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#101624]">
+        <div className="p-6">
+          <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                Profile Details
+              </h2>
 
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Trainer account information
-        </p>
-      </div>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                Trainer account information
+              </p>
+            </div>
 
-      {/* Trainer Badge */}
-      <div className="inline-flex w-fit items-center gap-2 rounded-full border border-pink-500/20 bg-pink-500/10 px-4 py-1.5 text-sm font-semibold text-pink-600 dark:text-pink-400">
-        <ShieldCheck className="h-4 w-4" />
-        Trainer
-      </div>
-    </div>
+            {/* Trainer Badge */}
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-pink-500/20 bg-pink-500/10 px-4 py-1.5 text-sm font-semibold text-pink-600 dark:text-pink-400">
+              <ShieldCheck className="h-4 w-4" />
+              Trainer
+            </div>
+          </div>
 
-    <div className="flex flex-col gap-6 rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-white/10 dark:bg-[#070b14]">
-      <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
-        <Image
-          src={user?.image || "/assets/default-user.png"}
-          alt={user?.name || "Trainer"}
-          width={88}
-          height={88}
-          className="h-[88px] w-[88px] rounded-full border-2 border-pink-500 object-cover"
-        />
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-white/10 dark:bg-[#070b14]">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+              {/* Left Profile Info */}
+              <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
+                {user?.image ? (
+                  <Image
+                    src={user.image}
+                    alt={user.name}
+                    width={88}
+                    height={88}
+                    className="h-[88px] w-[88px] rounded-xl border-2 border-pink-500 object-cover"
+                  />
+                ) : (
+                  <div className="flex h-[88px] w-[88px] items-center justify-center rounded-full border-2 border-pink-500 bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 text-3xl font-bold text-white">
+                    {avatarLetter}
+                  </div>
+                )}
 
-        <div className="flex-1">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-            {user?.name || "Trainer Name"}
-          </h3>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                    {user?.name || "Trainer Name"}
+                  </h3>
 
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {user?.email || "trainer@example.com"}
-          </p>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                    {user?.email || "trainer@example.com"}
+                  </p>
+                </div>
+              </div>
 
-          <div className="mt-3 inline-flex rounded-full bg-gradient-to-r from-fuchsia-500/10 via-pink-500/10 to-orange-400/10 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-pink-600 dark:text-pink-400">
-            Trainer Profile
+              {/* Right Account Created Date */}
+              <div className="w-full rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-[#101624] lg:w-[260px]">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400">
+                    <Calendar className="h-5 w-5" />
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      Account Created
+                    </p>
+
+                    <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">
+                      {user?.createdAt
+                        ? new Date(user.createdAt).toLocaleDateString("en-BD", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            timeZone: "Asia/Dhaka",
+                          })
+                        : "N/A"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Account Created Date */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-[#101624]">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400">
-            <Calendar className="h-5 w-5" />
-          </div>
-
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              Account Created
-            </p>
-
-            <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">
-             {user?.createdAt
-  ? new Date(user.createdAt).toLocaleDateString("en-BD", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      timeZone: "Asia/Dhaka",
-    })
-  : "N/A"}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</Card>
+      </Card>
     </section>
   );
 };
