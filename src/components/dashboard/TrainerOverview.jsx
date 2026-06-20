@@ -1,45 +1,15 @@
 "use client";
 
 import { Card } from "@heroui/react";
-import {
-  BookOpen,
-  PersonPlus,
-  Comment,
-  ShieldCheck,
-  Calendar,
-} from "@gravity-ui/icons";
+import { ShieldCheck, Calendar } from "@gravity-ui/icons";
 import Image from "next/image";
 
-const TrainerOverview = ({ user }) => {
-  const stats = [
-    {
-      title: "Total Classes Created",
-      value: 5,
-      icon: BookOpen,
-      iconBox: "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400",
-      glow: "hover:border-fuchsia-500/40",
-    },
-    {
-      title: "Total Students Enrolled",
-      value: 2,
-      icon: PersonPlus,
-      iconBox: "bg-pink-500/10 text-pink-600 dark:text-pink-400",
-      glow: "hover:border-pink-500/40",
-    },
-    {
-      title: "Forum Posts",
-      value: 3,
-      icon: Comment,
-      iconBox: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
-      glow: "hover:border-orange-500/40",
-    },
-  ];
-
+const TrainerOverview = ({ user, trainerStats }) => {
   return (
     <section className="space-y-6">
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {stats.map((item) => {
+        {trainerStats.map((item) => {
           const Icon = item.icon;
 
           return (
