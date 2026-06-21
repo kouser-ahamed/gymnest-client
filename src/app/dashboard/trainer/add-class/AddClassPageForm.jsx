@@ -181,6 +181,7 @@ const AddClassPageForm = ({ user }) => {
         description: formData.get("description"),
         status: "Pending",
         trainerId: user.id,
+        trainerName: user.name,
         createdAt: new Date().toISOString(),
       };
 

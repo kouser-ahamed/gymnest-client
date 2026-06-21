@@ -1,11 +1,10 @@
-import React from 'react';
+import ClassesGrid from "@/components/classes/ClassesGrid";
+import { getAllClasses } from "@/lib/api/classes";
 
-const AllClasses = () => {
-    return (
-        <div>
-            All Classes Page
-        </div>
-    );
+const AllClassesPage = async () => {
+  const classes = await getAllClasses();
+
+  return <ClassesGrid classes={classes} />;
 };
 
-export default AllClasses;
+export default AllClassesPage;
