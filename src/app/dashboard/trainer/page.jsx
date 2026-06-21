@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
-import TrainerOverview from "@/components/dashboard/TrainerOverview";
 import { BookOpen, PersonPlus, Comment } from "@gravity-ui/icons";
+import TrainerOverview from "@/components/dashboard/trainer/TrainerOverview";
 
 const TrainerDashboardPage = () => {
   const [mounted, setMounted] = useState(false);

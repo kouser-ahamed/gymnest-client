@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { getTrainerClasses } from "@/lib/api/classes";
-import TrainerClassesTable from "@/components/dashboard/TrainerClassesTable";
+import TrainerClassesTable from "@/components/dashboard/trainer/TrainerClassesTable";
 
 const TrainerClassesManagePage = async () => {
   const session = await auth.api.getSession({
