@@ -67,6 +67,7 @@ const AddClassPage = () => {
   const [period, setPeriod] = useState("AM");
 
   const [imageFile, setImageFile] = useState(null);
+  const [fileInputKey, setFileInputKey] = useState(0);
   const [imageError, setImageError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -79,6 +80,7 @@ const AddClassPage = () => {
 
   const resetFormState = () => {
     setImageFile(null);
+    setFileInputKey((prev) => prev + 1);
     setSelectedDays(["Mon", "Wed", "Fri"]);
     setCategory("weights");
     setDifficulty("beginner");
@@ -179,12 +181,11 @@ const AddClassPage = () => {
       // console.log("New Class Data:", newClass);
 
       const res = await createClass(newClass);
-      if(res.insertedId) {
+     if (res?.insertedId) {
         toast.success("Class added successfully.");
-        event.target.reset();
-        
-      }
-
+        formElement.reset();
+        resetFormState();
+       }
       // Later server API call example:
       // await fetch("/api/classes", {
       //   method: "POST",
@@ -290,6 +291,7 @@ const AddClassPage = () => {
 
                   <div className="flex flex-col justify-center">
                     <input
+                      key={fileInputKey}
                       type="file"
                       name="image"
                       accept="image/*"
