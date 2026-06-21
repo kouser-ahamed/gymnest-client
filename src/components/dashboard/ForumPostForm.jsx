@@ -17,6 +17,7 @@ import { FilePlus, Picture } from "@gravity-ui/icons";
 import { FiImage, FiSend, FiType, FiUserCheck } from "react-icons/fi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { postCommunityForumPost } from "@/lib/actions/community-forum-post";
 // import { createForumPost } from "@/lib/actions/forum";
 
 const ForumPostForm = ({
@@ -70,7 +71,7 @@ const ForumPostForm = ({
       {
         method: "POST",
         body: imageData,
-      }
+      },
     );
 
     const result = await response.json();
@@ -112,15 +113,17 @@ const ForumPostForm = ({
         description: formData.get("description"),
         status: "Published",
         authorId: user.id,
-        authorName: user?.name || "",
-        authorEmail: user?.email || "",
-        authorImage: user?.image || "",
+        // authorName: user?.name || "",
+        // authorEmail: user?.email || "",
+        // authorImage: user?.image || "",
         authorRole: role,
         createdAt: new Date().toISOString(),
       };
 
-    //   const res = await createForumPost(newPost);
-      
+      //   const res = await createForumPost(newPost);
+
+      const res = await postCommunityForumPost(newPost);
+
       if (res?.insertedId) {
         toast.success("Forum post created successfully!", {
           position: "top-right",
