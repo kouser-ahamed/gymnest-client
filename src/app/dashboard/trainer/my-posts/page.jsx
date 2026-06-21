@@ -1,19 +1,12 @@
-import { getCommunityForumPosts } from '@/lib/api/community-forum-post';
-import { getUserSession } from '@/lib/core/session';
-import React from 'react';
+import CommunityForumCards from "@/components/dashboard/CommunityForumCards";
+import { getCommunityForumPosts } from "@/lib/api/community-forum-post";
+import { getUserSession } from "@/lib/core/session";
 
 const TrainerCommunityAllForumPage = async () => {
+  const user = await getUserSession();
+  const communityPost = await getCommunityForumPosts(user?.id);
 
-    const user = await getUserSession();
-    const communityPost = await getCommunityForumPosts(user?.id);
-
-    console.log('communityPost', communityPost);
-
-    return (
-        <div>
-            Trainer Community All Forum Page
-        </div>
-    );
+  return <CommunityForumCards posts={communityPost} />;
 };
 
 export default TrainerCommunityAllForumPage;
