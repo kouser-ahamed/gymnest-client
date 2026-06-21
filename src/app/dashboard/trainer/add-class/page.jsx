@@ -14,16 +14,12 @@ import {
   Select,
   TextArea,
   TextField,
-  toast,
 } from "@heroui/react";
-import {
-  Calendar,
-  CircleDollar,
-  FilePlus,
-  Picture,
-} from "@gravity-ui/icons";
+import { Calendar, CircleDollar, FilePlus, Picture } from "@gravity-ui/icons";
 import { createClass } from "@/lib/actions/classes";
 import { useSession } from "@/lib/auth-client";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const categories = [
   { id: "yoga", label: "Yoga" },
@@ -57,7 +53,6 @@ const minutes = ["00", "15", "30", "45"].map((minute) => ({
 const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const AddClassPage = () => {
-
   const { data: session } = useSession();
   const user = session?.user;
 
@@ -102,7 +97,7 @@ const AddClassPage = () => {
     setSelectedDays((prevDays) =>
       prevDays.includes(day)
         ? prevDays.filter((item) => item !== day)
-        : [...prevDays, day]
+        : [...prevDays, day],
     );
   };
 
@@ -134,7 +129,7 @@ const AddClassPage = () => {
       {
         method: "POST",
         body: imageData,
-      }
+      },
     );
 
     const result = await response.json();
@@ -162,10 +157,9 @@ const AddClassPage = () => {
       return;
     }
 
-
     if (!user?.id) {
-    alert("User not found. Please login again.");
-    return;
+      alert("User not found. Please login again.");
+      return;
     }
 
     try {
@@ -190,30 +184,33 @@ const AddClassPage = () => {
         createdAt: new Date().toISOString(),
       };
 
-      // console.log("New Class Data:", newClass);
-
       const res = await createClass(newClass);
-     if (res?.insertedId) {
-        toast.success("Class added successfully.");
+
+      if (res?.insertedId) {
+        toast.success("Class added successfully!", {
+          position: "top-right",
+          autoClose: 1500,
+        });
+
         formElement.reset();
         resetFormState();
-       }
-      // Later server API call example:
-      // await fetch("/api/classes", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(newClass),
-      // });
 
-      // alert("Class added successfully with Pending status.");
-
-      // formElement.reset();
-      // resetFormState();
+        setTimeout(() => {
+          window.location.href = "/dashboard/trainer";
+        }, 1700);
+      } else {
+        toast.error("Failed to add class.", {
+          position: "top-right",
+          autoClose: 1500,
+        });
+      }
     } catch (error) {
       console.error(error);
-      alert(error.message || "Something went wrong.");
+
+      toast.error(error.message || "Something went wrong.", {
+        position: "top-right",
+        autoClose: 1800,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -221,6 +218,20 @@ const AddClassPage = () => {
 
   return (
     <section className="space-y-6">
+      <ToastContainer
+        position="top-right"
+        autoClose={1500}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+        toastClassName="!rounded-2xl !border !border-slate-200 !bg-white !text-slate-900 !shadow-lg !shadow-pink-500/10 dark:!border-white/10 dark:!bg-[#101624] dark:!text-white dark:!shadow-pink-500/20"
+        bodyClassName="!text-sm !font-semibold !text-slate-900 dark:!text-white"
+        progressClassName="!bg-gradient-to-r !from-fuchsia-500 !via-pink-500 !to-orange-400"
+      />
+
       {/* Page Header */}
       <div className="flex items-center gap-3">
         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-r from-fuchsia-500/10 via-pink-500/10 to-orange-400/10 text-pink-600 dark:text-pink-400">
@@ -579,8 +590,7 @@ const AddClassPage = () => {
                 <input type="hidden" name="classTime" value={classTime} />
 
                 <div className="mt-4 rounded-xl border border-pink-500/20 bg-pink-500/10 px-4 py-3 text-sm text-pink-600 dark:text-pink-400">
-                  Selected Time:{" "}
-                  <span className="font-bold">{classTime}</span>
+                  Selected Time: <span className="font-bold">{classTime}</span>
                 </div>
               </div>
 
