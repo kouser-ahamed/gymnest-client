@@ -23,6 +23,7 @@ import {
   Picture,
 } from "@gravity-ui/icons";
 import { createClass } from "@/lib/actions/classes";
+import { useSession } from "@/lib/auth-client";
 
 const categories = [
   { id: "yoga", label: "Yoga" },
@@ -56,6 +57,10 @@ const minutes = ["00", "15", "30", "45"].map((minute) => ({
 const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const AddClassPage = () => {
+
+  const { data: session } = useSession();
+  const user = session?.user;
+
   const [category, setCategory] = useState("weights");
   const [difficulty, setDifficulty] = useState("beginner");
 
@@ -157,6 +162,12 @@ const AddClassPage = () => {
       return;
     }
 
+
+    if (!user?.id) {
+    alert("User not found. Please login again.");
+    return;
+    }
+
     try {
       setIsSubmitting(true);
 
@@ -175,6 +186,7 @@ const AddClassPage = () => {
         price: Number(formData.get("price")),
         description: formData.get("description"),
         status: "Pending",
+        trainerId: user.id,
         createdAt: new Date().toISOString(),
       };
 
