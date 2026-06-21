@@ -61,7 +61,7 @@ const ClassCard = ({ classItem }) => {
   } = classItem || {};
 
   return (
-    <Card className="group overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-pink-500/10 dark:border-white/10 dark:bg-[#101624] dark:hover:shadow-pink-500/20">
+    <Card className="group overflow-hidden rounded-[1.6rem] border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-pink-500/30 hover:shadow-2xl hover:shadow-pink-500/10 dark:border-white/10 dark:bg-[#101624] dark:hover:border-pink-500/30 dark:hover:shadow-pink-500/20">
       {/* Image */}
       <div className="relative h-52 w-full overflow-hidden bg-slate-100 dark:bg-[#070b14]">
         {image ? (
@@ -78,37 +78,13 @@ const ClassCard = ({ classItem }) => {
           </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-transparent" />
 
-        {/* Category */}
+        {/* Category Badge */}
         <div className="absolute left-4 top-4">
-          <span className="rounded-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-white shadow-lg">
+          <span className="rounded-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-white shadow-lg shadow-pink-500/20">
             {category || "Fitness"}
           </span>
-        </div>
-
-        {/* Price */}
-        <div className="absolute right-4 top-4">
-          <span className="inline-flex items-center gap-1 rounded-full bg-lime-400 px-3 py-1 text-xs font-black text-slate-950 shadow-lg shadow-lime-500/20">
-            <CircleDollar className="h-4 w-4" />
-            {price || 0}
-          </span>
-        </div>
-
-        {/* Trainer */}
-        <div className="absolute bottom-4 left-4 right-4">
-          <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-slate-950/70 p-3 text-white backdrop-blur">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-lime-300">
-              <PersonWorker className="h-5 w-5" />
-            </div>
-
-            <div className="min-w-0">
-              <p className="text-xs text-white/60">by Trainer</p>
-              <p className="truncate text-sm font-bold">
-                {trainerName || "Trainer Name"}
-              </p>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -120,9 +96,23 @@ const ClassCard = ({ classItem }) => {
                 {className || "Class Name"}
               </Card.Title>
 
-              <Card.Description className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
+              {/* Trainer Name */}
+              <div className="mt-2 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-pink-500/10 text-pink-600 dark:text-pink-400">
+                  <PersonWorker className="h-4 w-4" />
+                </span>
+
+                <p className="truncate">
+                  by{" "}
+                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                    {trainerName || "Trainer Name"}
+                  </span>
+                </p>
+              </div>
+
+              {/* <Card.Description className="mt-3 line-clamp-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
                 {description || "No description available."}
-              </Card.Description>
+              </Card.Description> */}
             </div>
 
             <span
@@ -208,7 +198,7 @@ const ClassesGrid = ({ classes = [] }) => {
   );
 
   return (
-    <section className="space-y-6">
+    <section className="mx-auto w-full max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
       {sortedClasses.length === 0 ? (
         <div className="flex min-h-[260px] flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 text-center dark:border-white/10 dark:bg-[#101624]">
           <DatabaseMagnifier className="mb-4 h-12 w-12 text-pink-500" />
@@ -222,7 +212,7 @@ const ClassesGrid = ({ classes = [] }) => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {sortedClasses.map((item) => (
             <ClassCard key={getClassId(item)} classItem={item} />
           ))}
