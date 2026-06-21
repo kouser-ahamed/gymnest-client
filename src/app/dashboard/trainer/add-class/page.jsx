@@ -14,6 +14,7 @@ import {
   Select,
   TextArea,
   TextField,
+  toast,
 } from "@heroui/react";
 import {
   Calendar,
@@ -21,6 +22,7 @@ import {
   FilePlus,
   Picture,
 } from "@gravity-ui/icons";
+import { createClass } from "@/lib/actions/classes";
 
 const categories = [
   { id: "yoga", label: "Yoga" },
@@ -121,7 +123,7 @@ const AddClassPage = () => {
     imageData.append("image", imageFile);
 
     const response = await fetch(
-      `https://api.imgbb.com/1/upload?key=${imgbbApiKey}`,
+      `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`,
       {
         method: "POST",
         body: imageData,
@@ -174,7 +176,14 @@ const AddClassPage = () => {
         createdAt: new Date().toISOString(),
       };
 
-      console.log("New Class Data:", newClass);
+      // console.log("New Class Data:", newClass);
+
+      const res = await createClass(newClass);
+      if(res.insertedId) {
+        toast.success("Class added successfully.");
+        event.target.reset();
+        
+      }
 
       // Later server API call example:
       // await fetch("/api/classes", {
@@ -185,10 +194,10 @@ const AddClassPage = () => {
       //   body: JSON.stringify(newClass),
       // });
 
-      alert("Class added successfully with Pending status.");
+      // alert("Class added successfully with Pending status.");
 
-      formElement.reset();
-      resetFormState();
+      // formElement.reset();
+      // resetFormState();
     } catch (error) {
       console.error(error);
       alert(error.message || "Something went wrong.");
