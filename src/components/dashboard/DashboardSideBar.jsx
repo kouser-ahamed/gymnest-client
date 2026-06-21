@@ -61,8 +61,9 @@ export default function DashboardSideBar({ user }) {
       { label: "Applied Trainers", href: "/dashboard/admin/applied-trainers", icon: PersonPlus },
       { label: "Manage Trainers", href: "/dashboard/admin/trainers", icon: PersonWorker },
       { label: "Manage Classes", href: "/dashboard/admin/classes", icon: Paperclip },
+      { label: "Add Forum Post", href: "/dashboard/admin/add-forum", icon: Comment },
       { label: "Transactions", href: "/dashboard/admin/transactions", icon: CircleDollar },
-      { label: "Forum Management", href: "/dashboard/admin/forum", icon: Comment },
+      { label: "Forum Management", href: "/dashboard/admin/forum-management", icon: Comment },
       { label: "Settings", href: "/dashboard/admin/settings", icon: GearDot },
     ],
   };

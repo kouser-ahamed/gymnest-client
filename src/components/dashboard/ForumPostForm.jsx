@@ -22,8 +22,8 @@ import { postCommunityForumPost } from "@/lib/actions/community-forum-post";
 
 const ForumPostForm = ({
   user,
-  role = "trainer",
-  redirectPath = "/dashboard/trainer/my-posts",
+  role,
+  redirectPath,
 }) => {
   const [imageFile, setImageFile] = useState(null);
   const [fileInputKey, setFileInputKey] = useState(0);
