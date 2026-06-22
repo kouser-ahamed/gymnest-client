@@ -11,3 +11,7 @@ export const getTrainerClasses = async (trainerId, status='Pending') => {
 export const getAllClasses = async (status = "Approved") => {
   return serverFetch(`/api/classes/all?status=${status}`);
 };
+
+export const getClassById = async (id) => {
+  return serverFetch(`/api/classes/${id}`);
+};

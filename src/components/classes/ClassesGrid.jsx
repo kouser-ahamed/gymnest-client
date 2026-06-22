@@ -180,7 +180,7 @@ const ClassCard = ({ classItem }) => {
             </p>
           </div>
 
-          <Link href={`/classes/${classId}`} className="shrink-0">
+          <Link href={`/all-classes/${classId}`} className="shrink-0">
             <Button className="h-11 rounded-full border border-lime-500/20 bg-lime-500/10 px-5 text-sm font-bold text-lime-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-lime-500/20 dark:text-lime-300">
               View Details
               <ArrowRightFromSquare className="ml-2 h-4 w-4" />
