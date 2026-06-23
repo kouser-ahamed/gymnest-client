@@ -1,6 +1,6 @@
 import { getUserSession } from "@/lib/core/session";
 import { redirect } from "next/navigation";
-import { getClassById } from "@/lib/api/classes";
+//import { getClassById } from "@/lib/api/classes";
 import ClassBookingPayment from "./ClassBookingPayment";
 
 const BookingPage = async ({ params }) => {
@@ -37,7 +37,21 @@ const BookingPage = async ({ params }) => {
     );
   }
 
-  const classDetails = await getClassById(id);
+  //const classDetails = await getClassById(id);
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/classes/${id}`,
+    {
+      method: "GET",
+      cache: "no-store",
+    },
+  );
+
+  const classDetails = await response.json();
+
+  if (!response.ok) {
+    throw new Error(classDetails?.message || "Failed to fetch class details.");
+  }
 
   return <ClassBookingPayment classDetails={classDetails} user={user} />;
 };

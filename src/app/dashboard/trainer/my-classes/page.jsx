@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { getTrainerClasses } from "@/lib/api/classes";
+//import { getTrainerClasses } from "@/lib/api/classes";
 import TrainerClassesTable from "@/components/dashboard/trainer/TrainerClassesTable";
 
 const TrainerClassesManagePage = async () => {
@@ -23,7 +23,21 @@ const TrainerClassesManagePage = async () => {
     );
   }
 
-  const classes = await getTrainerClasses(trainerId);
+  //const classes = await getTrainerClasses(trainerId);
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/classes?trainerId=${trainerId}&status=Pending`,
+    {
+      method: "GET",
+      cache: "no-store",
+    },
+  );
+
+  const classes = await response.json();
+
+  if (!response.ok) {
+    throw new Error(classes?.message || "Failed to fetch trainer classes.");
+  }
 
   return <TrainerClassesTable classes={classes} />;
 };

@@ -1,10 +1,9 @@
-import { getAllUserTransactionsForAdmin } from "@/lib/api/transactions";
 import { getUserSession } from "@/lib/core/session";
 
 const getItemId = (item) => {
   if (typeof item?._id === "string") return item._id;
   if (item?._id?.$oid) return item._id.$oid;
-  return item?._id?.toString?.() || item?.transactionId;
+  return item?._id?.toString?.() || item?.transactionId || item?.sessionId;
 };
 
 const formatDate = (date) => {
@@ -82,7 +81,7 @@ const TransactionMobileCard = ({ item }) => {
           </p>
 
           <p className="mt-1 break-all text-xs font-bold text-orange-700 dark:text-orange-200">
-            {item?.transactionId || "N/A"}
+            {item?.transactionId || item?.sessionId || "N/A"}
           </p>
         </div>
       </div>
@@ -93,11 +92,29 @@ const TransactionMobileCard = ({ item }) => {
 const TransactionsPage = async () => {
   const user = await getUserSession();
 
-  const transactionsResponse = await getAllUserTransactionsForAdmin(user?.role);
+  let transactions = [];
 
-  const transactions = Array.isArray(transactionsResponse)
-    ? transactionsResponse
-    : [];
+  if (user?.role === "admin") {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/booking-history?role=${user?.role}`,
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
+
+    const transactionsResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        transactionsResponse?.message || "Failed to fetch transactions.",
+      );
+    }
+
+    transactions = Array.isArray(transactionsResponse)
+      ? transactionsResponse
+      : [];
+  }
 
   const totalRevenue = transactions.reduce((total, item) => {
     return total + Number(item?.price || 0);
@@ -206,7 +223,7 @@ const TransactionsPage = async () => {
                       </td>
 
                       <td className="px-4 py-5">
-                      <span className="inline-flex max-w-[220px] rounded-xl border border-pink-500/20 bg-gradient-to-r from-fuchsia-500/10 via-pink-500/10 to-orange-400/10 px-3 py-1.5 text-xs font-black text-pink-700 shadow-sm shadow-pink-500/5 dark:border-pink-400/20 dark:from-fuchsia-500/15 dark:via-pink-500/15 dark:to-orange-400/15 dark:text-pink-200">
+                        <span className="inline-flex max-w-[220px] rounded-xl border border-pink-500/20 bg-gradient-to-r from-fuchsia-500/10 via-pink-500/10 to-orange-400/10 px-3 py-1.5 text-xs font-black text-pink-700 shadow-sm shadow-pink-500/5 dark:border-pink-400/20 dark:from-fuchsia-500/15 dark:via-pink-500/15 dark:to-orange-400/15 dark:text-pink-200">
                           <span className="truncate">
                             {item?.classId || "N/A"}
                           </span>
@@ -226,7 +243,7 @@ const TransactionsPage = async () => {
                       <td className="px-4 py-5">
                         <span className="inline-flex max-w-[260px] rounded-xl border border-orange-400/20 bg-orange-400/10 px-3 py-1.5 text-xs font-bold text-orange-600 dark:text-orange-300">
                           <span className="truncate">
-                            {item?.transactionId || "N/A"}
+                            {item?.transactionId || item?.sessionId || "N/A"}
                           </span>
                         </span>
                       </td>

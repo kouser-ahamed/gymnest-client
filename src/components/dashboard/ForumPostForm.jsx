@@ -17,14 +17,10 @@ import { FilePlus, Picture } from "@gravity-ui/icons";
 import { FiImage, FiSend, FiType, FiUserCheck } from "react-icons/fi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { postCommunityForumPost } from "@/lib/actions/community-forum-post";
+// import { postCommunityForumPost } from "@/lib/actions/community-forum-post";
 // import { createForumPost } from "@/lib/actions/forum";
 
-const ForumPostForm = ({
-  user,
-  role,
-  redirectPath,
-}) => {
+const ForumPostForm = ({ user, role, redirectPath }) => {
   const [imageFile, setImageFile] = useState(null);
   const [fileInputKey, setFileInputKey] = useState(0);
   const [imageError, setImageError] = useState("");
@@ -122,7 +118,24 @@ const ForumPostForm = ({
 
       //   const res = await createForumPost(newPost);
 
-      const res = await postCommunityForumPost(newPost);
+      // const res = await postCommunityForumPost(newPost);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/community-forum-posts`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newPost),
+        },
+      );
+
+      const res = await response.json();
+
+      if (!response.ok) {
+        throw new Error(res?.message || "Failed to add forum post.");
+      }
 
       if (res?.insertedId) {
         toast.success("Forum post created successfully!", {

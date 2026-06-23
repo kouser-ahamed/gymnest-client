@@ -16,8 +16,8 @@ import {
   TextField,
 } from "@heroui/react";
 import { Calendar, CircleDollar, FilePlus, Picture } from "@gravity-ui/icons";
-import { createClass } from "@/lib/actions/classes";
-import { useSession } from "@/lib/auth-client";
+// import { createClass } from "@/lib/actions/classes";
+// import { useSession } from "@/lib/auth-client";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -185,7 +185,23 @@ const AddClassPageForm = ({ user }) => {
         createdAt: new Date().toISOString(),
       };
 
-      const res = await createClass(newClass);
+      //const res = await createClass(newClass);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/classes`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newClass),
+        },
+      );
+
+      const res = await response.json();
+
+      if (!response.ok) {
+        throw new Error(res?.message || "Failed to add class.");
+      }
 
       if (res?.insertedId) {
         toast.success("Class added successfully!", {
