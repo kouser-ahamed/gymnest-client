@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import NextLink from "next/link";
+import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import {
   CircleCheck,
@@ -17,6 +17,8 @@ import PasswordRules from "@/components/PasswordRules";
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
 
   const [formData, setFormData] = useState({
     name: "",
@@ -48,7 +50,7 @@ export default function SignupPage() {
       {
         method: "POST",
         body: imageData,
-      },
+      }
     );
 
     const data = await res.json();
@@ -127,7 +129,7 @@ export default function SignupPage() {
       setImagePreview("");
 
       setTimeout(() => {
-        router.push("/auth/signin");
+        router.push(`/auth/signin?redirect=${encodeURIComponent(redirectTo)}`);
       }, 2000);
     } catch (error) {
       setMessage({
@@ -141,9 +143,7 @@ export default function SignupPage() {
 
   return (
     <section className="flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-10">
-      {/* CONTAINER (AGAIN ORIGINAL LOOK) */}
       <div className="w-full max-w-md rounded-3xl border border-black/10 bg-white p-6 shadow-2xl shadow-black/10 dark:border-white/10 dark:bg-[#0c1220] dark:shadow-black/40">
-        {/* TITLE */}
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-bold text-slate-950 dark:text-white">
             Create Account
@@ -153,13 +153,12 @@ export default function SignupPage() {
           </p>
         </div>
 
-        {/* MESSAGE */}
         {message.text && (
           <div
-            className={`mb-5 flex items-center gap-2 rounded-xl px-4 py-3 text-sm ${
+            className={`mb-5 flex items-center gap-2 rounded-xl border px-4 py-3 text-sm ${
               message.type === "success"
-                ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
-                : "bg-red-500/10 text-red-500 border border-red-500/20"
+                ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-500"
+                : "border-red-500/20 bg-red-500/10 text-red-500"
             }`}
           >
             {message.type === "success" ? (
@@ -171,7 +170,6 @@ export default function SignupPage() {
           </div>
         )}
 
-        {/* FORM */}
         <form onSubmit={handleSignup} className="space-y-4">
           <Input
             className="w-full"
@@ -195,7 +193,6 @@ export default function SignupPage() {
             }
           />
 
-          {/* PASSWORD (FIXED ONLY ICON, DESIGN SAME) */}
           <div className="relative">
             <Input
               className="w-full"
@@ -224,9 +221,7 @@ export default function SignupPage() {
 
           <PasswordRules password={formData.password} />
 
-          {/* IMAGE (ONLY FIX INSIDE BOX, OLD STYLE RESTORED) */}
           <label className="flex cursor-pointer items-center justify-between rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center transition hover:border-pink-500 hover:bg-pink-500/5 dark:border-white/10 dark:bg-white/5">
-            {/* LEFT SIDE */}
             <div className="flex flex-col items-start">
               <div className="flex items-center gap-2">
                 <Picture className="h-6 w-6 text-pink-500" />
@@ -240,7 +235,6 @@ export default function SignupPage() {
               </span>
             </div>
 
-            {/* RIGHT SIDE IMAGE */}
             <div className="flex items-center justify-center">
               {imagePreview ? (
                 <Image
@@ -251,7 +245,7 @@ export default function SignupPage() {
                   className="h-14 w-14 rounded-full border border-pink-500 object-cover shadow-sm"
                 />
               ) : (
-                <div className="h-14 w-14 rounded-full border border-dashed flex items-center justify-center text-xs text-gray-400">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-dashed text-xs text-gray-400">
                   +
                 </div>
               )}
@@ -274,12 +268,14 @@ export default function SignupPage() {
           </Button>
         </form>
 
-        {/* FOOTER */}
-        <div className="mt-6 text-center text-sm text-slate-600 dark:text-neutral-400 border-t border-slate-100 dark:border-white/5 pt-4">
+        <div className="mt-6 border-t border-slate-100 pt-4 text-center text-sm text-slate-600 dark:border-white/5 dark:text-neutral-400">
           Already have an account?{" "}
-          <NextLink href="/auth/signin" className="text-pink-500 font-semibold">
+          <Link
+            href={`/auth/signin?redirect=${encodeURIComponent(redirectTo)}`}
+            className="font-semibold text-pink-500"
+          >
             Sign In
-          </NextLink>
+          </Link>
         </div>
       </div>
     </section>

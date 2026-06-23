@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import NextLink from "next/link";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import {
   CircleCheck,
@@ -15,6 +15,9 @@ import { FcGoogle } from "react-icons/fc";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const redirectTo = searchParams.get("redirect") || "/";
 
   const [formData, setFormData] = useState({
     email: "",
@@ -26,7 +29,6 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // credential login handler
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage({ type: "", text: "" });
@@ -45,7 +47,6 @@ export default function LoginPage() {
       const result = await authClient.signIn.email({
         email: formData.email,
         password: formData.password,
-        callbackURL: "/", // redirect to home page after successful login
       });
 
       if (result?.error) {
@@ -62,8 +63,9 @@ export default function LoginPage() {
       });
 
       setTimeout(() => {
-        router.push("/");
-      }, 1500);
+        router.replace(redirectTo);
+        router.refresh();
+      }, 800);
     } catch (error) {
       setMessage({
         type: "error",
@@ -74,15 +76,14 @@ export default function LoginPage() {
     }
   };
 
-  // google oauth login handler
   const handleGoogleLogin = async () => {
     setMessage({ type: "", text: "" });
     setIsGoogleLoading(true);
-    
+
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/", // redirect to home page after google authentication
+        callbackURL: redirectTo,
       });
     } catch (error) {
       setMessage({
@@ -95,10 +96,7 @@ export default function LoginPage() {
 
   return (
     <section className="flex min-h-[calc(100vh-80px)] items-center justify-center bg-white px-4 py-10 dark:bg-[#0c1220]">
-      {/* container */}
       <div className="w-full max-w-md rounded-3xl border border-black/10 bg-white p-6 shadow-2xl shadow-black/10 dark:border-white/10 dark:bg-[#0c1220] dark:shadow-black/40">
-        
-        {/* title */}
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-bold text-slate-950 dark:text-white">
             Welcome Back
@@ -108,13 +106,12 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* alerts / messages */}
         {message.text && (
           <div
-            className={`mb-5 flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium ${
+            className={`mb-5 flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium ${
               message.type === "success"
-                ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 dark:text-emerald-400"
-                : "bg-red-500/10 text-red-600 border border-red-500/20 dark:text-red-400"
+                ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                : "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400"
             }`}
           >
             {message.type === "success" ? (
@@ -126,7 +123,6 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* credentials form */}
         <form onSubmit={handleLogin} className="space-y-4">
           <Input
             className="w-full text-slate-900 dark:text-white"
@@ -153,11 +149,10 @@ export default function LoginPage() {
               }
             />
 
-            {/* password visibility toggle eye icon */}
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
             >
               {showPassword ? (
                 <EyeSlash className="h-5 w-5" />
@@ -167,47 +162,43 @@ export default function LoginPage() {
             </button>
           </div>
 
-          {/* submit button */}
           <Button
             type="submit"
             isLoading={isLoading}
             disabled={isGoogleLoading}
-            className="h-12 w-full rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 font-bold text-white shadow-lg shadow-pink-500/30 dark:shadow-pink-500/10 hover:opacity-90 transition-opacity"
+            className="h-12 w-full rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 font-bold text-white shadow-lg shadow-pink-500/30 transition-opacity hover:opacity-90 dark:shadow-pink-500/10"
           >
             {isLoading ? "Signing In..." : "Sign In"}
           </Button>
         </form>
 
-        {/* or divider */}
         <div className="my-5 flex items-center justify-between text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">
           <span className="h-px w-[35%] bg-slate-200 dark:bg-slate-800"></span>
           <span>or</span>
           <span className="h-px w-[35%] bg-slate-200 dark:bg-slate-800"></span>
         </div>
 
-        {/* google login button */}
         <Button
           type="button"
           onClick={handleGoogleLogin}
           isLoading={isGoogleLoading}
           disabled={isLoading}
           variant="bordered"
-          className="h-13 w-full rounded-2xl border border-slate-200 bg-slate-50 text-base font-bold text-slate-800 hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 transition-all flex items-center justify-center gap-3 shadow-sm"
+          className="flex h-13 w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 text-base font-bold text-slate-800 shadow-sm transition-all hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
         >
-          {!isGoogleLoading && (
-            <FcGoogle className="text-2xl shrink-0" />
-          )}
+          {!isGoogleLoading && <FcGoogle className="shrink-0 text-2xl" />}
           <span>Continue with Google</span>
         </Button>
 
-        {/* footer switch */}
-        <div className="mt-6 text-center text-sm text-slate-600 dark:text-neutral-400 border-t border-slate-100 dark:border-white/5 pt-4">
+        <div className="mt-6 border-t border-slate-100 pt-4 text-center text-sm text-slate-600 dark:border-white/5 dark:text-neutral-400">
           Don&apos;t have an account?{" "}
-          <NextLink href="/auth/signup" className="text-pink-500 hover:text-pink-600 dark:text-pink-400 dark:hover:text-pink-500 font-semibold transition-colors ml-1">
+          <Link
+            href={`/auth/signup?redirect=${encodeURIComponent(redirectTo)}`}
+            className="ml-1 font-semibold text-pink-500 transition-colors hover:text-pink-600 dark:text-pink-400 dark:hover:text-pink-500"
+          >
             Sign Up
-          </NextLink>
+          </Link>
         </div>
-
       </div>
     </section>
   );

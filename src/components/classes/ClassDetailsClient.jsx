@@ -129,36 +129,76 @@ const ClassDetailsClient = ({ classDetails }) => {
     trainerName,
   } = classDetails || {};
 
+  // const handleBookNow = () => {
+  //   if (!user?.id) {
+  //     toast.error("Please login first to book this class.");
+  //     router.push(`/auth/signin?redirect=/all-classes/${classId}/booking`);
+  //     return;
+  //   }
+
+  //   if (isBooked) {
+  //     toast.error("You have already booked this class.");
+  //     return;
+  //   }
+
+  //   router.push(`/all-classes/${classId}/booking`);
+  // };
+
+  // const handleAddFavorite = () => {
+  //   if (!user?.id) {
+  //     toast.error("Please login first to add favorite.");
+  //     router.push(`/auth/signin?redirect=/all-classes/${classId}/booking`);
+  //     return;
+  //   }
+
+  //   if (isFavorite) {
+  //     toast.error("This class is already saved to your favorites.");
+  //     return;
+  //   }
+
+  //   setIsFavorite(true);
+  //   toast.success("Successfully added to your favorites!");
+  // };
+
+
   const handleBookNow = () => {
-    if (!user?.id) {
-      toast.error("Please login first to book this class.");
-      router.push(`/login?redirect=/classes/${classId}`);
-      return;
-    }
+  if (isPending) return;
 
-    if (isBooked) {
-      toast.error("You have already booked this class.");
-      return;
-    }
+  const bookingPath = `/all-classes/${classId}/booking`;
 
-    router.push(`/payment/${classId}`);
-  };
+  if (!user?.id) {
+    toast.error("Please login first to book this class.");
+    router.push(`/auth/signin?redirect=${encodeURIComponent(bookingPath)}`);
+    return;
+  }
 
-  const handleAddFavorite = () => {
-    if (!user?.id) {
-      toast.error("Please login first to add favorite.");
-      router.push(`/login?redirect=/classes/${classId}`);
-      return;
-    }
+  if (isBooked) {
+    toast.error("You have already booked this class.");
+    return;
+  }
 
-    if (isFavorite) {
-      toast.error("This class is already saved to your favorites.");
-      return;
-    }
+  router.push(bookingPath);
+};
 
-    setIsFavorite(true);
-    toast.success("Successfully added to your favorites!");
-  };
+const handleAddFavorite = () => {
+  if (isPending) return;
+
+  const detailsPath = `/all-classes/${classId}`;
+
+  if (!user?.id) {
+    toast.error("Please login first to add favorite.");
+    router.push(`/auth/signin?redirect=${encodeURIComponent(detailsPath)}`);
+    return;
+  }
+
+  if (isFavorite) {
+    toast.error("This class is already saved to your favorites.");
+    return;
+  }
+
+  setIsFavorite(true);
+  toast.success("Successfully added to your favorites!");
+};
 
   if (!classDetails) {
     return (
