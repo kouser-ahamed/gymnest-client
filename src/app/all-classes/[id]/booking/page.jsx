@@ -1,5 +1,7 @@
 import { getUserSession } from "@/lib/core/session";
 import { redirect } from "next/navigation";
+import { getClassById } from "@/lib/api/classes";
+import ClassBookingApply from "./ClassBookingApply";
 
 const BookingPage = async ({ params }) => {
   const { id } = await params;
@@ -35,17 +37,9 @@ const BookingPage = async ({ params }) => {
     );
   }
 
-  return (
-    <div className="mx-auto max-w-7xl px-4 py-10">
-      <h1 className="text-2xl font-black text-slate-900 dark:text-white">
-        My Booking Page
-      </h1>
+  const classDetails = await getClassById(id);
 
-      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-        Booking Class ID: {id}
-      </p>
-    </div>
-  );
+  return <ClassBookingApply classDetails={classDetails} />;
 };
 
 export default BookingPage;
