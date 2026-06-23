@@ -1,5 +1,6 @@
 import { stripe } from '@/lib/stripe'
 import { redirect } from 'next/navigation'
+import { paymentDataSave } from '@/lib/actions/payment';
 
 export default async function Success({ searchParams }) {
   const { session_id } = await searchParams
@@ -20,7 +21,7 @@ export default async function Success({ searchParams }) {
 
   if (status === 'complete') {
 
-    const res = await paymentDataSave();
+    const res = await paymentDataSave({...metadata, sessionId: session_id});
 
 
 
