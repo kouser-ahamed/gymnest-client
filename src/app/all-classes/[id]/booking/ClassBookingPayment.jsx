@@ -21,7 +21,7 @@ const getClassId = (item) => {
   return item?._id?.toString?.();
 };
 
-const ClassBookingApply = ({ classDetails }) => {
+const ClassBookingPayment = ({ classDetails }) => {
   const classId = getClassId(classDetails);
 
   const {
@@ -232,4 +232,4 @@ const ClassBookingApply = ({ classDetails }) => {
   );
 };
 
-export default ClassBookingApply;
+export default ClassBookingPayment;

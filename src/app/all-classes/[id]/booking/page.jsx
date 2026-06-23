@@ -1,7 +1,7 @@
 import { getUserSession } from "@/lib/core/session";
 import { redirect } from "next/navigation";
 import { getClassById } from "@/lib/api/classes";
-import ClassBookingApply from "./ClassBookingApply";
+import ClassBookingPayment from "./ClassBookingPayment";
 
 const BookingPage = async ({ params }) => {
   const { id } = await params;
@@ -39,7 +39,7 @@ const BookingPage = async ({ params }) => {
 
   const classDetails = await getClassById(id);
 
-  return <ClassBookingApply classDetails={classDetails} />;
+  return <ClassBookingPayment classDetails={classDetails} user={user} />;
 };
 
 export default BookingPage;
