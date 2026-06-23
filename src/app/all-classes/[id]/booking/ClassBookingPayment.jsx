@@ -21,7 +21,7 @@ const getClassId = (item) => {
   return item?._id?.toString?.();
 };
 
-const ClassBookingPayment = ({ classDetails }) => {
+const ClassBookingPayment = ({ classDetails, user }) => {
   const classId = getClassId(classDetails);
 
   const {
@@ -212,11 +212,27 @@ const ClassBookingPayment = ({ classDetails }) => {
                 {price || 0}
               </p>
             </div>
+            <form action="/api/payment" method="POST">
+              <input type="hidden" name="price" defaultValue={price || 0} />
+              <input
+                type="hidden"
+                name="className"
+                defaultValue={className || ""}
+              />
+              <input
+                type="hidden"
+                name="classId"
+                defaultValue={classId || ""}
+              />
 
-            <Button className="mt-7 h-12 w-full rounded-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 text-sm font-black text-white shadow-lg shadow-pink-500/20 transition-all duration-300 hover:-translate-y-0.5">
-              Proceed to Checkout
-              <ArrowRightFromSquare className="ml-2 h-4 w-4" />
-            </Button>
+              <Button
+                type="submit"
+                className="mt-7 h-12 w-full rounded-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 text-sm font-black text-white shadow-lg shadow-pink-500/20 transition-all duration-300 hover:-translate-y-0.5"
+              >
+                Proceed to Checkout
+                <ArrowRightFromSquare className="ml-2 h-4 w-4" />
+              </Button>
+            </form>
 
             <div className="mt-5 flex gap-3 rounded-2xl border border-orange-400/20 bg-orange-400/10 p-4">
               <ShieldCheck className="h-5 w-5 shrink-0 text-orange-500 dark:text-orange-300" />
