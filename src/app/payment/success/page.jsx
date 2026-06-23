@@ -10,7 +10,8 @@ export default async function Success({ searchParams }) {
 
   const {
     status,
-    customer_details: { email: customerEmail }
+    customer_details: { email: customerEmail },
+    metadata
   } = await stripe.checkout.sessions.retrieve(session_id, {
     expand: ['line_items', 'payment_intent']
   })
