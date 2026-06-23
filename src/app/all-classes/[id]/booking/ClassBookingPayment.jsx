@@ -33,6 +33,7 @@ const ClassBookingPayment = ({ classDetails, user }) => {
     schedule,
     price,
     trainerName,
+    classId:_id,
   } = classDetails || {};
 
   if (!classDetails) {
