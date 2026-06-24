@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -34,11 +34,129 @@ const specialties = [
   { id: "General Fitness", label: "General Fitness" },
 ];
 
+const getStatusStyle = (status) => {
+  if (status === "Approved") {
+    return {
+      iconStyle:
+        "border-emerald-500/20 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400",
+      badgeStyle:
+        "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+      title: "Application Approved!",
+      text: "Congratulations! Your trainer application has been approved by admin.",
+    };
+  }
+
+  if (status === "Rejected") {
+    return {
+      iconStyle:
+        "border-red-500/20 bg-red-500/10 text-red-500 dark:text-red-400",
+      badgeStyle:
+        "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400",
+      title: "Application Rejected",
+      text: "Your trainer application has been reviewed and rejected by admin.",
+    };
+  }
+
+  return {
+    iconStyle:
+      "border-orange-400/20 bg-orange-400/10 text-orange-500 dark:text-orange-300",
+    badgeStyle:
+      "border-orange-400/20 bg-orange-400/10 text-orange-600 dark:text-orange-300",
+    title: "Application Submitted!",
+    text: "Your trainer application is now pending review. You’ll be notified once the admin reviews it.",
+  };
+};
+
+const ApplicationStatusCard = ({ application }) => {
+  const status = application?.status || "Pending";
+  const statusStyle = getStatusStyle(status);
+
+  return (
+    <Card className="mx-auto max-w-3xl overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 text-center shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624] sm:p-10">
+      <div
+        className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border ${statusStyle.iconStyle}`}
+      >
+        {status === "Rejected" ? (
+          <CircleXmark className="h-9 w-9" />
+        ) : (
+          <CircleCheck className="h-9 w-9" />
+        )}
+      </div>
+
+      <h2 className="mt-5 text-2xl font-black text-slate-900 dark:text-white">
+        {statusStyle.title}
+      </h2>
+
+      <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-500 dark:text-slate-400">
+        {statusStyle.text}
+      </p>
+
+      <div
+        className={`mx-auto mt-6 w-fit rounded-2xl border px-5 py-3 text-sm font-black ${statusStyle.badgeStyle}`}
+      >
+        Current Status: {status}
+      </div>
+
+      <div className="mx-auto mt-6 grid max-w-xl gap-3 text-left sm:grid-cols-2">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-[#070b14]">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+            Experience
+          </p>
+
+          <p className="mt-1 font-black text-slate-900 dark:text-white">
+            {application?.experience || 0} Years
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-[#070b14]">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+            Category
+          </p>
+
+          <p className="mt-1 font-black text-slate-900 dark:text-white">
+            {application?.specialty || "N/A"}
+          </p>
+        </div>
+      </div>
+    </Card>
+  );
+};
+
 const ApplyTrainerForm = ({ user }) => {
   const [specialty, setSpecialty] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+  const [application, setApplication] = useState(null);
   const [message, setMessage] = useState({ type: "", text: "" });
+
+  useEffect(() => {
+    const getApplicationStatus = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/apply-trainer?userId=${encodeURIComponent(
+            user?.id || ""
+          )}&email=${encodeURIComponent(user?.email || "")}`,
+          {
+            cache: "no-store",
+          }
+        );
+
+        const data = await response.json();
+
+        if (data?._id) {
+          setApplication(data);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    if (user?.id || user?.email) {
+      getApplicationStatus();
+    }
+  }, [user?.id, user?.email]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -87,9 +205,13 @@ const ApplyTrainerForm = ({ user }) => {
       const result = await response.json();
 
       if (result?.insertedId) {
+        setApplication({
+          ...applyData,
+          _id: result.insertedId,
+        });
+
         formElement.reset();
         setSpecialty("");
-        setIsSubmitted(true);
       } else {
         setMessage({
           type: "error",
@@ -133,29 +255,18 @@ const ApplyTrainerForm = ({ user }) => {
           </div>
 
           <div className="w-fit rounded-2xl border border-orange-400/20 bg-orange-400/10 px-5 py-3 text-sm font-black text-orange-600 dark:text-orange-300">
-            Status: Pending
+            Status: {application?.status || "Pending"}
           </div>
         </div>
 
-        {isSubmitted ? (
-          <Card className="mx-auto max-w-3xl overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 text-center shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624] sm:p-10">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400">
-              <CircleCheck className="h-9 w-9" />
-            </div>
-
-            <h2 className="mt-5 text-2xl font-black text-slate-900 dark:text-white">
-              Application Submitted!
-            </h2>
-
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-500 dark:text-slate-400">
-              Your trainer application is now pending review. You&apos;ll be
-              notified once the admin reviews it.
+        {isChecking ? (
+          <Card className="mx-auto max-w-3xl rounded-[2rem] border border-slate-200 bg-white p-8 text-center shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624]">
+            <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
+              Checking application status...
             </p>
-
-            <div className="mx-auto mt-6 w-fit rounded-2xl border border-orange-400/20 bg-orange-400/10 px-5 py-3 text-sm font-black text-orange-600 dark:text-orange-300">
-              Current Status: Pending
-            </div>
           </Card>
+        ) : application?._id ? (
+          <ApplicationStatusCard application={application} />
         ) : (
           <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
             {/* Left Info Card */}
@@ -217,7 +328,6 @@ const ApplyTrainerForm = ({ user }) => {
               >
                 <Fieldset className="w-full">
                   <Fieldset.Group className="grid gap-5">
-                    {/* Experience */}
                     <TextField name="experience" isRequired className="w-full">
                       <Label className="text-xs font-black uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
                         Years of Experience
@@ -239,7 +349,6 @@ const ApplyTrainerForm = ({ user }) => {
                       </FieldError>
                     </TextField>
 
-                    {/* Specialty */}
                     <Select
                       name="specialty"
                       value={specialty}
@@ -285,7 +394,6 @@ const ApplyTrainerForm = ({ user }) => {
                       </FieldError>
                     </Select>
 
-                    {/* Bio */}
                     <TextField name="bio" className="w-full">
                       <Label className="text-xs font-black uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
                         Bio / Description
@@ -302,7 +410,6 @@ const ApplyTrainerForm = ({ user }) => {
                       </Description>
                     </TextField>
 
-                    {/* Message */}
                     {message.text && (
                       <div
                         className={`flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-bold ${
