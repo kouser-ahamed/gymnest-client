@@ -127,14 +127,14 @@ const UpdateClassModal = ({
   };
 
   const uploadImageToImgbb = async () => {
+    if (!imageFile) {
+      return classItem?.image || "";
+    }
+
     const imgbbApiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
 
     if (!imgbbApiKey) {
       throw new Error("Imgbb API key is missing.");
-    }
-
-    if (!imageFile) {
-      return classItem?.image || "";
     }
 
     const imageData = new FormData();
@@ -206,7 +206,13 @@ const UpdateClassModal = ({
         throw new Error(result?.message || "Failed to update class.");
       }
 
-      if (result?.modifiedCount > 0 || result?.matchedCount > 0) {
+      const isUpdated =
+        result?.classResult?.modifiedCount > 0 ||
+        result?.classResult?.matchedCount > 0 ||
+        result?.modifiedCount > 0 ||
+        result?.matchedCount > 0;
+
+      if (isUpdated) {
         toast.success("Class updated successfully!", {
           position: "top-right",
           autoClose: 1500,
