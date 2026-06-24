@@ -3,13 +3,11 @@
 import React, { useState } from "react";
 import { Table } from "@heroui/react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   FiCalendar,
   FiClock,
   FiDollarSign,
-  FiEdit3,
   FiTag,
   FiUsers,
 } from "react-icons/fi";
@@ -17,6 +15,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DeleteClassAlert from "./DeleteClassAlert";
 import ViewStudentDetails from "./ViewStudentDetails";
+import UpdateClassModal from "./UpdateClassModal";
 
 const getClassId = (item) => {
   if (typeof item?._id === "string") return item._id;
@@ -190,13 +189,11 @@ const TrainerClassesTable = ({ classes = [] }) => {
                           buttonClassName="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:bg-[#101624] dark:text-slate-200 dark:hover:bg-white/5"
                         />
 
-                        <Link
-                          href={`/dashboard/trainer/my-classes/${classId}/edit`}
-                          className="inline-flex h-10 w-full items-center justify-center rounded-xl border border-pink-500/20 bg-pink-500/10 px-3 text-xs font-semibold text-pink-600 transition hover:bg-pink-500/15 dark:text-pink-400"
-                        >
-                          <FiEdit3 className="mr-1 h-4 w-4" />
-                          Update
-                        </Link>
+                        <UpdateClassModal
+                          classItem={item}
+                          buttonText="Update"
+                          buttonClassName="h-10 w-full rounded-xl border border-pink-500/20 bg-pink-500/10 px-3 text-xs font-semibold text-pink-600 transition hover:bg-pink-500/15 dark:text-pink-400"
+                        />
 
                         <DeleteClassAlert
                           classItem={item}
@@ -325,13 +322,11 @@ const TrainerClassesTable = ({ classes = [] }) => {
                                   buttonClassName="h-9 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:bg-[#070b14] dark:text-slate-200 dark:hover:bg-white/5"
                                 />
 
-                                <Link
-                                  href={`/dashboard/trainer/my-classes/${classId}/edit`}
-                                  className="inline-flex h-9 items-center justify-center rounded-xl border border-pink-500/20 bg-pink-500/10 px-3 text-xs font-semibold text-pink-600 transition hover:bg-pink-500/15 dark:text-pink-400"
-                                >
-                                  <FiEdit3 className="mr-1 h-4 w-4" />
-                                  Update
-                                </Link>
+                                <UpdateClassModal
+                                  classItem={item}
+                                  buttonText="Update"
+                                  buttonClassName="h-9 rounded-xl border border-pink-500/20 bg-pink-500/10 px-3 text-xs font-semibold text-pink-600 transition hover:bg-pink-500/15 dark:text-pink-400"
+                                />
 
                                 <DeleteClassAlert
                                   classItem={item}
