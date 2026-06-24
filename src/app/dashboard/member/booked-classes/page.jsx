@@ -11,10 +11,10 @@ const BookedClassPage = async () => {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/booking-classes?userId=${user?.id}&email=${user?.email}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/booking-classes?userId=${user?.id}&email=${user?.email}`,
     {
       cache: "no-store",
-    },
+    }
   );
 
   if (!response.ok) {

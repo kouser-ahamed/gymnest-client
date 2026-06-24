@@ -10,27 +10,42 @@ const getItemId = (item) => {
   return item?._id?.toString?.() || item?.transactionId || item?.classId;
 };
 
-const formatSchedule = (schedule) => {
-  if (!schedule) return "Schedule not added";
+const getScheduleDays = (schedule) => {
+  if (!schedule) return "Days not added";
 
   if (typeof schedule === "string") return schedule;
 
-  const days = Array.isArray(schedule?.days) ? schedule.days.join(", ") : "";
-  const time = schedule?.time || "";
+  if (Array.isArray(schedule?.days) && schedule.days.length > 0) {
+    return schedule.days.join(", ");
+  }
 
-  if (days && time) return `${days} at ${time}`;
-  if (days) return days;
-  if (time) return time;
+  return "Days not added";
+};
 
-  return "Schedule not added";
+const getScheduleTime = (schedule) => {
+  if (!schedule) return "Time not added";
+
+  if (typeof schedule === "string") return "Time not added";
+
+  return schedule?.time || "Time not added";
 };
 
 const BookedClassMobileCard = ({ item }) => {
   return (
     <Card className="overflow-hidden rounded-[1.8rem] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-900/5 transition-all duration-300 hover:-translate-y-1 hover:border-pink-500/30 hover:shadow-xl hover:shadow-pink-500/10 dark:border-white/10 dark:bg-[#101624]">
       <div className="flex items-start gap-4">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-pink-500/20 bg-gradient-to-r from-fuchsia-500/10 via-pink-500/10 to-orange-400/10 text-pink-500 dark:text-pink-300">
-          <Star className="h-7 w-7" />
+        <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-pink-500/20 bg-gradient-to-r from-fuchsia-500/10 via-pink-500/10 to-orange-400/10">
+          {item?.image ? (
+            <img
+              src={item.image}
+              alt={item?.className || "Class"}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-pink-500 dark:text-pink-300">
+              <Star className="h-7 w-7" />
+            </div>
+          )}
         </div>
 
         <div className="min-w-0 flex-1">
@@ -48,7 +63,7 @@ const BookedClassMobileCard = ({ item }) => {
         </div>
       </div>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
         <div className="rounded-2xl border border-pink-500/20 bg-pink-500/10 p-4">
           <p className="text-xs font-black uppercase tracking-[0.16em] text-pink-600 dark:text-pink-300">
             Trainer
@@ -62,12 +77,22 @@ const BookedClassMobileCard = ({ item }) => {
 
         <div className="rounded-2xl border border-orange-400/20 bg-orange-400/10 p-4">
           <p className="text-xs font-black uppercase tracking-[0.16em] text-orange-600 dark:text-orange-300">
-            Schedule
+            Days
           </p>
 
           <p className="mt-1 flex items-center gap-2 text-sm font-black text-slate-800 dark:text-white">
             <Calendar className="h-4 w-4 text-orange-500" />
-            {formatSchedule(item?.schedule)}
+            {getScheduleDays(item?.schedule)}
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-orange-400/20 bg-orange-400/10 p-4">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-orange-600 dark:text-orange-300">
+            Time
+          </p>
+
+          <p className="mt-1 text-sm font-black text-slate-800 dark:text-white">
+            {getScheduleTime(item?.schedule)}
           </p>
         </div>
       </div>
@@ -87,7 +112,6 @@ const BookedClassMobileCard = ({ item }) => {
 const BookedClassesTable = ({ bookedClasses = [] }) => {
   return (
     <section className="space-y-6">
-      {/* Header */}
       <div className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624]">
         <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-pink-500/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 -left-24 h-56 w-56 rounded-full bg-orange-400/20 blur-3xl" />
@@ -113,7 +137,6 @@ const BookedClassesTable = ({ bookedClasses = [] }) => {
         </div>
       </div>
 
-      {/* Main Content */}
       <Card className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624] sm:p-6">
         {bookedClasses.length === 0 ? (
           <div className="flex min-h-[280px] items-center justify-center text-center">
@@ -133,25 +156,24 @@ const BookedClassesTable = ({ bookedClasses = [] }) => {
           </div>
         ) : (
           <>
-            {/* Mobile & Medium Card View */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:hidden">
               {bookedClasses.map((item) => (
                 <BookedClassMobileCard key={getItemId(item)} item={item} />
               ))}
             </div>
 
-            {/* Large Device Table View */}
             <div className="hidden overflow-hidden rounded-[1.5rem] border border-slate-200 dark:border-white/10 lg:block">
               <Table>
                 <Table.ScrollContainer>
                   <Table.Content
                     aria-label="Booked classes table"
-                    className="min-w-[850px]"
+                    className="min-w-[950px]"
                   >
                     <Table.Header>
                       <Table.Column isRowHeader>Class Name</Table.Column>
                       <Table.Column>Trainer Name</Table.Column>
-                      <Table.Column>Schedule</Table.Column>
+                      <Table.Column>Days</Table.Column>
+                      <Table.Column>Time</Table.Column>
                       <Table.Column>Action</Table.Column>
                     </Table.Header>
 
@@ -160,8 +182,18 @@ const BookedClassesTable = ({ bookedClasses = [] }) => {
                         <Table.Row key={getItemId(item)}>
                           <Table.Cell>
                             <div className="flex items-center gap-3 py-2">
-                              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-pink-500/20 bg-gradient-to-r from-fuchsia-500/10 via-pink-500/10 to-orange-400/10 text-pink-500 dark:text-pink-300">
-                                <Star className="h-5 w-5" />
+                              <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-pink-500/20 bg-gradient-to-r from-fuchsia-500/10 via-pink-500/10 to-orange-400/10">
+                                {item?.image ? (
+                                  <img
+                                    src={item.image}
+                                    alt={item?.className || "Class"}
+                                    className="h-full w-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="flex h-full w-full items-center justify-center text-pink-500 dark:text-pink-300">
+                                    <Star className="h-5 w-5" />
+                                  </div>
+                                )}
                               </div>
 
                               <div>
@@ -183,21 +215,27 @@ const BookedClassesTable = ({ bookedClasses = [] }) => {
                           </Table.Cell>
 
                           <Table.Cell>
-                            <span className="inline-flex max-w-[320px] rounded-xl border border-orange-400/20 bg-orange-400/10 px-3 py-2 text-sm font-bold text-orange-700 dark:text-orange-300">
+                            <span className="inline-flex max-w-[260px] rounded-xl border border-orange-400/20 bg-orange-400/10 px-3 py-2 text-sm font-bold text-orange-700 dark:text-orange-300">
                               <span className="truncate">
-                                {formatSchedule(item?.schedule)}
+                                {getScheduleDays(item?.schedule)}
                               </span>
                             </span>
                           </Table.Cell>
 
                           <Table.Cell>
-                            <Button
-                              as={Link}
+                            <span className="inline-flex rounded-xl border border-orange-400/20 bg-orange-400/10 px-3 py-2 text-sm font-bold text-orange-700 dark:text-orange-300">
+                              {getScheduleTime(item?.schedule)}
+                            </span>
+                          </Table.Cell>
+
+                          <Table.Cell>
+                           <Link
+                              
                               href={`/all-classes/${item?.classId}`}
-                              className="h-10 rounded-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-5 text-xs font-black text-white shadow-lg shadow-pink-500/20 transition-all duration-300 hover:-translate-y-0.5"
+                              className="h-10 rounded-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 p-3 text-xs font-black text-white shadow-lg shadow-pink-500/20 transition-all duration-300 hover:-translate-y-0.5"
                             >
                               View Class
-                            </Button>
+                            </Link>
                           </Table.Cell>
                         </Table.Row>
                       ))}
