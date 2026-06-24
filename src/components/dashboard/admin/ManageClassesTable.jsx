@@ -3,9 +3,10 @@
 import React, { useMemo, useState } from "react";
 import { Button, Table } from "@heroui/react";
 import Image from "next/image";
-import { Check, Xmark, TrashBin, Magnifier } from "@gravity-ui/icons";
+import { Check, Xmark, Magnifier } from "@gravity-ui/icons";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AdminDeleteClassAlert from "@/components/dashboard/admin/AdminDeleteClassAlert";
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
@@ -163,48 +164,6 @@ const ManageClassesTable = ({ classes = [] }) => {
     }
   };
 
-  const handleDeleteClass = async (classItem) => {
-    const classId = getClassId(classItem);
-
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete "${classItem?.className}"?`,
-    );
-
-    if (!confirmDelete) return;
-
-    try {
-      setLoadingId(`${classId}-delete`);
-
-      const response = await fetch(`${apiBaseUrl}/api/classes/${classId}`, {
-        method: "DELETE",
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result?.message || "Failed to delete class.");
-      }
-
-      if (result?.deletedCount < 1) {
-        throw new Error("Class was not deleted.");
-      }
-
-      removeClassFromState(classId);
-
-      toast.success("Class deleted successfully.", {
-        position: "top-right",
-        autoClose: 1500,
-      });
-    } catch (error) {
-      toast.error(error.message || "Something went wrong.", {
-        position: "top-right",
-        autoClose: 1800,
-      });
-    } finally {
-      setLoadingId("");
-    }
-  };
-
   const renderActions = (item) => {
     const classId = getClassId(item);
     const currentStatus = item?.status || "Pending";
@@ -246,14 +205,12 @@ const ManageClassesTable = ({ classes = [] }) => {
           {loadingId === `${classId}-Rejected` ? "Saving..." : "Reject"}
         </Button>
 
-        <Button
-          type="button"
-          disabled={loadingId === `${classId}-delete`}
-          onClick={() => handleDeleteClass(item)}
-          className="h-9 rounded-xl border border-red-500/20 bg-red-500/10 px-3 text-xs font-bold text-red-600 transition hover:bg-red-500/15 disabled:cursor-not-allowed disabled:opacity-60 dark:text-red-400"
-        >
-          <TrashBin className="h-4 w-4" />
-        </Button>
+        <AdminDeleteClassAlert
+          classItem={item}
+          loadingId={loadingId}
+          setLoadingId={setLoadingId}
+          onDeleted={removeClassFromState}
+        />
       </div>
     );
   };
