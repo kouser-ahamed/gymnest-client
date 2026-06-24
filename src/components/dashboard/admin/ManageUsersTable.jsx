@@ -65,8 +65,8 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
   const updateUserInState = (userId, updateData) => {
     setUserList((prev) =>
       prev.map((item) =>
-        getUserId(item) === userId ? { ...item, ...updateData } : item,
-      ),
+        getUserId(item) === userId ? { ...item, ...updateData } : item
+      )
     );
   };
 
@@ -88,7 +88,7 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
             actorId: currentUserId,
             actorEmail: currentUserEmail,
           }),
-        },
+        }
       );
 
       const result = await response.json();
@@ -97,7 +97,9 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
         throw new Error(result?.message || "Failed to update status.");
       }
 
-      updateUserInState(userId, { status: nextStatus });
+      updateUserInState(userId, {
+        status: result?.updatedStatus || nextStatus,
+      });
 
       toast.success(result?.message || "User status updated.", {
         position: "top-right",
@@ -132,7 +134,7 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
             actorId: currentUserId,
             actorEmail: currentUserEmail,
           }),
-        },
+        }
       );
 
       const result = await response.json();
@@ -141,9 +143,14 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
         throw new Error(result?.message || "Failed to update role.");
       }
 
+      const updatedRole = result?.updatedRole || nextRole;
+
       updateUserInState(userId, {
-        role: nextRole,
-        previousRole: nextRole === "admin" ? currentRole : null,
+        role: updatedRole,
+        previousRole:
+          updatedRole === "admin"
+            ? result?.previousRole || currentRole
+            : null,
       });
 
       toast.success(result?.message || "User role updated.", {
@@ -325,7 +332,7 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
                     <div className="mt-4 flex flex-wrap justify-center gap-2">
                       <span
                         className={`rounded-full border px-3 py-1 text-xs font-bold capitalize ${getRoleClass(
-                          item?.role,
+                          item?.role
                         )}`}
                       >
                         {item?.role || "member"}
@@ -333,7 +340,7 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
 
                       <span
                         className={`rounded-full border px-3 py-1 text-xs font-bold capitalize ${getStatusClass(
-                          item?.status,
+                          item?.status
                         )}`}
                       >
                         {item?.status || "active"}
@@ -404,7 +411,7 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
                             <Table.Cell>
                               <span
                                 className={`inline-flex rounded-full border px-3 py-1 text-xs font-bold capitalize ${getRoleClass(
-                                  item?.role,
+                                  item?.role
                                 )}`}
                               >
                                 {item?.role || "member"}
@@ -414,7 +421,7 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
                             <Table.Cell>
                               <span
                                 className={`inline-flex rounded-full border px-3 py-1 text-xs font-bold capitalize ${getStatusClass(
-                                  item?.status,
+                                  item?.status
                                 )}`}
                               >
                                 {item?.status || "active"}

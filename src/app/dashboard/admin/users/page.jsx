@@ -28,7 +28,7 @@ const ManageUsersPage = async () => {
     {
       method: "GET",
       cache: "no-store",
-    },
+    }
   );
 
   const data = await response.json();
