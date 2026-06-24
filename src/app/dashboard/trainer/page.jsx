@@ -1,58 +1,49 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-import { useSession } from "@/lib/auth-client";
-import { BookOpen, PersonPlus, Comment } from "@gravity-ui/icons";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import TrainerOverview from "@/components/dashboard/trainer/TrainerOverview";
 
-const TrainerDashboardPage = () => {
-  const [mounted, setMounted] = useState(false);
-  const { data: session, isPending } = useSession();
+const TrainerDashboardPage = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const user = session?.user;
 
-  if (!mounted || isPending) {
+  if (!user?.id) {
     return (
-      <div className="flex min-h-[300px] items-center justify-center">
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Loading dashboard...
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 text-center dark:border-white/10 dark:bg-[#101624]">
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+          User not found
+        </h2>
+
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          Please login again to view your dashboard.
         </p>
-      </div>
+      </section>
     );
   }
 
-  const trainerStats = [
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/trainer-overview?trainerId=${user.id}`,
     {
-      title: "Total Classes Created",
-      value: 5,
-      icon: BookOpen,
-      iconBox: "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400",
-      glow: "hover:border-fuchsia-500/40",
-    },
-    {
-      title: "Total Students Enrolled",
-      value: 2,
-      icon: PersonPlus,
-      iconBox: "bg-pink-500/10 text-pink-600 dark:text-pink-400",
-      glow: "hover:border-pink-500/40",
-    },
-    {
-      title: "Forum Posts",
-      value: 3,
-      icon: Comment,
-      iconBox: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
-      glow: "hover:border-orange-500/40",
-    },
-  ];
+      method: "GET",
+      cache: "no-store",
+    }
+  );
 
-  const user = session?.user || null;
+  const trainerOverviewData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      trainerOverviewData?.message || "Failed to load trainer dashboard."
+    );
+  }
 
   return (
-    <div>
-      <TrainerOverview user={user} trainerStats={trainerStats} />
-    </div>
+    <TrainerOverview
+      user={user}
+      trainerOverviewData={trainerOverviewData}
+    />
   );
 };
 

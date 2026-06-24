@@ -1,10 +1,42 @@
 "use client";
 
 import { Card } from "@heroui/react";
-import { ShieldCheck, Calendar } from "@gravity-ui/icons";
+import {
+  ShieldCheck,
+  Calendar,
+  BookOpen,
+  PersonPlus,
+  Comment,
+} from "@gravity-ui/icons";
 import Image from "next/image";
 
-const TrainerOverview = ({ user, trainerStats }) => {
+const TrainerOverview = ({ user, trainerOverviewData }) => {
+  const avatarLetter = user?.name?.charAt(0)?.toUpperCase() || "T";
+
+  const trainerStats = [
+    {
+      title: "Total Classes Created",
+      value: trainerOverviewData?.totalClassesCreated || 0,
+      icon: BookOpen,
+      iconBox: "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400",
+      glow: "hover:border-fuchsia-500/40",
+    },
+    {
+      title: "Total Students Enrolled",
+      value: trainerOverviewData?.totalStudentsEnrolled || 0,
+      icon: PersonPlus,
+      iconBox: "bg-pink-500/10 text-pink-600 dark:text-pink-400",
+      glow: "hover:border-pink-500/40",
+    },
+    {
+      title: "Forum Posts",
+      value: trainerOverviewData?.totalForumPosts || 0,
+      icon: Comment,
+      iconBox: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+      glow: "hover:border-orange-500/40",
+    },
+  ];
+
   return (
     <section className="space-y-6">
       {/* Statistics Cards */}
@@ -67,7 +99,7 @@ const TrainerOverview = ({ user, trainerStats }) => {
                 {user?.image ? (
                   <Image
                     src={user.image}
-                    alt={user.name}
+                    alt={user.name || "Trainer"}
                     width={88}
                     height={88}
                     className="h-[88px] w-[88px] rounded-xl border-2 border-pink-500 object-cover"
@@ -103,12 +135,15 @@ const TrainerOverview = ({ user, trainerStats }) => {
 
                     <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">
                       {user?.createdAt
-                        ? new Date(user.createdAt).toLocaleDateString("en-BD", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                            timeZone: "Asia/Dhaka",
-                          })
+                        ? new Date(user.createdAt).toLocaleDateString(
+                            "en-BD",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                              timeZone: "Asia/Dhaka",
+                            }
+                          )
                         : "N/A"}
                     </p>
                   </div>
