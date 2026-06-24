@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button, Card } from "@heroui/react";
 import { useRouter } from "next/navigation";
@@ -67,6 +67,7 @@ const DetailCard = ({ icon, label, value }) => {
           <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
             {label}
           </p>
+
           <p className="mt-1 truncate text-base font-black text-slate-900 dark:text-white">
             {value}
           </p>
@@ -81,6 +82,7 @@ const ScheduleDays = ({ days = [] }) => {
     <div className="rounded-[1.7rem] border border-pink-500/25 bg-pink-500/10 p-5">
       <div className="mb-4 flex items-center gap-2">
         <Calendar className="h-5 w-5 text-pink-500 dark:text-pink-300" />
+
         <p className="text-xs font-black uppercase tracking-[0.18em] text-pink-600 dark:text-pink-300">
           Training Days
         </p>
@@ -106,16 +108,18 @@ const ScheduleDays = ({ days = [] }) => {
   );
 };
 
-const ClassDetailsClient = ({ classDetails }) => {
+const ClassDetailsClient = ({ classDetails, user: serverUser }) => {
   const router = useRouter();
   const { data: session, isPending } = useSession();
 
-  const user = session?.user;
+  const user = session?.user || serverUser;
   const classId = getClassId(classDetails);
   const bookingCount = getBookingCount(classDetails);
 
   const [isBooked, setIsBooked] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isCheckingStatus, setIsCheckingStatus] = useState(true);
+  const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
 
   const {
     className,
@@ -126,88 +130,145 @@ const ClassDetailsClient = ({ classDetails }) => {
     schedule,
     price,
     description,
+    trainerId,
     trainerName,
   } = classDetails || {};
 
-  // const handleBookNow = () => {
-  //   if (!user?.id) {
-  //     toast.error("Please login first to book this class.");
-  //     router.push(`/auth/signin?redirect=/all-classes/${classId}/booking`);
-  //     return;
-  //   }
+  useEffect(() => {
+    const checkClassStatus = async () => {
+      if (!user?.id || !classId) {
+        setIsCheckingStatus(false);
+        return;
+      }
 
-  //   if (isBooked) {
-  //     toast.error("You have already booked this class.");
-  //     return;
-  //   }
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/class-status?classId=${classId}&userId=${user?.id}&email=${user?.email}`,
+          {
+            cache: "no-store",
+          }
+        );
 
-  //   router.push(`/all-classes/${classId}/booking`);
-  // };
+        const data = await response.json();
 
-  // const handleAddFavorite = () => {
-  //   if (!user?.id) {
-  //     toast.error("Please login first to add favorite.");
-  //     router.push(`/auth/signin?redirect=/all-classes/${classId}/booking`);
-  //     return;
-  //   }
+        setIsBooked(data?.isBooked || false);
+        setIsFavorite(data?.isFavorite || false);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsCheckingStatus(false);
+      }
+    };
 
-  //   if (isFavorite) {
-  //     toast.error("This class is already saved to your favorites.");
-  //     return;
-  //   }
-
-  //   setIsFavorite(true);
-  //   toast.success("Successfully added to your favorites!");
-  // };
-
+    checkClassStatus();
+  }, [user?.id, user?.email, classId]);
 
   const handleBookNow = () => {
-  if (isPending) return;
+    if (isPending || isCheckingStatus) return;
 
-  const bookingPath = `/all-classes/${classId}/booking`;
+    const paymentPath = `/all-classes/${classId}/booking`;
 
-  if (!user?.id) {
-    toast.error("Please login first to book this class.");
-    router.push(`/auth/signin?redirect=${encodeURIComponent(bookingPath)}`);
-    return;
-  }
+    if (!user?.id) {
+      toast.error("Please login first to book this class.");
+      router.push(`/auth/signin?redirect=${paymentPath}`);
+      return;
+    }
 
-  if (isBooked) {
-    toast.error("You have already booked this class.");
-    return;
-  }
+    if (isBooked) {
+      toast.error("You have already booked this class.");
+      return;
+    }
 
-  router.push(bookingPath);
-};
+    router.push(paymentPath);
+  };
 
-const handleAddFavorite = () => {
-  if (isPending) return;
+  const handleAddFavorite = async () => {
+    if (isPending || isFavoriteLoading) return;
 
-  const detailsPath = `/all-classes/${classId}`;
+    const detailsPath = `/all-classes/${classId}`;
 
-  if (!user?.id) {
-    toast.error("Please login first to add favorite.");
-    router.push(`/auth/signin?redirect=${encodeURIComponent(detailsPath)}`);
-    return;
-  }
+    if (!user?.id) {
+      toast.error("Please login first to add favorite.");
+      router.push(`/auth/signin?redirect=${detailsPath}`);
+      return;
+    }
 
-  if (isFavorite) {
-    toast.error("This class is already saved to your favorites.");
-    return;
-  }
+    try {
+      setIsFavoriteLoading(true);
 
-  setIsFavorite(true);
-  toast.success("Successfully added to your favorites!");
-};
+      if (isFavorite) {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/favorite-classes?classId=${classId}&userId=${user?.id}&email=${user?.email}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        const result = await response.json();
+
+        if (result?.deletedCount > 0) {
+          setIsFavorite(false);
+          toast.success("Removed from favorites!");
+        } else {
+          toast.error("Failed to remove favorite.");
+        }
+
+        return;
+      }
+
+      const favoriteData = {
+        classId,
+        className,
+        image,
+        category,
+        difficultyLevel,
+        duration,
+        schedule,
+        price,
+        description,
+        trainerId,
+        trainerName,
+        userId: user?.id,
+        userEmail: user?.email,
+        createdAt: new Date().toISOString(),
+      };
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/favorite-classes`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(favoriteData),
+        }
+      );
+
+      const result = await response.json();
+
+      if (result?.insertedId || result?.alreadyFavorite) {
+        setIsFavorite(true);
+        toast.success("Successfully added to your favorites!");
+      } else {
+        toast.error("Failed to add favorite.");
+      }
+    } catch (error) {
+      toast.error(error.message || "Something went wrong.");
+    } finally {
+      setIsFavoriteLoading(false);
+    }
+  };
 
   if (!classDetails) {
     return (
       <section className="mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center px-4 py-10">
         <Card className="rounded-[2rem] border border-slate-200 bg-white p-8 text-center shadow-sm dark:border-white/10 dark:bg-[#101624]">
           <DatabaseMagnifier className="mx-auto mb-4 h-12 w-12 text-pink-400" />
+
           <h2 className="text-xl font-black text-slate-900 dark:text-white">
             Class not found
           </h2>
+
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
             The class details could not be loaded.
           </p>
@@ -292,6 +353,7 @@ const handleAddFavorite = () => {
                   <CircleDollar className="mr-1 h-10 w-10" />
                   {price || 0}
                 </p>
+
                 <span className="pb-3 text-sm font-bold text-slate-500 dark:text-slate-400">
                   /session
                 </span>
@@ -303,9 +365,11 @@ const handleAddFavorite = () => {
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
                   Booked
                 </p>
+
                 <p className="mt-2 text-2xl font-black text-slate-900 dark:text-white">
                   {bookingCount}
                 </p>
+
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   students
                 </p>
@@ -315,9 +379,11 @@ const handleAddFavorite = () => {
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
                   Duration
                 </p>
+
                 <p className="mt-2 text-2xl font-black text-slate-900 dark:text-white">
                   {duration || 0}
                 </p>
+
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   minutes
                 </p>
@@ -330,6 +396,7 @@ const handleAddFavorite = () => {
               <div className="rounded-[1.7rem] border border-orange-400/25 bg-orange-400/10 p-5">
                 <div className="mb-2 flex items-center gap-2">
                   <Clock className="h-5 w-5 text-orange-500 dark:text-orange-300" />
+
                   <p className="text-xs font-black uppercase tracking-[0.18em] text-orange-600 dark:text-orange-300">
                     Class Time
                   </p>
@@ -344,32 +411,40 @@ const handleAddFavorite = () => {
             <div className="mt-6 space-y-4">
               <Button
                 onClick={handleBookNow}
-                disabled={isPending || isBooked}
+                disabled={isPending || isCheckingStatus}
                 className={`h-12 w-full rounded-full text-sm font-black text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 ${
                   isBooked
-                    ? "bg-slate-400"
+                    ? "bg-slate-400 hover:bg-slate-500"
                     : "bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 shadow-pink-500/20"
                 }`}
               >
-                {isPending
+                {isPending || isCheckingStatus
                   ? "Loading..."
                   : isBooked
-                  ? "Already Booked"
-                  : `Book Now - $${price || 0}`}
-                {!isBooked && <ArrowRightFromSquare className="ml-2 h-4 w-4" />}
+                    ? "Already Booked"
+                    : `Book Now - $${price || 0}`}
+
+                {!isBooked && (
+                  <ArrowRightFromSquare className="ml-2 h-4 w-4" />
+                )}
               </Button>
 
               <Button
                 onClick={handleAddFavorite}
-                disabled={isPending || isFavorite}
+                disabled={isPending || isFavoriteLoading}
                 className={`h-12 w-full rounded-full border text-sm font-bold transition-all duration-300 hover:-translate-y-0.5 ${
                   isFavorite
-                    ? "border-pink-500/20 bg-pink-500/10 text-pink-600 dark:text-pink-300"
+                    ? "border-red-500/20 bg-red-500/10 text-red-600 hover:bg-red-500/15 dark:text-red-300"
                     : "border-pink-500/20 bg-pink-500/10 text-pink-600 hover:bg-pink-500/15 dark:text-pink-300"
                 }`}
               >
                 <Heart className="mr-2 h-4 w-4" />
-                {isFavorite ? "Saved to Favorites" : "Add to Favorites"}
+
+                {isFavoriteLoading
+                  ? "Processing..."
+                  : isFavorite
+                    ? "Remove Favorite"
+                    : "Add to Favorites"}
               </Button>
             </div>
           </Card>
@@ -386,6 +461,7 @@ const handleAddFavorite = () => {
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-pink-500 dark:text-pink-300">
                   About This Class
                 </p>
+
                 <h2 className="text-2xl font-black text-slate-900 dark:text-white">
                   Full Description
                 </h2>
@@ -402,6 +478,7 @@ const handleAddFavorite = () => {
               <p className="text-xs font-black uppercase tracking-[0.18em] text-pink-500 dark:text-pink-300">
                 Class Details
               </p>
+
               <h2 className="text-2xl font-black text-slate-900 dark:text-white">
                 Complete Information
               </h2>
