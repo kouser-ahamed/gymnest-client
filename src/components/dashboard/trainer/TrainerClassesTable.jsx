@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Table } from "@heroui/react";
+import { Table } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,14 +10,13 @@ import {
   FiClock,
   FiDollarSign,
   FiEdit3,
-  FiEye,
   FiTag,
   FiUsers,
-  FiX,
 } from "react-icons/fi";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DeleteClassAlert from "./DeleteClassAlert";
+import ViewStudentDetails from "./ViewStudentDetails";
 
 const getClassId = (item) => {
   if (typeof item?._id === "string") return item._id;
@@ -45,7 +44,6 @@ const getStatusClass = (status) => {
 const TrainerClassesTable = ({ classes = [] }) => {
   const router = useRouter();
   const [classList, setClassList] = useState(classes);
-  const [selectedClass, setSelectedClass] = useState(null);
 
   const handleClassDeleted = (deletedClassId) => {
     setClassList((prev) =>
@@ -54,8 +52,6 @@ const TrainerClassesTable = ({ classes = [] }) => {
 
     router.refresh();
   };
-
-  const selectedStudents = getStudents(selectedClass);
 
   return (
     <section className="space-y-6">
@@ -188,14 +184,11 @@ const TrainerClassesTable = ({ classes = [] }) => {
                       </p>
 
                       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                        <Button
-                          type="button"
-                          onClick={() => setSelectedClass(item)}
-                          className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:bg-[#101624] dark:text-slate-200 dark:hover:bg-white/5"
-                        >
-                          <FiEye className="mr-1 h-4 w-4" />
-                          Students
-                        </Button>
+                        <ViewStudentDetails
+                          classItem={item}
+                          buttonText="Students"
+                          buttonClassName="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:bg-[#101624] dark:text-slate-200 dark:hover:bg-white/5"
+                        />
 
                         <Link
                           href={`/dashboard/trainer/my-classes/${classId}/edit`}
@@ -326,14 +319,11 @@ const TrainerClassesTable = ({ classes = [] }) => {
 
                             <Table.Cell>
                               <div className="flex flex-wrap items-center gap-2">
-                                <Button
-                                  type="button"
-                                  onClick={() => setSelectedClass(item)}
-                                  className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:bg-[#070b14] dark:text-slate-200 dark:hover:bg-white/5"
-                                >
-                                  <FiEye className="mr-1 h-4 w-4" />
-                                  View Students
-                                </Button>
+                                <ViewStudentDetails
+                                  classItem={item}
+                                  buttonText="View Students"
+                                  buttonClassName="h-9 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-white/10 dark:bg-[#070b14] dark:text-slate-200 dark:hover:bg-white/5"
+                                />
 
                                 <Link
                                   href={`/dashboard/trainer/my-classes/${classId}/edit`}
@@ -361,71 +351,6 @@ const TrainerClassesTable = ({ classes = [] }) => {
           </>
         )}
       </div>
-
-      {selectedClass && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm">
-          <div className="max-h-[90vh] w-full max-w-lg overflow-hidden rounded-2xl border border-slate-200 bg-white text-center shadow-2xl shadow-pink-500/10 dark:border-white/10 dark:bg-[#101624] sm:text-left">
-            <div className="h-1 w-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400" />
-
-            <div className="flex flex-col items-center justify-between gap-4 border-b border-slate-200 p-4 dark:border-white/10 sm:flex-row sm:p-5">
-              <div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                  Enrolled Students
-                </h2>
-
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                  {selectedClass.className}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setSelectedClass(null)}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:border-white/10 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white"
-              >
-                <FiX className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="max-h-[65vh] overflow-y-auto p-4 sm:p-5">
-              {selectedStudents.length === 0 ? (
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center dark:border-white/10 dark:bg-[#070b14]">
-                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-pink-500/10 text-pink-600 dark:text-pink-400">
-                    <FiUsers className="h-6 w-6" />
-                  </div>
-
-                  <h3 className="font-bold text-slate-900 dark:text-white">
-                    No students found
-                  </h3>
-
-                  <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                    No booking data is available for this class yet.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {selectedStudents.map((student, index) => (
-                    <div
-                      key={student.userEmail || student.email || index}
-                      className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center dark:border-white/10 dark:bg-[#070b14] sm:text-left"
-                    >
-                      <h4 className="font-semibold text-slate-900 dark:text-white">
-                        {student.userName || student.name || "Student Name"}
-                      </h4>
-
-                      <p className="mt-1 break-all text-sm text-slate-500 dark:text-slate-400">
-                        {student.userEmail ||
-                          student.email ||
-                          "student@email.com"}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 };
