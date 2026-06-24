@@ -175,12 +175,12 @@ const ManageClassesTable = ({ classes = [] }) => {
       currentStatus === "Approved" ? "Cancel Approve" : "Approve";
 
     return (
-      <div className="flex flex-wrap items-center justify-end gap-2">
+      <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-3 lg:flex lg:w-auto lg:flex-wrap lg:items-center lg:justify-end">
         <Button
           type="button"
           disabled={loadingId === `${classId}-${approveNextStatus}`}
           onClick={() => handleStatusChange(item, approveNextStatus)}
-          className={`h-9 rounded-xl border px-3 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-60 ${
+          className={`flex h-10 w-full items-center justify-center rounded-xl border px-3 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-60 lg:h-9 lg:w-auto ${
             currentStatus === "Approved"
               ? "border-orange-500/20 bg-orange-500/10 text-orange-600 hover:bg-orange-500/15 dark:text-orange-400"
               : "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/15 dark:text-emerald-400"
@@ -199,7 +199,7 @@ const ManageClassesTable = ({ classes = [] }) => {
             loadingId === `${classId}-Rejected`
           }
           onClick={() => handleStatusChange(item, "Rejected")}
-          className="h-9 rounded-xl border border-pink-500/20 bg-pink-500/10 px-3 text-xs font-bold text-pink-600 transition hover:bg-pink-500/15 disabled:cursor-not-allowed disabled:opacity-60 dark:text-pink-400"
+          className="flex h-10 w-full items-center justify-center rounded-xl border border-pink-500/20 bg-pink-500/10 px-3 text-xs font-bold text-pink-600 transition hover:bg-pink-500/15 disabled:cursor-not-allowed disabled:opacity-60 dark:text-pink-400 lg:h-9 lg:w-auto"
         >
           <Xmark className="mr-1 h-4 w-4" />
           {loadingId === `${classId}-Rejected` ? "Saving..." : "Reject"}
@@ -288,13 +288,13 @@ const ManageClassesTable = ({ classes = [] }) => {
                     key={classId}
                     className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-[#070b14]"
                   >
-                    <div className="flex gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row">
                       <Image
                         src={item?.image || "/placeholder.png"}
                         alt={item?.className || "Class"}
-                        width={80}
-                        height={64}
-                        className="h-16 w-20 rounded-xl object-cover"
+                        width={96}
+                        height={72}
+                        className="h-44 w-full rounded-xl object-cover sm:h-[72px] sm:w-24"
                       />
 
                       <div className="min-w-0 flex-1">
@@ -310,19 +310,24 @@ const ManageClassesTable = ({ classes = [] }) => {
                         <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                           {formatSchedule(item?.schedule)}
                         </p>
+
+                        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                          Level: {formatText(item?.difficultyLevel)} ·{" "}
+                          {item?.duration || 0} min
+                        </p>
                       </div>
                     </div>
 
-                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                    <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
                       <span
-                        className={`rounded-full border px-3 py-1 text-xs font-bold ${getStatusClass(
+                        className={`flex justify-center rounded-full border px-3 py-1 text-xs font-bold ${getStatusClass(
                           currentStatus,
                         )}`}
                       >
                         {currentStatus}
                       </span>
 
-                      <span className="text-sm font-bold text-lime-600 dark:text-lime-300">
+                      <span className="flex justify-center rounded-full border border-lime-500/20 bg-lime-500/10 px-3 py-1 text-sm font-bold text-lime-600 dark:text-lime-300">
                         {formatPrice(item?.price)}
                       </span>
                     </div>

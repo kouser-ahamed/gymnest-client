@@ -64,14 +64,15 @@ const AdminDeleteClassAlert = ({
       <Button
         type="button"
         disabled={isDeleting}
-        className="h-9 rounded-xl border border-red-500/20 bg-red-500/10 px-3 text-xs font-bold text-red-600 transition hover:bg-red-500/15 disabled:cursor-not-allowed disabled:opacity-60 dark:text-red-400"
+        className="flex h-10 w-full items-center justify-center rounded-xl border border-red-500/20 bg-red-500/10 px-3 text-xs font-bold text-red-600 transition hover:bg-red-500/15 disabled:cursor-not-allowed disabled:opacity-60 dark:text-red-400 lg:h-9 lg:w-auto"
       >
-        <TrashBin className="h-4 w-4" />
+        <TrashBin className="mr-1 h-4 w-4" />
+        Delete
       </Button>
 
       <AlertDialog.Backdrop>
         <AlertDialog.Container>
-          <AlertDialog.Dialog className="sm:max-w-[420px]">
+          <AlertDialog.Dialog className="mx-4 sm:max-w-[420px]">
             <AlertDialog.CloseTrigger />
 
             <AlertDialog.Header>
