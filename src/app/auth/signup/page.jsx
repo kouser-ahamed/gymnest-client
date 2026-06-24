@@ -109,6 +109,7 @@ export default function SignupPage() {
         image: imageUrl || undefined,
         role: "member",
         plan: "free",
+        status: "active",
       });
 
       if (result?.error) {
