@@ -36,7 +36,9 @@ export async function POST(request) {
         userId: user?.id,
         userEmail: user?.email,
         className,
+        userName: user?.name,
         classId,
+        userName: user?.name,
         transactionId: `txn_${Date.now()}`, // Unique transaction ID
       },
       mode: "payment",
