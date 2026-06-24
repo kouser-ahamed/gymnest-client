@@ -26,7 +26,7 @@ const TrainerClassesManagePage = async () => {
   //const classes = await getTrainerClasses(trainerId);
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/classes?trainerId=${trainerId}&status=Pending`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/classes?trainerId=${trainerId}`,
     {
       method: "GET",
       cache: "no-store",
@@ -38,6 +38,7 @@ const TrainerClassesManagePage = async () => {
   if (!response.ok) {
     throw new Error(classes?.message || "Failed to fetch trainer classes.");
   }
+  console.log("Trainer Classes:", classes);
 
   return <TrainerClassesTable classes={classes} />;
 };

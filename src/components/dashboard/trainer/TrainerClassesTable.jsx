@@ -12,15 +12,12 @@ import {
   FiEdit3,
   FiEye,
   FiTag,
-  FiTrash2,
   FiUsers,
   FiX,
 } from "react-icons/fi";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
+import DeleteClassAlert from "./DeleteClassAlert";
 
 const getClassId = (item) => {
   if (typeof item?._id === "string") return item._id;
@@ -49,51 +46,13 @@ const TrainerClassesTable = ({ classes = [] }) => {
   const router = useRouter();
   const [classList, setClassList] = useState(classes);
   const [selectedClass, setSelectedClass] = useState(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDelete = async (classId) => {
-    const isConfirmed = window.confirm(
-      "Are you sure you want to delete this class?"
+  const handleClassDeleted = (deletedClassId) => {
+    setClassList((prev) =>
+      prev.filter((item) => getClassId(item) !== deletedClassId)
     );
 
-    if (!isConfirmed) return;
-
-    try {
-      setIsDeleting(true);
-
-      const res = await fetch(`${apiBaseUrl}/api/classes/${classId}`, {
-        method: "DELETE",
-      });
-
-      const data = await res.json();
-
-      if (data?.deletedCount > 0) {
-        setClassList((prev) =>
-          prev.filter((item) => getClassId(item) !== classId)
-        );
-
-        toast.success("Class deleted successfully!", {
-          position: "top-right",
-          autoClose: 1500,
-        });
-
-        router.refresh();
-      } else {
-        toast.error("Failed to delete class.", {
-          position: "top-right",
-          autoClose: 1500,
-        });
-      }
-    } catch (error) {
-      console.error(error);
-
-      toast.error(error.message || "Something went wrong.", {
-        position: "top-right",
-        autoClose: 1500,
-      });
-    } finally {
-      setIsDeleting(false);
-    }
+    router.refresh();
   };
 
   const selectedStudents = getStudents(selectedClass);
@@ -114,7 +73,6 @@ const TrainerClassesTable = ({ classes = [] }) => {
         progressClassName="!bg-gradient-to-r !from-fuchsia-500 !via-pink-500 !to-orange-400"
       />
 
-      {/* Header */}
       <div className="flex flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm dark:border-white/10 dark:bg-[#101624] sm:p-5 lg:flex-row lg:items-center lg:justify-between lg:text-left">
         <div className="flex flex-col items-center gap-3 sm:flex-row lg:items-center">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-fuchsia-500/10 via-pink-500/10 to-orange-400/10 text-pink-600 dark:text-pink-400">
@@ -125,6 +83,7 @@ const TrainerClassesTable = ({ classes = [] }) => {
             <h1 className="text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">
               My Classes
             </h1>
+
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
               Manage all classes created by you.
             </p>
@@ -136,7 +95,6 @@ const TrainerClassesTable = ({ classes = [] }) => {
         </div>
       </div>
 
-      {/* Main Wrapper */}
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#101624]">
         <div className="h-1 w-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400" />
 
@@ -156,7 +114,6 @@ const TrainerClassesTable = ({ classes = [] }) => {
           </div>
         ) : (
           <>
-            {/* Small + Medium Card Layout */}
             <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:hidden">
               {classList.map((item) => {
                 const classId = getClassId(item);
@@ -167,7 +124,6 @@ const TrainerClassesTable = ({ classes = [] }) => {
                     key={classId}
                     className="mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 text-center dark:border-white/10 dark:bg-[#070b14]"
                   >
-                    {/* Next Image for small and medium devices */}
                     <div className="relative h-44 w-full overflow-hidden bg-slate-100 dark:bg-[#101624] sm:h-48">
                       {item?.image ? (
                         <Image
@@ -249,15 +205,11 @@ const TrainerClassesTable = ({ classes = [] }) => {
                           Update
                         </Link>
 
-                        <Button
-                          type="button"
-                          disabled={isDeleting}
-                          onClick={() => handleDelete(classId)}
-                          className="h-10 w-full rounded-xl border border-red-500/20 bg-red-500/10 px-3 text-xs font-semibold text-red-600 transition hover:bg-red-500/15 disabled:cursor-not-allowed disabled:opacity-60 dark:text-red-400"
-                        >
-                          <FiTrash2 className="mr-1 h-4 w-4" />
-                          Delete
-                        </Button>
+                        <DeleteClassAlert
+                          classItem={item}
+                          onDeleted={handleClassDeleted}
+                          buttonClassName="h-10 w-full rounded-xl border border-red-500/20 bg-red-500/10 px-3 text-xs font-semibold text-red-600 transition hover:bg-red-500/15 dark:text-red-400"
+                        />
                       </div>
                     </div>
                   </div>
@@ -265,7 +217,6 @@ const TrainerClassesTable = ({ classes = [] }) => {
               })}
             </div>
 
-            {/* Large Table Layout */}
             <div className="hidden lg:block">
               <Table className="bg-transparent">
                 <Table.ScrollContainer>
@@ -335,6 +286,7 @@ const TrainerClassesTable = ({ classes = [] }) => {
                                 <p className="font-semibold capitalize text-slate-800 dark:text-slate-100">
                                   {item.category}
                                 </p>
+
                                 <p className="mt-1 text-xs capitalize text-slate-500 dark:text-slate-400">
                                   {item.difficultyLevel}
                                 </p>
@@ -391,15 +343,11 @@ const TrainerClassesTable = ({ classes = [] }) => {
                                   Update
                                 </Link>
 
-                                <Button
-                                  type="button"
-                                  disabled={isDeleting}
-                                  onClick={() => handleDelete(classId)}
-                                  className="h-9 rounded-xl border border-red-500/20 bg-red-500/10 px-3 text-xs font-semibold text-red-600 transition hover:bg-red-500/15 disabled:cursor-not-allowed disabled:opacity-60 dark:text-red-400"
-                                >
-                                  <FiTrash2 className="mr-1 h-4 w-4" />
-                                  Delete
-                                </Button>
+                                <DeleteClassAlert
+                                  classItem={item}
+                                  onDeleted={handleClassDeleted}
+                                  buttonClassName="h-9 rounded-xl border border-red-500/20 bg-red-500/10 px-3 text-xs font-semibold text-red-600 transition hover:bg-red-500/15 dark:text-red-400"
+                                />
                               </div>
                             </Table.Cell>
                           </Table.Row>
@@ -414,7 +362,6 @@ const TrainerClassesTable = ({ classes = [] }) => {
         )}
       </div>
 
-      {/* Students Modal */}
       {selectedClass && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm">
           <div className="max-h-[90vh] w-full max-w-lg overflow-hidden rounded-2xl border border-slate-200 bg-white text-center shadow-2xl shadow-pink-500/10 dark:border-white/10 dark:bg-[#101624] sm:text-left">
@@ -425,6 +372,7 @@ const TrainerClassesTable = ({ classes = [] }) => {
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                   Enrolled Students
                 </h2>
+
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                   {selectedClass.className}
                 </p>
@@ -458,14 +406,17 @@ const TrainerClassesTable = ({ classes = [] }) => {
                 <div className="space-y-3">
                   {selectedStudents.map((student, index) => (
                     <div
-                      key={student.email || index}
+                      key={student.userEmail || student.email || index}
                       className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center dark:border-white/10 dark:bg-[#070b14] sm:text-left"
                     >
                       <h4 className="font-semibold text-slate-900 dark:text-white">
-                        {student.name || "Student Name"}
+                        {student.userName || student.name || "Student Name"}
                       </h4>
+
                       <p className="mt-1 break-all text-sm text-slate-500 dark:text-slate-400">
-                        {student.email || "student@email.com"}
+                        {student.userEmail ||
+                          student.email ||
+                          "student@email.com"}
                       </p>
                     </div>
                   ))}
