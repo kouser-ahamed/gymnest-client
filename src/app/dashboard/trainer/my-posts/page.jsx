@@ -1,15 +1,20 @@
-import CommunityForumCards from "@/components/dashboard/CommunityForumCards";
+import TrainerCommunityForumCards from "@/components/dashboard/trainer/TrainerCommunityForumCards";
 import { getUserSession } from "@/lib/core/session";
 
 const TrainerCommunityAllForumPage = async () => {
   const user = await getUserSession();
 
   if (!user?.id) {
-    return <CommunityForumCards posts={[]} />;
+    return <TrainerCommunityForumCards posts={[]} currentUser={null} />;
   }
 
+  const queryParams = new URLSearchParams({
+    trainerId: user.id,
+    trainerEmail: user.email || "",
+  });
+
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/community-forum-posts?authorId=${user.id}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/trainer/community-forum-posts?${queryParams.toString()}`,
     {
       method: "GET",
       cache: "no-store",
@@ -24,20 +29,7 @@ const TrainerCommunityAllForumPage = async () => {
     );
   }
 
-  return <CommunityForumCards posts={communityPost} />;
+  return <TrainerCommunityForumCards posts={communityPost} currentUser={user} />;
 };
 
 export default TrainerCommunityAllForumPage;
-
-// import CommunityForumCards from "@/components/dashboard/CommunityForumCards";
-// //import { getCommunityForumPosts } from "@/lib/api/community-forum-post";
-// import { getUserSession } from "@/lib/core/session";
-
-// const TrainerCommunityAllForumPage = async () => {
-//   const user = await getUserSession();
-//   //const communityPost = await getCommunityForumPosts(user?.id);
-
-//   return <CommunityForumCards posts={communityPost} />;
-// };
-
-// export default TrainerCommunityAllForumPage;
