@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@heroui/react";
+import { AlertDialog, Button } from "@heroui/react";
 import { toast } from "react-toastify";
 
 const apiBaseUrl =
@@ -33,7 +33,6 @@ const TrainerApplicationDetailsModal = ({
   setLoadingId,
   onCompleted,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [feedback, setFeedback] = useState("");
 
   const applicationId = getApplicationId(application);
@@ -70,7 +69,6 @@ const TrainerApplicationDetailsModal = ({
       });
 
       onCompleted?.(applicationId);
-      setIsOpen(false);
       setFeedback("");
     } catch (error) {
       toast.error(error.message || "Something went wrong.", {
@@ -102,7 +100,7 @@ const TrainerApplicationDetailsModal = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            feedback,
+            feedback: feedback.trim(),
             actorId: currentUser?.id,
             actorEmail: currentUser?.email,
           }),
@@ -121,7 +119,6 @@ const TrainerApplicationDetailsModal = ({
       });
 
       onCompleted?.(applicationId);
-      setIsOpen(false);
       setFeedback("");
     } catch (error) {
       toast.error(error.message || "Something went wrong.", {
@@ -134,122 +131,123 @@ const TrainerApplicationDetailsModal = ({
   };
 
   return (
-    <>
+    <AlertDialog>
       <Button
         type="button"
-        onClick={() => setIsOpen(true)}
         className="h-10 w-full rounded-xl border border-pink-500/20 bg-pink-500/10 px-4 text-xs font-bold text-pink-600 transition hover:bg-pink-500/15 dark:text-pink-400 lg:h-9 lg:w-auto"
       >
         Details
       </Button>
 
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="max-h-[90vh] w-full max-w-[520px] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#101624]">
+      <AlertDialog.Backdrop>
+        <AlertDialog.Container>
+          <AlertDialog.Dialog className="mx-4 max-h-[90vh] overflow-y-auto sm:max-w-[520px]">
+            <AlertDialog.CloseTrigger />
+
             <div className="h-1 w-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400" />
 
-            <div className="p-5 sm:p-6">
-              <div className="flex items-start justify-between gap-4">
+            <div className="p-1">
+              <AlertDialog.Header>
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                  <AlertDialog.Heading>
                     Trainer Application Details
-                  </h2>
+                  </AlertDialog.Heading>
 
                   <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                     Review applicant information before approving or rejecting.
                   </p>
                 </div>
+              </AlertDialog.Header>
 
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="rounded-full border border-slate-200 px-3 py-1 text-sm font-bold text-slate-500 transition hover:bg-slate-100 dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/5"
-                >
-                  ✕
-                </button>
-              </div>
+              <AlertDialog.Body>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-[#070b14]">
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                      Name
+                    </p>
 
-              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-[#070b14]">
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    Name
-                  </p>
-                  <p className="mt-1 font-bold text-slate-900 dark:text-white">
-                    {application?.name || "N/A"}
-                  </p>
+                    <p className="mt-1 font-bold text-slate-900 dark:text-white">
+                      {application?.name || "N/A"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-[#070b14]">
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                      Email
+                    </p>
+
+                    <p className="mt-1 break-all font-bold text-slate-900 dark:text-white">
+                      {application?.email || "N/A"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-[#070b14]">
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                      Experience
+                    </p>
+
+                    <p className="mt-1 font-bold text-slate-900 dark:text-white">
+                      {application?.experience || 0} years
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-[#070b14]">
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                      Specialty
+                    </p>
+
+                    <p className="mt-1 font-bold text-slate-900 dark:text-white">
+                      {application?.specialty || "N/A"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-[#070b14] sm:col-span-2">
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                      Time
+                    </p>
+
+                    <p className="mt-1 font-bold text-slate-900 dark:text-white">
+                      {formatDateTime(application?.createdAt)}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-[#070b14] sm:col-span-2">
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                      Bio
+                    </p>
+
+                    <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700 dark:text-slate-300">
+                      {application?.bio || "No bio provided."}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-[#070b14]">
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    Email
-                  </p>
-                  <p className="mt-1 break-all font-bold text-slate-900 dark:text-white">
-                    {application?.email || "N/A"}
-                  </p>
+                <div className="mt-5">
+                  <label className="text-sm font-bold text-slate-900 dark:text-white">
+                    Feedback for rejection
+                  </label>
+
+                  <textarea
+                    value={feedback}
+                    onChange={(event) => setFeedback(event.target.value)}
+                    rows={4}
+                    placeholder="Write why this application is rejected..."
+                    className="mt-2 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 dark:border-white/10 dark:bg-[#070b14] dark:text-white dark:placeholder:text-slate-500"
+                  />
                 </div>
+              </AlertDialog.Body>
 
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-[#070b14]">
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    Experience
-                  </p>
-                  <p className="mt-1 font-bold text-slate-900 dark:text-white">
-                    {application?.experience || 0} years
-                  </p>
-                </div>
-
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-[#070b14]">
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    Specialty
-                  </p>
-                  <p className="mt-1 font-bold text-slate-900 dark:text-white">
-                    {application?.specialty || "N/A"}
-                  </p>
-                </div>
-
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-[#070b14] sm:col-span-2">
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    Time
-                  </p>
-                  <p className="mt-1 font-bold text-slate-900 dark:text-white">
-                    {formatDateTime(application?.createdAt)}
-                  </p>
-                </div>
-
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-[#070b14] sm:col-span-2">
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    Bio
-                  </p>
-                  <p className="mt-1 text-sm leading-6 text-slate-700 dark:text-slate-300">
-                    {application?.bio || "No bio provided."}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-5">
-                <label className="text-sm font-bold text-slate-900 dark:text-white">
-                  Feedback for rejection
-                </label>
-
-                <textarea
-                  value={feedback}
-                  onChange={(event) => setFeedback(event.target.value)}
-                  placeholder="Write why this application is rejected..."
-                  rows={4}
-                  className="mt-2 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 dark:border-white/10 dark:bg-[#070b14] dark:text-white"
-                />
-              </div>
-
-              <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <AlertDialog.Footer>
                 <Button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="h-11 rounded-xl border border-slate-200 bg-slate-100 text-sm font-bold text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+                  slot="close"
+                  variant="tertiary"
+                  onClick={() => setFeedback("")}
                 >
                   Cancel
                 </Button>
 
                 <Button
-                  type="button"
+                  slot="close"
                   disabled={approveLoading || rejectLoading}
                   onClick={handleApprove}
                   className="h-11 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-sm font-bold text-emerald-600 disabled:cursor-not-allowed disabled:opacity-60 dark:text-emerald-400"
@@ -258,19 +256,19 @@ const TrainerApplicationDetailsModal = ({
                 </Button>
 
                 <Button
-                  type="button"
+                  slot={feedback.trim() ? "close" : undefined}
                   disabled={approveLoading || rejectLoading}
                   onClick={handleReject}
                   className="h-11 rounded-xl border border-red-500/20 bg-red-500/10 text-sm font-bold text-red-600 disabled:cursor-not-allowed disabled:opacity-60 dark:text-red-400"
                 >
                   {rejectLoading ? "Rejecting..." : "Reject"}
                 </Button>
-              </div>
+              </AlertDialog.Footer>
             </div>
-          </div>
-        </div>
-      )}
-    </>
+          </AlertDialog.Dialog>
+        </AlertDialog.Container>
+      </AlertDialog.Backdrop>
+    </AlertDialog>
   );
 };
 
