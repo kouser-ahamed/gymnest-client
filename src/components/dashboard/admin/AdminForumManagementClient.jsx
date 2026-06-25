@@ -132,7 +132,7 @@ const AdminForumManagementClient = ({ currentUser, posts = [] }) => {
   };
 
   return (
-    <section className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 dark:bg-[#050914] dark:text-white sm:px-6 lg:px-8">
+    <section className="min-h-screen px-4 py-8 text-slate-900 dark:text-white sm:px-6 lg:px-8">
       <ToastContainer
         position="top-right"
         autoClose={1500}
@@ -148,7 +148,7 @@ const AdminForumManagementClient = ({ currentUser, posts = [] }) => {
         progressClassName="!bg-gradient-to-r !from-fuchsia-500 !via-pink-500 !to-orange-400"
       />
 
-      <div className="mx-auto max-w-7xl space-y-6">
+      <div className="mx-auto max-w-[1500px] space-y-6">
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm dark:border-white/10 dark:bg-[#101624] lg:flex-row lg:items-center lg:justify-between lg:text-left">
           <div className="flex flex-col items-center gap-3 sm:flex-row lg:items-center">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-fuchsia-500/10 via-pink-500/10 to-orange-400/10 text-pink-600 dark:text-pink-300">
@@ -278,7 +278,7 @@ const AdminForumManagementClient = ({ currentUser, posts = [] }) => {
                             href={`/community-forum/${postId}`}
                             className="flex h-10 items-center justify-center rounded-xl border border-pink-500/20 bg-pink-500/10 text-sm font-bold text-pink-600 dark:text-pink-300"
                           >
-                            View
+                            View Post
                           </Link>
 
                           <Button
@@ -296,31 +296,31 @@ const AdminForumManagementClient = ({ currentUser, posts = [] }) => {
               </div>
 
               <div className="hidden overflow-x-auto lg:block">
-                <table className="w-full min-w-[1050px] border-collapse text-left">
+                <table className="w-full min-w-[1250px] border-collapse text-left">
                   <thead>
                     <tr className="border-b border-slate-200 bg-slate-50 dark:border-white/10 dark:bg-[#070b14]">
-                      <th className="px-4 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
                         Image
                       </th>
-                      <th className="px-4 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
                         Title
                       </th>
-                      <th className="px-4 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
                         Post Date
                       </th>
-                      <th className="px-4 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
                         Author
                       </th>
-                      <th className="px-4 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
                         Role
                       </th>
-                      <th className="px-4 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
                         Likes
                       </th>
-                      <th className="px-4 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
                         Comments
                       </th>
-                      <th className="px-4 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
                         Action
                       </th>
                     </tr>
@@ -335,8 +335,8 @@ const AdminForumManagementClient = ({ currentUser, posts = [] }) => {
                           key={postId}
                           className="border-b border-slate-100 transition hover:bg-slate-50 dark:border-white/10 dark:hover:bg-white/[0.03]"
                         >
-                          <td className="px-4 py-4">
-                            <div className="h-14 w-20 overflow-hidden rounded-xl bg-slate-100 dark:bg-[#070b14]">
+                          <td className="px-5 py-4">
+                            <div className="h-14 w-24 overflow-hidden rounded-xl bg-slate-100 dark:bg-[#070b14]">
                               {post?.image ? (
                                 <img
                                   src={post.image}
@@ -351,28 +351,21 @@ const AdminForumManagementClient = ({ currentUser, posts = [] }) => {
                             </div>
                           </td>
 
-                          <td className="max-w-[260px] px-4 py-4">
+                          <td className="max-w-[320px] px-5 py-4">
                             <p className="line-clamp-2 font-bold text-slate-900 dark:text-white">
                               {post?.title || "Untitled Post"}
                             </p>
-
-                            <Link
-                              href={`/community-forum/${postId}`}
-                              className="mt-1 inline-flex text-xs font-bold text-pink-600 dark:text-pink-300"
-                            >
-                              View post
-                            </Link>
                           </td>
 
-                          <td className="px-4 py-4 text-sm font-semibold text-slate-600 dark:text-slate-400">
+                          <td className="px-5 py-4 text-sm font-semibold text-slate-600 dark:text-slate-400">
                             {formatDate(post?.createdAt)}
                           </td>
 
-                          <td className="px-4 py-4 text-sm font-bold text-slate-900 dark:text-white">
+                          <td className="px-5 py-4 text-sm font-bold text-slate-900 dark:text-white">
                             {post?.authorName || "Author"}
                           </td>
 
-                          <td className="px-4 py-4">
+                          <td className="px-5 py-4">
                             <span
                               className={`inline-flex rounded-full border px-3 py-1 text-xs font-bold capitalize ${getRoleClass(
                                 post?.authorRole,
@@ -382,28 +375,37 @@ const AdminForumManagementClient = ({ currentUser, posts = [] }) => {
                             </span>
                           </td>
 
-                          <td className="px-4 py-4">
+                          <td className="px-5 py-4">
                             <span className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-600 dark:text-emerald-300">
                               <ThumbsUp className="h-4 w-4" />
                               {post?.likeCount || 0}
                             </span>
                           </td>
 
-                          <td className="px-4 py-4">
+                          <td className="px-5 py-4">
                             <span className="inline-flex items-center gap-1.5 rounded-xl border border-orange-400/20 bg-orange-400/10 px-3 py-2 text-xs font-bold text-orange-600 dark:text-orange-300">
                               <Comments className="h-4 w-4" />
                               {post?.commentCount || 0}
                             </span>
                           </td>
 
-                          <td className="px-4 py-4">
-                            <Button
-                              type="button"
-                              onClick={() => setSelectedPost(post)}
-                              className="h-10 rounded-xl border border-red-500/20 bg-red-500/10 px-4 text-xs font-bold text-red-600 transition hover:bg-red-500/15 dark:text-red-300"
-                            >
-                              Delete
-                            </Button>
+                          <td className="px-5 py-4">
+                            <div className="flex items-center gap-2">
+                              <Link
+                                href={`/community-forum/${postId}`}
+                                className="flex h-10 items-center justify-center rounded-xl border border-pink-500/20 bg-pink-500/10 px-4 text-xs font-bold text-pink-600 transition hover:bg-pink-500/15 dark:text-pink-300"
+                              >
+                                View Post
+                              </Link>
+
+                              <Button
+                                type="button"
+                                onClick={() => setSelectedPost(post)}
+                                className="h-10 rounded-xl border border-red-500/20 bg-red-500/10 px-4 text-xs font-bold text-red-600 transition hover:bg-red-500/15 dark:text-red-300"
+                              >
+                                Delete
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       );
