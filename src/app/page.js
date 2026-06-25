@@ -1,4 +1,5 @@
 import Banner from "@/components/Shared/homepage/Banner";
+import ContactFeedbackPage from "@/components/Shared/homepage/ContactFeedbackPage";
 import FeaturedClasses from "@/components/Shared/homepage/FeaturedClasses";
 import FeedbackSlider from "@/components/Shared/homepage/FeedbackSlider";
 import LatestForumPosts from "@/components/Shared/homepage/LatestForumPosts";
@@ -12,6 +13,7 @@ export default function Home() {
       <FeaturedClasses />
       <LatestForumPosts />
       <FeedbackSlider />
+      <ContactFeedbackPage />
      </div>
     
   );

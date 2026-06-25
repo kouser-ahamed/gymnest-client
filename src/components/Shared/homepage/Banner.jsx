@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@heroui/react";
 import Link from "next/link";
 
@@ -10,6 +11,26 @@ const bannerImages = [
   "/assets/Banner-2.png",
   "/assets/Banner-3.png",
 ];
+
+const imageDirections = ["left", "right", "top", "bottom"];
+
+const getInitialPosition = (direction) => {
+  if (direction === "left") return { x: "-100%", y: 0 };
+  if (direction === "right") return { x: "100%", y: 0 };
+  if (direction === "top") return { x: 0, y: "-100%" };
+  if (direction === "bottom") return { x: 0, y: "100%" };
+
+  return { x: "100%", y: 0 };
+};
+
+const getExitPosition = (direction) => {
+  if (direction === "left") return { x: "100%", y: 0 };
+  if (direction === "right") return { x: "-100%", y: 0 };
+  if (direction === "top") return { x: 0, y: "100%" };
+  if (direction === "bottom") return { x: 0, y: "-100%" };
+
+  return { x: "-100%", y: 0 };
+};
 
 const Banner = () => {
   const [currentImage, setCurrentImage] = useState(0);
@@ -22,8 +43,16 @@ const Banner = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const currentDirection =
+    imageDirections[currentImage % imageDirections.length];
+
   return (
-    <div className="max-w-7xl mx-auto px-4">
+    <motion.div
+      initial={{ opacity: 0, y: 45 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, ease: "easeOut" }}
+      className="max-w-7xl mx-auto px-4"
+    >
       <div
         className="
           relative w-full overflow-hidden mt-6 shadow-xl
@@ -31,22 +60,43 @@ const Banner = () => {
           bg-cover bg-center bg-no-repeat rounded-2xl
         "
       >
-        {bannerImages.map((image, index) => (
-          <div
-            key={image}
-            className={`
-              absolute inset-0 bg-cover bg-center bg-no-repeat
-              transition-opacity duration-1000 ease-in-out
-              ${index === currentImage ? "opacity-100" : "opacity-0"}
-            `}
+        <AnimatePresence mode="sync">
+          <motion.div
+            key={bannerImages[currentImage]}
+            initial={{
+              opacity: 0,
+              scale: 1.04,
+              ...getInitialPosition(currentDirection),
+            }}
+            animate={{
+              opacity: 1,
+              x: 0,
+              y: 0,
+              scale: 1,
+            }}
+            exit={{
+              opacity: 0,
+              scale: 1.04,
+              ...getExitPosition(currentDirection),
+            }}
+            transition={{
+              duration: 1,
+              ease: "easeInOut",
+            }}
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{
-              backgroundImage: `url('${image}')`,
+              backgroundImage: `url('${bannerImages[currentImage]}')`,
             }}
           />
-        ))}
+        </AnimatePresence>
 
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent flex items-center">
-          <div className="w-full max-w-3xl px-6 sm:px-12 md:px-16 text-white">
+          <motion.div
+            initial={{ opacity: 0, x: -45 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
+            className="w-full max-w-3xl px-6 sm:px-12 md:px-16 text-white"
+          >
             <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl font-black mb-3 md:mb-5 leading-tight tracking-tight">
               Train Stronger. <br className="hidden sm:inline" />
               <span className="bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
@@ -69,10 +119,10 @@ const Banner = () => {
                 Explore Classes
               </Button>
             </Link>
-          </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
