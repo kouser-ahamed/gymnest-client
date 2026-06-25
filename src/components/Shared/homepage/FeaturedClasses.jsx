@@ -1,6 +1,7 @@
 import { Button, Card } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
+import { getUserSession } from "@/lib/core/session";
 import {
   Calendar,
   CircleDollar,
@@ -86,9 +87,14 @@ const getFeaturedClasses = async () => {
     .slice(0, 3);
 };
 
-const FeaturedClassCard = ({ classItem }) => {
+const FeaturedClassCard = ({ classItem, isLoggedIn }) => {
   const classId = getClassId(classItem);
   const bookingCount = getBookingCount(classItem);
+
+  const detailsHref = `/all-classes/${classId}`;
+  const viewDetailsHref = isLoggedIn
+    ? detailsHref
+    : `/auth/signin?redirect=${encodeURIComponent(detailsHref)}`;
 
   const {
     className,
@@ -217,7 +223,7 @@ const FeaturedClassCard = ({ classItem }) => {
             </p>
           </div>
 
-          <Link href={`/all-classes/${classId}`} className="shrink-0">
+          <Link href={viewDetailsHref} className="shrink-0">
             <Button className="h-11 rounded-full border border-pink-500/20 bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-5 text-sm font-bold text-white shadow-lg shadow-pink-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-orange-500/25">
               View Details
               <ArrowRightFromSquare className="ml-2 h-4 w-4" />
@@ -231,6 +237,8 @@ const FeaturedClassCard = ({ classItem }) => {
 
 const FeaturedClasses = async () => {
   const featuredClasses = await getFeaturedClasses();
+  const user = await getUserSession();
+  const isLoggedIn = !!user;
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
@@ -276,7 +284,11 @@ const FeaturedClasses = async () => {
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {featuredClasses.map((item) => (
-            <FeaturedClassCard key={getClassId(item)} classItem={item} />
+            <FeaturedClassCard
+              key={getClassId(item)}
+              classItem={item}
+              isLoggedIn={isLoggedIn}
+            />
           ))}
         </div>
       )}
