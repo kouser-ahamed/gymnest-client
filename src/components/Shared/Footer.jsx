@@ -19,7 +19,7 @@ export default function Footer() {
   return (
     <footer className="w-full border-t border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-800 dark:bg-[#0c1220] dark:text-slate-300">
       {/* Container: Properly scales padding and max-width across all screens */}
-      <div className="mx-auto max-w-7xl px-6 py-12 md:px-8 md:py-14 lg:px-12">
+      <div className="container mx-auto px-6 py-12 md:px-8 md:py-14 lg:px-12">
         
         {/* 
           Grid Breakpoints:
