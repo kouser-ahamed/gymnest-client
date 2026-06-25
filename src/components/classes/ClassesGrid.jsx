@@ -5,6 +5,7 @@ import { Button, Card } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 import {
   Calendar,
   CircleDollar,
@@ -56,9 +57,14 @@ const getDifficultyClass = (difficulty) => {
   return "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400";
 };
 
-const ClassCard = ({ classItem }) => {
+const ClassCard = ({ classItem, isLoggedIn }) => {
   const classId = getClassId(classItem);
   const bookingCount = getBookingCount(classItem);
+
+  const detailsHref = `/all-classes/${classId}`;
+  const viewDetailsHref = isLoggedIn
+    ? detailsHref
+    : `/auth/signin?redirect=${encodeURIComponent(detailsHref)}`;
 
   const {
     className,
@@ -187,7 +193,7 @@ const ClassCard = ({ classItem }) => {
             </p>
           </div>
 
-          <Link href={`/all-classes/${classId}`} className="shrink-0">
+          <Link href={viewDetailsHref} className="shrink-0">
             <Button className="h-11 rounded-full border border-lime-500/20 bg-lime-500/10 px-5 text-sm font-bold text-lime-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-lime-500/20 dark:text-lime-300">
               View Details
               <ArrowRightFromSquare className="ml-2 h-4 w-4" />
@@ -208,11 +214,19 @@ const ClassesGrid = ({
   totalClasses = 0,
 }) => {
   const router = useRouter();
+  const { data: session } = useSession();
+
+  const user = session?.user;
+  const isLoggedIn = !!user;
 
   const [searchValue, setSearchValue] = useState(searchText);
   const [activeCategories, setActiveCategories] = useState(selectedCategories);
 
-  const createUrl = ({ page = 1, search = searchValue, cats = activeCategories }) => {
+  const createUrl = ({
+    page = 1,
+    search = searchValue,
+    cats = activeCategories,
+  }) => {
     const queryParams = new URLSearchParams();
 
     if (search.trim()) {
@@ -230,19 +244,20 @@ const ClassesGrid = ({
     return queryString ? `/all-classes?${queryString}` : "/all-classes";
   };
 
-  const handleSearchSubmit = (event) => {
-    event.preventDefault();
-
-    router.push(createUrl({ page: 1, search: searchValue, cats: activeCategories }));
-  };
-
   const handleCategoryToggle = (categoryId) => {
     const updatedCategories = activeCategories.includes(categoryId)
       ? activeCategories.filter((item) => item !== categoryId)
       : [...activeCategories, categoryId];
 
     setActiveCategories(updatedCategories);
-    router.push(createUrl({ page: 1, search: searchValue, cats: updatedCategories }));
+
+    router.push(
+      createUrl({
+        page: 1,
+        search: searchValue,
+        cats: updatedCategories,
+      }),
+    );
   };
 
   const handleClearFilters = () => {
@@ -252,13 +267,38 @@ const ClassesGrid = ({
   };
 
   const handlePageChange = (pageNumber) => {
-    router.push(createUrl({ page: pageNumber }));
+    router.push(
+      createUrl({
+        page: pageNumber,
+        search: searchValue,
+        cats: activeCategories,
+      }),
+    );
   };
 
   useEffect(() => {
     setSearchValue(searchText);
     setActiveCategories(selectedCategories);
   }, [searchText, selectedCategories]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const currentSearch = searchText.trim();
+      const newSearch = searchValue.trim();
+
+      if (currentSearch !== newSearch) {
+        router.replace(
+          createUrl({
+            page: 1,
+            search: searchValue,
+            cats: activeCategories,
+          }),
+        );
+      }
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [searchValue]);
 
   return (
     <section className="mx-auto w-full max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
@@ -280,10 +320,7 @@ const ClassesGrid = ({
           </div>
         </div>
 
-        <form
-          onSubmit={handleSearchSubmit}
-          className="mt-5 flex flex-col gap-3 md:flex-row"
-        >
+        <div className="mt-5 flex flex-col gap-3 md:flex-row">
           <div className="relative flex-1">
             <Magnifier className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
 
@@ -296,13 +333,6 @@ const ClassesGrid = ({
             />
           </div>
 
-          <Button
-            type="submit"
-            className="h-12 rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-7 text-sm font-bold text-white shadow-lg shadow-pink-500/20"
-          >
-            Search
-          </Button>
-
           {(searchValue || activeCategories.length > 0) && (
             <Button
               type="button"
@@ -312,7 +342,7 @@ const ClassesGrid = ({
               Clear
             </Button>
           )}
-        </form>
+        </div>
 
         <div className="mt-5 flex flex-wrap gap-2">
           {categories.map((category) => {
@@ -352,7 +382,11 @@ const ClassesGrid = ({
         <>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {classes.map((item) => (
-              <ClassCard key={getClassId(item)} classItem={item} />
+              <ClassCard
+                key={getClassId(item)}
+                classItem={item}
+                isLoggedIn={isLoggedIn}
+              />
             ))}
           </div>
 

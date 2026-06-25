@@ -15,6 +15,23 @@ const getValidPage = (value) => {
   return pageNumber;
 };
 
+const getResponseData = async (response) => {
+  const contentType = response.headers.get("content-type") || "";
+
+  if (contentType.includes("application/json")) {
+    return response.json();
+  }
+
+  const text = await response.text();
+
+  throw new Error(
+    `API did not return JSON. Check backend route /api/classes/browse. Response: ${text.slice(
+      0,
+      120,
+    )}`,
+  );
+};
+
 const AllClassesPage = async ({ searchParams }) => {
   const resolvedSearchParams = await searchParams;
 
@@ -44,7 +61,7 @@ const AllClassesPage = async ({ searchParams }) => {
     },
   );
 
-  const data = await response.json();
+  const data = await getResponseData(response);
 
   if (!response.ok) {
     throw new Error(data?.message || "Failed to fetch classes.");
