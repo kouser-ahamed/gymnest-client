@@ -19,15 +19,17 @@ import {
   BookOpen,
 } from "@gravity-ui/icons";
 
-import { Button, Drawer } from "@heroui/react";
+import { Drawer } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "@/lib/auth-client";
 
 export default function DashboardSideBar({ user }) {
   const pathname = usePathname();
   const route = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
 
   const roll = user?.role || "member";
 
@@ -83,7 +85,6 @@ export default function DashboardSideBar({ user }) {
           className="object-contain"
           priority
         />
-
         <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
           Gym
           <span className="bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
@@ -102,12 +103,10 @@ export default function DashboardSideBar({ user }) {
             height={44}
             className="rounded-full border border-pink-500 object-cover"
           />
-
           <div>
             <h3 className="font-semibold text-slate-900 dark:text-white">
               {user?.name}
             </h3>
-
             <span className="rounded-full bg-pink-500/10 px-2 py-1 text-xs text-pink-600 dark:text-pink-400">
               {user?.role}
             </span>
@@ -118,11 +117,11 @@ export default function DashboardSideBar({ user }) {
       {/* NAV ITEMS */}
       {navItems.map((item) => {
         const isActive = pathname === item.href;
-
         return (
           <Link
             key={item.href}
             href={item.href}
+            onClick={() => setIsOpen(false)}
             className={`flex items-center gap-3 rounded-xl px-4 py-3 transition ${
               isActive
                 ? "bg-gradient-to-r from-fuchsia-500/15 to-orange-500/15 text-pink-600 dark:text-pink-400"
@@ -155,13 +154,17 @@ export default function DashboardSideBar({ user }) {
         {navContent}
       </aside>
 
-      {/* MOBILE */}
-      <Drawer>
-        <Button className="lg:hidden" variant="secondary">
-          <LayoutSideContentLeft />
-          Menu
-        </Button>
+      {/* MOBILE TRIGGER */}
+      <button
+        onClick={() => setIsOpen(true)}
+        className="fixed top-4 left-4 z-50 lg:hidden flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-md transition hover:bg-slate-100 dark:border-white/10 dark:bg-[#070b14] dark:text-neutral-300 dark:hover:bg-white/5"
+      >
+        <LayoutSideContentLeft className="h-5 w-5" />
+        Menu
+      </button>
 
+      {/* MOBILE DRAWER */}
+      <Drawer isOpen={isOpen} onOpenChange={setIsOpen}>
         <Drawer.Backdrop>
           <Drawer.Content placement="left">
             <Drawer.Dialog>
