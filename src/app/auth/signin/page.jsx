@@ -2,19 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Button, Input } from "@heroui/react";
-import {
-  CircleCheck,
-  CircleXmark,
-  Eye,
-  EyeSlash,
-} from "@gravity-ui/icons";
+import { CircleCheck, CircleXmark, Eye, EyeSlash } from "@gravity-ui/icons";
 import { authClient } from "@/lib/auth-client";
 import { FcGoogle } from "react-icons/fc";
 
 export default function LoginPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const redirectTo = searchParams.get("redirect") || "/";
@@ -54,6 +48,7 @@ export default function LoginPage() {
           type: "error",
           text: result.error.message || "Invalid email or password.",
         });
+        setIsLoading(false);
         return;
       }
 
@@ -63,15 +58,14 @@ export default function LoginPage() {
       });
 
       setTimeout(() => {
-        router.replace(redirectTo);
-        router.refresh();
-      }, 800);
+        window.location.replace(redirectTo);
+      }, 600);
     } catch (error) {
       setMessage({
         type: "error",
         text: error.message || "Something went wrong. Please try again.",
       });
-    } finally {
+
       setIsLoading(false);
     }
   };
@@ -90,17 +84,19 @@ export default function LoginPage() {
         type: "error",
         text: error.message || "Google sign-in failed. Please try again.",
       });
+
       setIsGoogleLoading(false);
     }
   };
 
   return (
-    <section className="flex min-h-[calc(100vh-80px)] items-center justify-center bg-white px-4 py-10 dark:bg-[#0c1220]">
+    <section className="flex min-h-screen items-center justify-center bg-white px-4 py-10 dark:bg-[#0c1220]">
       <div className="w-full max-w-md rounded-3xl border border-black/10 bg-white p-6 shadow-2xl shadow-black/10 dark:border-white/10 dark:bg-[#0c1220] dark:shadow-black/40">
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-bold text-slate-950 dark:text-white">
             Welcome Back
           </h1>
+
           <p className="mt-2 text-sm text-slate-500 dark:text-neutral-400">
             Sign in to your GymNest account to continue your journey.
           </p>
@@ -119,6 +115,7 @@ export default function LoginPage() {
             ) : (
               <CircleXmark className="h-5 w-5 shrink-0" />
             )}
+
             <span>{message.text}</span>
           </div>
         )}
