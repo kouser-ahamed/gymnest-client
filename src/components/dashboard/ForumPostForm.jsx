@@ -113,6 +113,7 @@ const ForumPostForm = ({ user, role, redirectPath }) => {
         // authorEmail: user?.email || "",
         // authorImage: user?.image || "",
         authorRole: role,
+        authorName: user?.name || "",
         createdAt: new Date().toISOString(),
       };
 
