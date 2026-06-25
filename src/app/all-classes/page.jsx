@@ -1,24 +1,65 @@
 import ClassesGrid from "@/components/classes/ClassesGrid";
-//import { getAllClasses } from "@/lib/api/classes";
 
-const AllClassesPage = async () => {
-  // const classes = await getAllClasses();
+const getSingleValue = (value) => {
+  if (Array.isArray(value)) return value[0];
+  return value;
+};
+
+const getValidPage = (value) => {
+  const pageNumber = Number.parseInt(value || "1", 10);
+
+  if (Number.isNaN(pageNumber) || pageNumber < 1) {
+    return 1;
+  }
+
+  return pageNumber;
+};
+
+const AllClassesPage = async ({ searchParams }) => {
+  const resolvedSearchParams = await searchParams;
+
+  const page = getValidPage(getSingleValue(resolvedSearchParams?.page));
+  const search = getSingleValue(resolvedSearchParams?.search)?.trim() || "";
+  const categories =
+    getSingleValue(resolvedSearchParams?.categories)?.trim() || "";
+
+  const queryParams = new URLSearchParams({
+    page: String(page),
+    limit: "9",
+  });
+
+  if (search) {
+    queryParams.set("search", search);
+  }
+
+  if (categories) {
+    queryParams.set("categories", categories);
+  }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/classes/all`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/classes/browse?${queryParams.toString()}`,
     {
       method: "GET",
       cache: "no-store",
     },
   );
 
-  const classes = await response.json();
+  const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(classes?.message || "Failed to fetch classes.");
+    throw new Error(data?.message || "Failed to fetch classes.");
   }
 
-  return <ClassesGrid classes={classes} />;
+  return (
+    <ClassesGrid
+      classes={data?.classes || []}
+      searchText={data?.search || search}
+      selectedCategories={data?.selectedCategories || []}
+      currentPage={data?.currentPage || page}
+      totalPages={data?.totalPages || 1}
+      totalClasses={data?.totalClasses || 0}
+    />
+  );
 };
 
 export default AllClassesPage;

@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Card } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Calendar,
   CircleDollar,
@@ -11,9 +12,20 @@ import {
   PersonWorker,
   DatabaseMagnifier,
   ArrowRightFromSquare,
+  Magnifier,
 } from "@gravity-ui/icons";
 
+const categories = [
+  { id: "yoga", label: "Yoga" },
+  { id: "weights", label: "Weights" },
+  { id: "cardio", label: "Cardio" },
+  { id: "hiit", label: "HIIT" },
+  { id: "strength", label: "Strength" },
+  { id: "zumba", label: "Zumba" },
+];
+
 const getClassId = (item) => {
+  if (item?.classId) return item.classId;
   if (typeof item?._id === "string") return item._id;
   if (item?._id?.$oid) return item._id.$oid;
   return item?._id?.toString?.();
@@ -56,7 +68,6 @@ const ClassCard = ({ classItem }) => {
     duration,
     schedule,
     price,
-    description,
     trainerName,
   } = classItem || {};
 
@@ -109,15 +120,11 @@ const ClassCard = ({ classItem }) => {
                   </span>
                 </p>
               </div>
-
-              {/* <Card.Description className="mt-3 line-clamp-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                {description || "No description available."}
-              </Card.Description> */}
             </div>
 
             <span
               className={`shrink-0 rounded-full border px-3 py-1 text-xs font-bold capitalize ${getDifficultyClass(
-                difficultyLevel
+                difficultyLevel,
               )}`}
             >
               {difficultyLevel || "Beginner"}
@@ -192,14 +199,144 @@ const ClassCard = ({ classItem }) => {
   );
 };
 
-const ClassesGrid = ({ classes = [] }) => {
-  const sortedClasses = [...classes].sort(
-    (a, b) => getBookingCount(b) - getBookingCount(a)
-  );
+const ClassesGrid = ({
+  classes = [],
+  searchText = "",
+  selectedCategories = [],
+  currentPage = 1,
+  totalPages = 1,
+  totalClasses = 0,
+}) => {
+  const router = useRouter();
+
+  const [searchValue, setSearchValue] = useState(searchText);
+  const [activeCategories, setActiveCategories] = useState(selectedCategories);
+
+  const createUrl = ({ page = 1, search = searchValue, cats = activeCategories }) => {
+    const queryParams = new URLSearchParams();
+
+    if (search.trim()) {
+      queryParams.set("search", search.trim());
+    }
+
+    if (cats.length > 0) {
+      queryParams.set("categories", cats.join(","));
+    }
+
+    queryParams.set("page", String(page));
+
+    const queryString = queryParams.toString();
+
+    return queryString ? `/all-classes?${queryString}` : "/all-classes";
+  };
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+
+    router.push(createUrl({ page: 1, search: searchValue, cats: activeCategories }));
+  };
+
+  const handleCategoryToggle = (categoryId) => {
+    const updatedCategories = activeCategories.includes(categoryId)
+      ? activeCategories.filter((item) => item !== categoryId)
+      : [...activeCategories, categoryId];
+
+    setActiveCategories(updatedCategories);
+    router.push(createUrl({ page: 1, search: searchValue, cats: updatedCategories }));
+  };
+
+  const handleClearFilters = () => {
+    setSearchValue("");
+    setActiveCategories([]);
+    router.push("/all-classes");
+  };
+
+  const handlePageChange = (pageNumber) => {
+    router.push(createUrl({ page: pageNumber }));
+  };
+
+  useEffect(() => {
+    setSearchValue(searchText);
+    setActiveCategories(selectedCategories);
+  }, [searchText, selectedCategories]);
 
   return (
     <section className="mx-auto w-full max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
-      {sortedClasses.length === 0 ? (
+      <div className="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#101624] sm:p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h1 className="text-2xl font-black text-slate-900 dark:text-white">
+              Browse Classes
+            </h1>
+
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Search and filter approved classes. Most booked classes appear
+              first.
+            </p>
+          </div>
+
+          <div className="rounded-full border border-pink-500/20 bg-pink-500/10 px-4 py-1.5 text-sm font-bold text-pink-600 dark:text-pink-300">
+            Total Classes: {totalClasses}
+          </div>
+        </div>
+
+        <form
+          onSubmit={handleSearchSubmit}
+          className="mt-5 flex flex-col gap-3 md:flex-row"
+        >
+          <div className="relative flex-1">
+            <Magnifier className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+
+            <input
+              type="text"
+              value={searchValue}
+              onChange={(event) => setSearchValue(event.target.value)}
+              placeholder="Search by class name..."
+              className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 dark:border-white/10 dark:bg-[#070b14] dark:text-white"
+            />
+          </div>
+
+          <Button
+            type="submit"
+            className="h-12 rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-7 text-sm font-bold text-white shadow-lg shadow-pink-500/20"
+          >
+            Search
+          </Button>
+
+          {(searchValue || activeCategories.length > 0) && (
+            <Button
+              type="button"
+              onClick={handleClearFilters}
+              className="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-7 text-sm font-bold text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+            >
+              Clear
+            </Button>
+          )}
+        </form>
+
+        <div className="mt-5 flex flex-wrap gap-2">
+          {categories.map((category) => {
+            const isActive = activeCategories.includes(category.id);
+
+            return (
+              <button
+                type="button"
+                key={category.id}
+                onClick={() => handleCategoryToggle(category.id)}
+                className={`rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] transition ${
+                  isActive
+                    ? "border-pink-500 bg-pink-500 text-white shadow-lg shadow-pink-500/20"
+                    : "border-slate-200 bg-slate-50 text-slate-600 hover:border-pink-500/30 hover:bg-pink-500/10 hover:text-pink-500 dark:border-white/10 dark:bg-[#070b14] dark:text-slate-300"
+                }`}
+              >
+                {category.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {classes.length === 0 ? (
         <div className="flex min-h-[260px] flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 text-center dark:border-white/10 dark:bg-[#101624]">
           <DatabaseMagnifier className="mb-4 h-12 w-12 text-pink-500" />
 
@@ -208,15 +345,62 @@ const ClassesGrid = ({ classes = [] }) => {
           </h2>
 
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-            No fitness classes are available right now.
+            No fitness classes match your search or selected filters.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {sortedClasses.map((item) => (
-            <ClassCard key={getClassId(item)} classItem={item} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {classes.map((item) => (
+              <ClassCard key={getClassId(item)} classItem={item} />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="flex flex-col items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-[#101624] sm:flex-row">
+              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                Page {currentPage} of {totalPages}
+              </p>
+
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <Button
+                  type="button"
+                  disabled={currentPage <= 1}
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className="h-10 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-700 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+                >
+                  Previous
+                </Button>
+
+                {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+                  (pageNumber) => (
+                    <button
+                      type="button"
+                      key={pageNumber}
+                      onClick={() => handlePageChange(pageNumber)}
+                      className={`h-10 min-w-10 rounded-xl border px-3 text-sm font-bold transition ${
+                        currentPage === pageNumber
+                          ? "border-pink-500 bg-pink-500 text-white"
+                          : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-pink-500/10 hover:text-pink-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  ),
+                )}
+
+                <Button
+                  type="button"
+                  disabled={currentPage >= totalPages}
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className="h-10 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-700 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </section>
   );
