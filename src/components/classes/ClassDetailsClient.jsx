@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button, Card } from "@heroui/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -21,6 +21,7 @@ import {
 } from "@gravity-ui/icons";
 
 const getClassId = (item) => {
+  if (item?.classId) return item.classId;
   if (typeof item?._id === "string") return item._id;
   if (item?._id?.$oid) return item._id.$oid;
   return item?._id?.toString?.();
@@ -32,7 +33,9 @@ const getBookingCount = (item) => {
   if (Array.isArray(item?.bookings)) return item.bookings.length;
   if (Array.isArray(item?.bookedUsers)) return item.bookedUsers.length;
   if (Array.isArray(item?.students)) return item.students.length;
-  if (Array.isArray(item?.enrolledStudents)) return item.enrolledStudents.length;
+  if (Array.isArray(item?.enrolledStudents)) {
+    return item.enrolledStudents.length;
+  }
 
   return 0;
 };
@@ -110,16 +113,26 @@ const ScheduleDays = ({ days = [] }) => {
 
 const ClassDetailsClient = ({ classDetails, user: serverUser }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session, isPending } = useSession();
 
-  const user = session?.user || serverUser;
+  const sessionUser = session?.user;
+  const user = isPending ? serverUser : sessionUser;
+
   const classId = getClassId(classDetails);
   const bookingCount = getBookingCount(classDetails);
+  const detailsPath = `/all-classes/${classId}`;
 
+  const [wasLoggedIn, setWasLoggedIn] = useState(Boolean(serverUser?.id));
   const [isBooked, setIsBooked] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
+
+  const isRestrictedUser =
+    Boolean(user?.id) && Boolean(user?.status) && user.status !== "active";
+
+  const restrictedMessage = "You Resticted by admin";
 
   const {
     className,
@@ -135,6 +148,24 @@ const ClassDetailsClient = ({ classDetails, user: serverUser }) => {
   } = classDetails || {};
 
   useEffect(() => {
+    if (user?.id) {
+      setWasLoggedIn(true);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (isPending) return;
+
+    if (wasLoggedIn && !user?.id) {
+      const redirectPath = pathname || detailsPath;
+
+      window.location.replace(
+        `/auth/signin?redirect=${encodeURIComponent(redirectPath)}`,
+      );
+    }
+  }, [isPending, wasLoggedIn, user?.id, pathname, detailsPath]);
+
+  useEffect(() => {
     const checkClassStatus = async () => {
       if (!user?.id || !classId) {
         setIsCheckingStatus(false);
@@ -146,7 +177,7 @@ const ClassDetailsClient = ({ classDetails, user: serverUser }) => {
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/class-status?classId=${classId}&userId=${user?.id}&email=${user?.email}`,
           {
             cache: "no-store",
-          }
+          },
         );
 
         const data = await response.json();
@@ -170,7 +201,12 @@ const ClassDetailsClient = ({ classDetails, user: serverUser }) => {
 
     if (!user?.id) {
       toast.error("Please login first to book this class.");
-      router.push(`/auth/signin?redirect=${paymentPath}`);
+      router.push(`/auth/signin?redirect=${encodeURIComponent(paymentPath)}`);
+      return;
+    }
+
+    if (isRestrictedUser) {
+      toast.error(restrictedMessage);
       return;
     }
 
@@ -185,11 +221,14 @@ const ClassDetailsClient = ({ classDetails, user: serverUser }) => {
   const handleAddFavorite = async () => {
     if (isPending || isFavoriteLoading) return;
 
-    const detailsPath = `/all-classes/${classId}`;
-
     if (!user?.id) {
       toast.error("Please login first to add favorite.");
-      router.push(`/auth/signin?redirect=${detailsPath}`);
+      router.push(`/auth/signin?redirect=${encodeURIComponent(detailsPath)}`);
+      return;
+    }
+
+    if (isRestrictedUser) {
+      toast.error(restrictedMessage);
       return;
     }
 
@@ -201,7 +240,7 @@ const ClassDetailsClient = ({ classDetails, user: serverUser }) => {
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/favorite-classes?classId=${classId}&userId=${user?.id}&email=${user?.email}`,
           {
             method: "DELETE",
-          }
+          },
         );
 
         const result = await response.json();
@@ -241,7 +280,7 @@ const ClassDetailsClient = ({ classDetails, user: serverUser }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(favoriteData),
-        }
+        },
       );
 
       const result = await response.json();
@@ -322,7 +361,7 @@ const ClassDetailsClient = ({ classDetails, user: serverUser }) => {
 
                 <span
                   className={`inline-flex items-center rounded-full border px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] backdrop-blur ${getDifficultyClass(
-                    difficultyLevel
+                    difficultyLevel,
                   )}`}
                 >
                   {difficultyLevel || "Beginner"}
