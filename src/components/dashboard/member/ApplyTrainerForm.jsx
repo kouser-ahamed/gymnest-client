@@ -53,7 +53,18 @@ const getStatusStyle = (status) => {
       badgeStyle:
         "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400",
       title: "Application Rejected",
-      text: "Your trainer application has been reviewed and rejected by admin.",
+      text: "Your trainer application has been reviewed and rejected by admin. You can submit a new application again.",
+    };
+  }
+
+  if (status === "Demoted" || status === "Demote") {
+    return {
+      iconStyle:
+        "border-red-500/20 bg-red-500/10 text-red-500 dark:text-red-400",
+      badgeStyle:
+        "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400",
+      title: "Trainer Role Removed",
+      text: "Your trainer role has been removed by admin. You can apply again as a trainer.",
     };
   }
 
@@ -67,16 +78,26 @@ const getStatusStyle = (status) => {
   };
 };
 
-const ApplicationStatusCard = ({ application }) => {
+const ApplicationStatusCard = ({ application, onNewApply }) => {
   const status = application?.status || "Pending";
   const statusStyle = getStatusStyle(status);
+
+  const canApplyAgain =
+    status === "Rejected" || status === "Demoted" || status === "Demote";
+
+  const feedback =
+    application?.feedback ||
+    application?.demoteFeedback ||
+    application?.adminFeedback ||
+    application?.rejectionReason ||
+    "";
 
   return (
     <Card className="mx-auto max-w-3xl overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 text-center shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624] sm:p-10">
       <div
         className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border ${statusStyle.iconStyle}`}
       >
-        {status === "Rejected" ? (
+        {status === "Rejected" || status === "Demoted" || status === "Demote" ? (
           <CircleXmark className="h-9 w-9" />
         ) : (
           <CircleCheck className="h-9 w-9" />
@@ -118,6 +139,30 @@ const ApplicationStatusCard = ({ application }) => {
           </p>
         </div>
       </div>
+
+      {canApplyAgain && feedback && (
+        <div className="mx-auto mt-5 max-w-xl rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-left">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-red-600 dark:text-red-300">
+            {status === "Demoted" || status === "Demote"
+              ? "Demote Feedback"
+              : "Admin Feedback"}
+          </p>
+
+          <p className="mt-2 text-sm leading-6 text-red-600 dark:text-red-300">
+            {feedback}
+          </p>
+        </div>
+      )}
+
+      {canApplyAgain && (
+        <Button
+          type="button"
+          onClick={onNewApply}
+          className="mx-auto mt-7 h-12 w-full max-w-xs rounded-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 text-sm font-black text-white shadow-lg shadow-pink-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-pink-500/30"
+        >
+          New Apply
+        </Button>
+      )}
     </Card>
   );
 };
@@ -127,6 +172,7 @@ const ApplyTrainerForm = ({ user }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
   const [application, setApplication] = useState(null);
+  const [showNewApplyForm, setShowNewApplyForm] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
 
   useEffect(() => {
@@ -134,11 +180,11 @@ const ApplyTrainerForm = ({ user }) => {
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/apply-trainer?userId=${encodeURIComponent(
-            user?.id || ""
+            user?.id || "",
           )}&email=${encodeURIComponent(user?.email || "")}`,
           {
             cache: "no-store",
-          }
+          },
         );
 
         const data = await response.json();
@@ -157,6 +203,12 @@ const ApplyTrainerForm = ({ user }) => {
       getApplicationStatus();
     }
   }, [user?.id, user?.email]);
+
+  const handleNewApply = () => {
+    setShowNewApplyForm(true);
+    setMessage({ type: "", text: "" });
+    setSpecialty("");
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -185,6 +237,8 @@ const ApplyTrainerForm = ({ user }) => {
       specialty,
       bio,
       status: "Pending",
+      previousApplicationId: application?._id?.toString?.() || application?._id,
+      isReApply: Boolean(application?._id),
       createdAt: new Date().toISOString(),
     };
 
@@ -199,7 +253,7 @@ const ApplyTrainerForm = ({ user }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(applyData),
-        }
+        },
       );
 
       const result = await response.json();
@@ -212,6 +266,7 @@ const ApplyTrainerForm = ({ user }) => {
 
         formElement.reset();
         setSpecialty("");
+        setShowNewApplyForm(false);
       } else {
         setMessage({
           type: "error",
@@ -228,10 +283,11 @@ const ApplyTrainerForm = ({ user }) => {
     }
   };
 
+  const shouldShowStatusCard = application?._id && !showNewApplyForm;
+
   return (
     <section className="min-h-screen bg-white px-4 py-8 dark:bg-[#050914] sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
-        {/* Header */}
         <div className="mb-7 flex flex-col justify-between gap-5 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624] md:flex-row md:items-end">
           <div className="flex items-start gap-4">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 text-white shadow-lg shadow-pink-500/30">
@@ -255,7 +311,10 @@ const ApplyTrainerForm = ({ user }) => {
           </div>
 
           <div className="w-fit rounded-2xl border border-orange-400/20 bg-orange-400/10 px-5 py-3 text-sm font-black text-orange-600 dark:text-orange-300">
-            Status: {application?.status || "Pending"}
+            Status:{" "}
+            {showNewApplyForm
+              ? "New Application"
+              : application?.status || "Pending"}
           </div>
         </div>
 
@@ -265,11 +324,13 @@ const ApplyTrainerForm = ({ user }) => {
               Checking application status...
             </p>
           </Card>
-        ) : application?._id ? (
-          <ApplicationStatusCard application={application} />
+        ) : shouldShowStatusCard ? (
+          <ApplicationStatusCard
+            application={application}
+            onNewApply={handleNewApply}
+          />
         ) : (
           <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-            {/* Left Info Card */}
             <Card className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624]">
               <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-pink-500/20 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-24 -left-24 h-56 w-56 rounded-full bg-orange-400/20 blur-3xl" />
@@ -312,11 +373,20 @@ const ApplyTrainerForm = ({ user }) => {
                       Pending
                     </p>
                   </div>
+
+                  {showNewApplyForm && application?._id && (
+                    <Button
+                      type="button"
+                      onClick={() => setShowNewApplyForm(false)}
+                      className="h-11 w-full rounded-xl border border-slate-200 bg-slate-100 text-sm font-black text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+                    >
+                      Back to Previous Status
+                    </Button>
+                  )}
                 </div>
               </div>
             </Card>
 
-            {/* Form Card */}
             <Card className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624]">
               <div className="h-1.5 w-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400" />
 
