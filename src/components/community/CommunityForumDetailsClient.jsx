@@ -4,33 +4,30 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@heroui/react";
 import { Comments, ThumbsDown, ThumbsUp } from "@gravity-ui/icons";
-import { toast, ToastContainer } from "react-toastify";
+import { toast, ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
 
-const getToastClassName = ({ type }) => {
-  const baseClass =
-    "rounded-2xl border px-1 py-1 text-sm font-semibold shadow-xl backdrop-blur-md";
-
-  if (type === "success") {
-    return `${baseClass} border-pink-500/30 bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 text-white shadow-pink-500/20`;
-  }
-
-  if (type === "error") {
-    return `${baseClass} border-red-500/30 bg-gradient-to-r from-red-500 via-pink-500 to-orange-400 text-white shadow-red-500/20`;
-  }
-
-  return `${baseClass} border-pink-500/30 bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 text-white shadow-pink-500/20`;
+const toastOptions = {
+  position: "top-right",
+  autoClose: 1500,
+  closeOnClick: true,
+  pauseOnHover: false,
+  pauseOnFocusLoss: false,
+  draggable: false,
+  hideProgressBar: false,
 };
 
-const getToastProgressClassName = ({ type }) => {
-  if (type === "error") {
-    return "bg-white/80";
-  }
+const showSuccessToast = (message) => {
+  toast.dismiss();
+  toast.success(message, toastOptions);
+};
 
-  return "bg-white/80";
+const showErrorToast = (message) => {
+  toast.dismiss();
+  toast.error(message, toastOptions);
 };
 
 const getCommentId = (item) => {
@@ -59,7 +56,7 @@ const EditCommentModal = ({ comment, user, onClose, onUpdated }) => {
 
   const handleUpdate = async () => {
     if (!text.trim()) {
-      toast.error("Comment is required.");
+      showErrorToast("Comment is required.");
       return;
     }
 
@@ -87,11 +84,11 @@ const EditCommentModal = ({ comment, user, onClose, onUpdated }) => {
         throw new Error(result?.message || "Failed to update comment.");
       }
 
-      toast.success(result?.message || "Comment updated successfully.");
+      showSuccessToast(result?.message || "Comment updated successfully.");
       onUpdated?.();
       onClose?.();
     } catch (error) {
-      toast.error(error.message || "Something went wrong.");
+      showErrorToast(error.message || "Something went wrong.");
     } finally {
       setIsSaving(false);
     }
@@ -157,11 +154,11 @@ const DeleteCommentModal = ({ comment, user, onClose, onDeleted }) => {
         throw new Error(result?.message || "Failed to delete comment.");
       }
 
-      toast.success(result?.message || "Comment deleted successfully.");
+      showSuccessToast(result?.message || "Comment deleted successfully.");
       onDeleted?.(result);
       onClose?.();
     } catch (error) {
-      toast.error(error.message || "Something went wrong.");
+      showErrorToast(error.message || "Something went wrong.");
     } finally {
       setIsDeleting(false);
     }
@@ -224,7 +221,7 @@ const CommentItem = ({
 
   const ensureActive = () => {
     if (user?.status === "blocked") {
-      toast.error("You Resticted by admin");
+      showErrorToast("You Resticted by admin");
       return false;
     }
 
@@ -235,7 +232,7 @@ const CommentItem = ({
     if (!ensureActive()) return;
 
     if (!replyText.trim()) {
-      toast.error("Reply is required.");
+      showErrorToast("Reply is required.");
       return;
     }
 
@@ -266,7 +263,7 @@ const CommentItem = ({
         throw new Error(result?.message || "Failed to reply.");
       }
 
-      toast.success(result?.message || "Reply posted successfully.");
+      showSuccessToast(result?.message || "Reply posted successfully.");
       setReplyText("");
       setShowReplyBox(false);
 
@@ -276,7 +273,7 @@ const CommentItem = ({
 
       onRefresh?.();
     } catch (error) {
-      toast.error(error.message || "Something went wrong.");
+      showErrorToast(error.message || "Something went wrong.");
     } finally {
       setIsReplying(false);
     }
@@ -445,7 +442,7 @@ const CommunityForumDetailsClient = ({
 
   const ensureActive = () => {
     if (user?.status === "blocked") {
-      toast.error("You Resticted by admin");
+      showErrorToast("You Resticted by admin");
       return false;
     }
 
@@ -501,9 +498,9 @@ const CommunityForumDetailsClient = ({
       setDislikeCount(result?.dislikeCount || 0);
       setVoteType(result?.voteType || type);
 
-      toast.success(result?.message || "Vote updated.");
+      showSuccessToast(result?.message || "Vote updated.");
     } catch (error) {
-      toast.error(error.message || "Something went wrong.");
+      showErrorToast(error.message || "Something went wrong.");
     } finally {
       setIsVoting("");
     }
@@ -513,7 +510,7 @@ const CommunityForumDetailsClient = ({
     if (!ensureActive()) return;
 
     if (!commentText.trim()) {
-      toast.error("Comment is required.");
+      showErrorToast("Comment is required.");
       return;
     }
 
@@ -543,7 +540,7 @@ const CommunityForumDetailsClient = ({
         throw new Error(result?.message || "Failed to post comment.");
       }
 
-      toast.success(result?.message || "Comment posted successfully.");
+      showSuccessToast(result?.message || "Comment posted successfully.");
       setCommentText("");
 
       if (typeof result?.commentCount === "number") {
@@ -554,7 +551,7 @@ const CommunityForumDetailsClient = ({
 
       refreshComments();
     } catch (error) {
-      toast.error(error.message || "Something went wrong.");
+      showErrorToast(error.message || "Something went wrong.");
     } finally {
       setIsCommenting(false);
     }
@@ -568,13 +565,14 @@ const CommunityForumDetailsClient = ({
         hideProgressBar={false}
         newestOnTop
         closeOnClick
-        pauseOnHover
-        draggable
+        pauseOnHover={false}
+        pauseOnFocusLoss={false}
+        draggable={false}
+        transition={Slide}
         theme="light"
-        toastClassName={getToastClassName}
-        progressClassName={getToastProgressClassName}
-        bodyClassName={() => "text-sm font-semibold text-white"}
-        closeButton={false}
+        toastClassName="!rounded-2xl !border !border-slate-200 !bg-white !text-slate-900 !shadow-lg !shadow-pink-500/10 dark:!border-white/10 dark:!bg-[#101624] dark:!text-white dark:!shadow-pink-500/20"
+        bodyClassName="!text-sm !font-semibold !text-slate-900 dark:!text-white"
+        progressClassName="!bg-gradient-to-r !from-fuchsia-500 !via-pink-500 !to-orange-400"
       />
 
       <div className="mx-auto max-w-5xl">
