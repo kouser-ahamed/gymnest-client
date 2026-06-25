@@ -1,15 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Comments,
   Magnifier,
   ThumbsUp,
   ThumbsDown,
 } from "@gravity-ui/icons";
-
-const POSTS_PER_PAGE = 9;
 
 const getPostId = (item) => {
   if (item?.postId) return item.postId;
@@ -38,52 +37,73 @@ const formatDate = (value) => {
   });
 };
 
-const CommunityForumPageClient = ({ posts = [] }) => {
-  const [searchText, setSearchText] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+const CommunityForumPageClient = ({
+  posts = [],
+  searchText = "",
+  currentPage = 1,
+  totalPages = 1,
+  totalPosts = 0,
+  limit = 9,
+}) => {
+  const router = useRouter();
+  const [searchValue, setSearchValue] = useState(searchText);
 
-  const filteredPosts = useMemo(() => {
-    const text = searchText.toLowerCase();
+  const createUrl = ({ page = 1, search = searchValue }) => {
+    const queryParams = new URLSearchParams();
 
-    return posts.filter((post) => {
-      const title = post?.title?.toLowerCase() || "";
-      const description = post?.description?.toLowerCase() || "";
-      const author = post?.authorName?.toLowerCase() || "";
-      const role = post?.authorRole?.toLowerCase() || "";
+    if (search.trim()) {
+      queryParams.set("search", search.trim());
+    }
 
-      return (
-        title.includes(text) ||
-        description.includes(text) ||
-        author.includes(text) ||
-        role.includes(text)
-      );
-    });
-  }, [posts, searchText]);
+    queryParams.set("page", String(page));
 
-  const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE) || 1;
+    const queryString = queryParams.toString();
 
-  const paginatedPosts = useMemo(() => {
-    const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
-    const endIndex = startIndex + POSTS_PER_PAGE;
-
-    return filteredPosts.slice(startIndex, endIndex);
-  }, [filteredPosts, currentPage]);
-
-  const handleSearchChange = (event) => {
-    setSearchText(event.target.value);
-    setCurrentPage(1);
+    return queryString
+      ? `/community-forum?${queryString}`
+      : "/community-forum";
   };
 
   const goToPage = (pageNumber) => {
     if (pageNumber < 1 || pageNumber > totalPages) return;
 
-    setCurrentPage(pageNumber);
+    router.push(
+      createUrl({
+        page: pageNumber,
+        search: searchValue,
+      }),
+    );
 
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     });
   };
+
+  useEffect(() => {
+    setSearchValue(searchText);
+  }, [searchText]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const currentSearch = searchText.trim();
+      const newSearch = searchValue.trim();
+
+      if (currentSearch !== newSearch) {
+        router.replace(
+          createUrl({
+            page: 1,
+            search: searchValue,
+          }),
+          {
+            scroll: false,
+          },
+        );
+      }
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [searchValue]);
 
   return (
     <section className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900 dark:bg-[#050914] dark:text-white sm:px-6 lg:px-8">
@@ -119,8 +139,8 @@ const CommunityForumPageClient = ({ posts = [] }) => {
 
               <input
                 type="text"
-                value={searchText}
-                onChange={handleSearchChange}
+                value={searchValue}
+                onChange={(event) => setSearchValue(event.target.value)}
                 placeholder="Search posts, authors, topics..."
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 dark:border-white/10 dark:bg-[#070b14] dark:text-white dark:placeholder:text-slate-500"
               />
@@ -130,8 +150,8 @@ const CommunityForumPageClient = ({ posts = [] }) => {
 
         <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624] sm:flex-row sm:items-center sm:justify-between sm:text-left">
           <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">
-            Showing {paginatedPosts.length} posts on this page from{" "}
-            {filteredPosts.length} matched posts
+            Showing {posts.length} posts on this page from {totalPosts} matched
+            posts
           </p>
 
           <p className="text-sm font-bold text-pink-600 dark:text-pink-300">
@@ -139,7 +159,7 @@ const CommunityForumPageClient = ({ posts = [] }) => {
           </p>
         </div>
 
-        {filteredPosts.length === 0 ? (
+        {posts.length === 0 ? (
           <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624] dark:shadow-black/20">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">
               No posts found
@@ -152,7 +172,7 @@ const CommunityForumPageClient = ({ posts = [] }) => {
         ) : (
           <>
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
-              {paginatedPosts.map((post) => {
+              {posts.map((post) => {
                 const postId = getPostId(post);
 
                 return (
