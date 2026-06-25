@@ -1,4 +1,5 @@
 import Banner from "@/components/Shared/homepage/Banner";
+import FeaturedClasses from "@/components/Shared/homepage/FeaturedClasses";
 import Image from "next/image";
 
 export default function Home() {
@@ -6,6 +7,7 @@ export default function Home() {
     
      <div>
       <Banner />
+      <FeaturedClasses />
      </div>
     
   );
