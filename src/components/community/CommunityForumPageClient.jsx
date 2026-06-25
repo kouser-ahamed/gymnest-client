@@ -8,6 +8,9 @@ import {
   Magnifier,
   ThumbsUp,
   ThumbsDown,
+  Calendar,
+  PersonWorker,
+  ArrowRightFromSquare,
 } from "@gravity-ui/icons";
 
 const getPostId = (item) => {
@@ -178,58 +181,82 @@ const CommunityForumPageClient = ({
                 return (
                   <article
                     key={postId}
-                    className="group flex min-h-[560px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 transition hover:-translate-y-1 hover:border-pink-500/40 hover:shadow-pink-500/10 dark:border-white/10 dark:bg-[#101624] dark:shadow-black/20"
+                    className="group flex min-h-[470px] flex-col overflow-hidden rounded-[1.6rem] border border-pink-200/70 bg-gradient-to-br from-white via-pink-50/50 to-orange-50/40 shadow-xl shadow-slate-900/5 transition-all duration-300 hover:-translate-y-1 hover:border-pink-500/40 hover:shadow-2xl hover:shadow-pink-500/15 dark:border-white/10 dark:bg-gradient-to-br dark:from-[#101624] dark:via-[#141827] dark:to-[#261425] dark:shadow-black/20 dark:hover:border-pink-500/40 dark:hover:shadow-pink-500/20"
                   >
-                    <div className="h-64 overflow-hidden bg-slate-100 dark:bg-[#070b14]">
+                    <div className="relative mx-3 mt-3 h-64 overflow-hidden rounded-[1.25rem] bg-pink-50 dark:bg-[#070b14]">
                       {post?.image ? (
                         <img
                           src={post.image}
                           alt={post?.title || "Forum post"}
-                          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                          className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center text-slate-500">
+                        <div className="flex h-full w-full items-center justify-center text-sm font-bold text-pink-500">
                           No Image
                         </div>
                       )}
+
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent" />
+
+                      <div className="absolute left-4 top-4">
+                        <span className="rounded-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-white shadow-lg shadow-pink-500/25">
+                          {post?.authorRole || "Author"}
+                        </span>
+                      </div>
                     </div>
 
                     <div className="flex flex-1 flex-col p-5">
-                      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                        <span className="rounded-full border border-pink-500/20 bg-pink-500/10 px-3 py-1 text-xs font-bold capitalize text-pink-600 dark:text-pink-300">
-                          {post?.authorRole || "Author"}
-                        </span>
-
-                        <span className="text-xs text-slate-500 dark:text-slate-500">
-                          {formatDate(post?.createdAt)}
-                        </span>
-                      </div>
-
-                      <h2 className="line-clamp-2 min-h-[56px] text-lg font-black leading-7 text-slate-900 dark:text-white">
+                      <h2 className="line-clamp-2 min-h-[56px] text-xl font-black leading-7 text-slate-900 dark:text-white">
                         {post?.title || "Untitled Post"}
                       </h2>
 
-                      <p className="mt-2 text-xs font-semibold text-slate-500 dark:text-slate-500">
-                        By {post?.authorName || "Author"}
-                      </p>
+                      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <div className="flex items-center gap-2 rounded-2xl border border-pink-100/80 bg-white/80 p-3 shadow-sm dark:border-white/10 dark:bg-[#070b14]/80">
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-pink-500/10 text-pink-600 dark:bg-pink-500/15 dark:text-pink-300">
+                            <PersonWorker className="h-4 w-4" />
+                          </span>
 
-                      <p className="mt-3 min-h-[96px] text-sm leading-6 text-slate-600 dark:text-slate-400">
-                        {truncateText(post?.description)}
-                      </p>
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                              Author
+                            </p>
+
+                            <p className="truncate text-sm font-bold text-slate-800 dark:text-slate-200">
+                              {post?.authorName || "Author"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 rounded-2xl border border-pink-100/80 bg-white/80 p-3 shadow-sm dark:border-white/10 dark:bg-[#070b14]/80">
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-400/10 text-orange-600 dark:bg-orange-400/15 dark:text-orange-300">
+                            <Calendar className="h-4 w-4" />
+                          </span>
+
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                              Published
+                            </p>
+
+                            <p className="truncate text-sm font-bold text-slate-800 dark:text-slate-200">
+                              {formatDate(post?.createdAt)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
 
                       <div className="mt-auto">
                         <div className="mt-5 grid grid-cols-3 gap-2">
-                          <div className="flex h-10 items-center justify-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-xs font-bold text-emerald-600 dark:text-emerald-300">
+                          <div className="flex h-11 items-center justify-center gap-1.5 rounded-2xl border border-pink-500/20 bg-pink-500/10 text-xs font-bold text-pink-600 dark:text-pink-300">
                             <ThumbsUp className="h-4 w-4" />
                             <span>{post?.likeCount || 0}</span>
                           </div>
 
-                          <div className="flex h-10 items-center justify-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 text-xs font-bold text-red-600 dark:text-red-300">
+                          <div className="flex h-11 items-center justify-center gap-1.5 rounded-2xl border border-red-500/20 bg-red-500/10 text-xs font-bold text-red-600 dark:text-red-300">
                             <ThumbsDown className="h-4 w-4" />
                             <span>{post?.dislikeCount || 0}</span>
                           </div>
 
-                          <div className="flex h-10 items-center justify-center gap-1.5 rounded-xl border border-orange-400/20 bg-orange-400/10 text-xs font-bold text-orange-600 dark:text-orange-300">
+                          <div className="flex h-11 items-center justify-center gap-1.5 rounded-2xl border border-orange-400/20 bg-orange-400/10 text-xs font-bold text-orange-600 dark:text-orange-300">
                             <Comments className="h-4 w-4" />
                             <span>{post?.commentCount || 0}</span>
                           </div>
@@ -237,9 +264,10 @@ const CommunityForumPageClient = ({
 
                         <Link
                           href={`/community-forum/${postId}`}
-                          className="mt-5 flex h-11 w-full items-center justify-center rounded-xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 text-sm font-black text-white shadow-lg shadow-pink-500/20 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-pink-500/30"
+                          className="mt-5 flex h-11 w-full items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 text-sm font-black text-white shadow-lg shadow-pink-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-pink-500/30"
                         >
                           Read More
+                          <ArrowRightFromSquare className="ml-2 h-4 w-4" />
                         </Link>
                       </div>
                     </div>
