@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { AlertDialog, Button } from "@heroui/react";
 import { toast } from "react-toastify";
 
@@ -19,10 +20,20 @@ const DemoteTrainerAlert = ({
   setLoadingId,
   onDemoted,
 }) => {
+  const [feedback, setFeedback] = useState("");
+
   const trainerId = getUserId(trainer);
   const isLoading = loadingId === `${trainerId}-demote`;
 
   const handleDemoteTrainer = async () => {
+    if (!feedback.trim()) {
+      toast.error("Please write a demote note first.", {
+        position: "top-right",
+        autoClose: 1800,
+      });
+      return;
+    }
+
     try {
       setLoadingId(`${trainerId}-demote`);
 
@@ -36,6 +47,7 @@ const DemoteTrainerAlert = ({
           body: JSON.stringify({
             actorId: currentUser?.id,
             actorEmail: currentUser?.email,
+            feedback: feedback.trim(),
           }),
         },
       );
@@ -51,6 +63,7 @@ const DemoteTrainerAlert = ({
         autoClose: 1500,
       });
 
+      setFeedback("");
       onDemoted?.(trainerId);
     } catch (error) {
       toast.error(error.message || "Something went wrong.", {
@@ -74,7 +87,7 @@ const DemoteTrainerAlert = ({
 
       <AlertDialog.Backdrop>
         <AlertDialog.Container>
-          <AlertDialog.Dialog className="mx-4 sm:max-w-[430px]">
+          <AlertDialog.Dialog className="mx-4 sm:max-w-[460px]">
             <AlertDialog.CloseTrigger />
 
             <AlertDialog.Header>
@@ -86,20 +99,40 @@ const DemoteTrainerAlert = ({
             </AlertDialog.Header>
 
             <AlertDialog.Body>
-              <p>
-                Are you sure you want to remove trainer privileges from{" "}
-                <strong>{trainer?.name || "this trainer"}</strong>? This user
-                will become a normal member.
-              </p>
+              <div className="space-y-4">
+                <p>
+                  Are you sure you want to remove trainer privileges from{" "}
+                  <strong>{trainer?.name || "this trainer"}</strong>? This user
+                  will become a normal member.
+                </p>
+
+                <div>
+                  <label className="text-sm font-bold text-slate-900 dark:text-white">
+                    Demote Note / Feedback
+                  </label>
+
+                  <textarea
+                    value={feedback}
+                    onChange={(event) => setFeedback(event.target.value)}
+                    rows={4}
+                    placeholder="Write why this trainer is being demoted..."
+                    className="mt-2 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 dark:border-white/10 dark:bg-[#070b14] dark:text-white"
+                  />
+                </div>
+              </div>
             </AlertDialog.Body>
 
             <AlertDialog.Footer>
-              <Button slot="close" variant="tertiary">
+              <Button
+                slot="close"
+                variant="tertiary"
+                onClick={() => setFeedback("")}
+              >
                 No
               </Button>
 
               <Button
-                slot="close"
+                slot={feedback.trim() ? "close" : undefined}
                 variant="danger"
                 onClick={handleDemoteTrainer}
                 disabled={isLoading}
