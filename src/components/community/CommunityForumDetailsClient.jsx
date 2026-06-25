@@ -3,11 +3,35 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@heroui/react";
+import { Comments, ThumbsDown, ThumbsUp } from "@gravity-ui/icons";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
+
+const getToastClassName = ({ type }) => {
+  const baseClass =
+    "rounded-2xl border px-1 py-1 text-sm font-semibold shadow-xl backdrop-blur-md";
+
+  if (type === "success") {
+    return `${baseClass} border-pink-500/30 bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 text-white shadow-pink-500/20`;
+  }
+
+  if (type === "error") {
+    return `${baseClass} border-red-500/30 bg-gradient-to-r from-red-500 via-pink-500 to-orange-400 text-white shadow-red-500/20`;
+  }
+
+  return `${baseClass} border-pink-500/30 bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 text-white shadow-pink-500/20`;
+};
+
+const getToastProgressClassName = ({ type }) => {
+  if (type === "error") {
+    return "bg-white/80";
+  }
+
+  return "bg-white/80";
+};
 
 const getCommentId = (item) => {
   if (item?.commentId) return item.commentId;
@@ -75,7 +99,7 @@ const EditCommentModal = ({ comment, user, onClose, onUpdated }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#101624] p-5 text-white shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 text-slate-900 shadow-2xl dark:border-white/10 dark:bg-[#101624] dark:text-white">
         <h2 className="text-lg font-black">Update Comment</h2>
 
         <textarea
@@ -83,14 +107,14 @@ const EditCommentModal = ({ comment, user, onClose, onUpdated }) => {
           onChange={(event) => setText(event.target.value)}
           rows={5}
           placeholder="Update your comment..."
-          className="mt-4 w-full resize-none rounded-xl border border-white/10 bg-[#070b14] px-4 py-3 text-sm leading-6 text-white outline-none placeholder:text-slate-500 focus:border-lime-400/40 focus:ring-2 focus:ring-lime-400/10"
+          className="mt-4 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-900 outline-none placeholder:text-slate-400 focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 dark:border-white/10 dark:bg-[#070b14] dark:text-white dark:placeholder:text-slate-500"
         />
 
         <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Button
             type="button"
             onClick={onClose}
-            className="h-11 rounded-xl border border-white/10 bg-white/5 text-sm font-bold text-slate-200"
+            className="h-11 rounded-xl border border-slate-200 bg-slate-50 text-sm font-bold text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
           >
             Cancel
           </Button>
@@ -99,7 +123,7 @@ const EditCommentModal = ({ comment, user, onClose, onUpdated }) => {
             type="button"
             disabled={isSaving}
             onClick={handleUpdate}
-            className="h-11 rounded-xl border border-lime-400/20 bg-lime-400/10 text-sm font-bold text-lime-300 disabled:cursor-not-allowed disabled:opacity-60"
+            className="h-11 rounded-xl border border-pink-500/20 bg-pink-500/10 text-sm font-bold text-pink-600 disabled:cursor-not-allowed disabled:opacity-60 dark:text-pink-300"
           >
             {isSaving ? "Updating..." : "Update"}
           </Button>
@@ -145,10 +169,12 @@ const DeleteCommentModal = ({ comment, user, onClose, onDeleted }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#101624] p-5 text-white shadow-2xl">
-        <h2 className="text-lg font-black text-red-300">Delete Comment?</h2>
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 text-slate-900 shadow-2xl dark:border-white/10 dark:bg-[#101624] dark:text-white">
+        <h2 className="text-lg font-black text-red-600 dark:text-red-300">
+          Delete Comment?
+        </h2>
 
-        <p className="mt-3 text-sm leading-6 text-slate-400">
+        <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
           Are you sure you want to delete this comment? This action will hide
           the comment from the discussion.
         </p>
@@ -157,7 +183,7 @@ const DeleteCommentModal = ({ comment, user, onClose, onDeleted }) => {
           <Button
             type="button"
             onClick={onClose}
-            className="h-11 rounded-xl border border-white/10 bg-white/5 text-sm font-bold text-slate-200"
+            className="h-11 rounded-xl border border-slate-200 bg-slate-50 text-sm font-bold text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
           >
             Cancel
           </Button>
@@ -166,7 +192,7 @@ const DeleteCommentModal = ({ comment, user, onClose, onDeleted }) => {
             type="button"
             disabled={isDeleting}
             onClick={handleDelete}
-            className="h-11 rounded-xl border border-red-500/20 bg-red-500/10 text-sm font-bold text-red-300 disabled:cursor-not-allowed disabled:opacity-60"
+            className="h-11 rounded-xl border border-red-500/20 bg-red-500/10 text-sm font-bold text-red-600 disabled:cursor-not-allowed disabled:opacity-60 dark:text-red-300"
           >
             {isDeleting ? "Deleting..." : "Delete"}
           </Button>
@@ -188,6 +214,10 @@ const CommentItem = ({
   const [isReplying, setIsReplying] = useState(false);
   const [editingComment, setEditingComment] = useState(null);
   const [deletingComment, setDeletingComment] = useState(null);
+
+  if (comment?.isDeleted) {
+    return null;
+  }
 
   const isOwner =
     comment?.userId === user?.id || comment?.userEmail === user?.email;
@@ -254,14 +284,16 @@ const CommentItem = ({
 
   return (
     <div
-      className={`rounded-2xl border border-white/10 bg-[#101624] p-4 ${
-        level > 0 ? "ml-4 border-lime-400/20 md:ml-8" : ""
+      className={`rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624] dark:shadow-black/20 ${
+        level > 0
+          ? "ml-4 border-pink-500/20 dark:border-pink-500/20 md:ml-8"
+          : ""
       }`}
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex gap-3">
           <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400">
-            {comment?.userImage && !comment?.isDeleted ? (
+            {comment?.userImage ? (
               <img
                 src={comment.userImage}
                 alt={comment?.userName || "User"}
@@ -275,24 +307,24 @@ const CommentItem = ({
           </div>
 
           <div>
-            <h4 className="font-black text-white">
-              {comment?.isDeleted ? "Deleted User" : comment?.userName || "User"}
+            <h4 className="font-black text-slate-900 dark:text-white">
+              {comment?.userName || "User"}
             </h4>
 
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-500">
               {formatDateTime(comment?.createdAt)}
             </p>
           </div>
         </div>
 
-        {!comment?.isDeleted && isOwner && (
+        {isOwner && (
           <div className="flex gap-2">
             <button
               type="button"
               onClick={() => {
                 if (ensureActive()) setEditingComment(comment);
               }}
-              className="rounded-lg border border-lime-400/20 bg-lime-400/10 px-3 py-1 text-xs font-bold text-lime-300"
+              className="rounded-lg border border-pink-500/20 bg-pink-500/10 px-3 py-1 text-xs font-bold text-pink-600 dark:text-pink-300"
             >
               Edit
             </button>
@@ -302,7 +334,7 @@ const CommentItem = ({
               onClick={() => {
                 if (ensureActive()) setDeletingComment(comment);
               }}
-              className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-1 text-xs font-bold text-red-300"
+              className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-1 text-xs font-bold text-red-600 dark:text-red-300"
             >
               Delete
             </button>
@@ -310,25 +342,19 @@ const CommentItem = ({
         )}
       </div>
 
-      <p
-        className={`mt-4 whitespace-pre-wrap break-words text-sm leading-6 ${
-          comment?.isDeleted ? "italic text-slate-500" : "text-slate-300"
-        }`}
-      >
+      <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700 dark:text-slate-300">
         {comment?.comment}
       </p>
 
-      {!comment?.isDeleted && (
-        <button
-          type="button"
-          onClick={() => {
-            if (ensureActive()) setShowReplyBox((prev) => !prev);
-          }}
-          className="mt-3 text-xs font-bold text-lime-300"
-        >
-          Reply
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => {
+          if (ensureActive()) setShowReplyBox((prev) => !prev);
+        }}
+        className="mt-3 text-xs font-bold text-pink-600 dark:text-pink-300"
+      >
+        Reply
+      </button>
 
       {showReplyBox && (
         <div className="mt-4">
@@ -337,7 +363,7 @@ const CommentItem = ({
             onChange={(event) => setReplyText(event.target.value)}
             rows={3}
             placeholder="Write your reply..."
-            className="w-full resize-none rounded-xl border border-white/10 bg-[#070b14] px-4 py-3 text-sm leading-6 text-white outline-none placeholder:text-slate-500 focus:border-lime-400/40 focus:ring-2 focus:ring-lime-400/10"
+            className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-900 outline-none placeholder:text-slate-400 focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 dark:border-white/10 dark:bg-[#070b14] dark:text-white dark:placeholder:text-slate-500"
           />
 
           <div className="mt-3 flex justify-end">
@@ -345,7 +371,7 @@ const CommentItem = ({
               type="button"
               disabled={isReplying}
               onClick={handleReply}
-              className="h-10 rounded-xl border border-lime-400/20 bg-lime-400/10 px-4 text-xs font-bold text-lime-300 disabled:cursor-not-allowed disabled:opacity-60"
+              className="h-10 rounded-xl border border-pink-500/20 bg-pink-500/10 px-4 text-xs font-bold text-pink-600 disabled:cursor-not-allowed disabled:opacity-60 dark:text-pink-300"
             >
               {isReplying ? "Replying..." : "Post Reply"}
             </Button>
@@ -353,18 +379,20 @@ const CommentItem = ({
         </div>
       )}
 
-      {comment?.replies?.length > 0 && (
+      {comment?.replies?.filter((reply) => !reply?.isDeleted)?.length > 0 && (
         <div className="mt-4 space-y-3">
-          {comment.replies.map((reply) => (
-            <CommentItem
-              key={getCommentId(reply)}
-              comment={reply}
-              user={user}
-              onRefresh={onRefresh}
-              onCommentCountChange={onCommentCountChange}
-              level={level + 1}
-            />
-          ))}
+          {comment.replies
+            .filter((reply) => !reply?.isDeleted)
+            .map((reply) => (
+              <CommentItem
+                key={getCommentId(reply)}
+                comment={reply}
+                user={user}
+                onRefresh={onRefresh}
+                onCommentCountChange={onCommentCountChange}
+                level={level + 1}
+              />
+            ))}
         </div>
       )}
 
@@ -412,6 +440,8 @@ const CommunityForumDetailsClient = ({
   const [isCommenting, setIsCommenting] = useState(false);
 
   const postId = post?.postId || post?._id?.toString?.() || post?._id;
+
+  const visibleComments = comments.filter((comment) => !comment?.isDeleted);
 
   const ensureActive = () => {
     if (user?.status === "blocked") {
@@ -531,7 +561,7 @@ const CommunityForumDetailsClient = ({
   };
 
   return (
-    <section className="min-h-screen bg-[#050914] px-4 py-8 text-white sm:px-6 lg:px-8">
+    <section className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 dark:bg-[#050914] dark:text-white sm:px-6 lg:px-8">
       <ToastContainer
         position="top-right"
         autoClose={1500}
@@ -540,19 +570,23 @@ const CommunityForumDetailsClient = ({
         closeOnClick
         pauseOnHover
         draggable
-        theme="dark"
+        theme="light"
+        toastClassName={getToastClassName}
+        progressClassName={getToastProgressClassName}
+        bodyClassName={() => "text-sm font-semibold text-white"}
+        closeButton={false}
       />
 
       <div className="mx-auto max-w-5xl">
         <Link
           href="/community-forum"
-          className="inline-flex rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-slate-300 transition hover:bg-white/10"
+          className="inline-flex rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm shadow-slate-900/5 transition hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10"
         >
-          ← Back to Forum
+          Back to Forum
         </Link>
 
-        <article className="mt-6 overflow-hidden rounded-[2rem] border border-white/10 bg-[#101624] shadow-xl shadow-black/20">
-          <div className="max-h-[480px] overflow-hidden bg-[#070b14]">
+        <article className="mt-6 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624] dark:shadow-black/20">
+          <div className="max-h-[520px] overflow-hidden bg-slate-100 dark:bg-[#070b14]">
             {post?.image ? (
               <img
                 src={post.image}
@@ -568,24 +602,24 @@ const CommunityForumDetailsClient = ({
 
           <div className="p-5 sm:p-8">
             <div className="mb-4 flex flex-wrap items-center gap-3">
-              <span className="rounded-full border border-pink-500/20 bg-pink-500/10 px-3 py-1 text-xs font-bold text-pink-300">
+              <span className="rounded-full border border-pink-500/20 bg-pink-500/10 px-3 py-1 text-xs font-bold capitalize text-pink-600 dark:text-pink-300">
                 {post?.authorRole || "Author"}
               </span>
 
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-slate-500 dark:text-slate-500">
                 By {post?.authorName || "Author"}
               </span>
 
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-slate-500 dark:text-slate-500">
                 {formatDateTime(post?.createdAt)}
               </span>
             </div>
 
-            <h1 className="break-words text-3xl font-black tracking-tight sm:text-4xl">
+            <h1 className="break-words text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
               {post?.title || "Untitled Post"}
             </h1>
 
-            <p className="mt-5 whitespace-pre-wrap break-words text-sm leading-7 text-slate-300 sm:text-base">
+            <p className="mt-5 whitespace-pre-wrap break-words text-sm leading-7 text-slate-700 dark:text-slate-300 sm:text-base">
               {post?.description || "No description available."}
             </p>
 
@@ -594,37 +628,46 @@ const CommunityForumDetailsClient = ({
                 type="button"
                 disabled={isVoting === "like"}
                 onClick={() => handleVote("like")}
-                className={`h-11 rounded-xl border text-sm font-bold ${
+                className={`h-11 rounded-xl border text-sm font-bold disabled:cursor-not-allowed disabled:opacity-60 ${
                   voteType === "like"
-                    ? "border-lime-400/30 bg-lime-400/20 text-lime-300"
-                    : "border-white/10 bg-white/5 text-slate-300"
+                    ? "border-emerald-500/30 bg-emerald-500/20 text-emerald-600 dark:text-emerald-300"
+                    : "border-slate-200 bg-slate-50 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
                 }`}
               >
-                👍 Like {likeCount}
+                <span className="flex items-center justify-center gap-2">
+                  <ThumbsUp className="h-4 w-4" />
+                  Like {likeCount}
+                </span>
               </Button>
 
               <Button
                 type="button"
                 disabled={isVoting === "dislike"}
                 onClick={() => handleVote("dislike")}
-                className={`h-11 rounded-xl border text-sm font-bold ${
+                className={`h-11 rounded-xl border text-sm font-bold disabled:cursor-not-allowed disabled:opacity-60 ${
                   voteType === "dislike"
-                    ? "border-red-500/30 bg-red-500/20 text-red-300"
-                    : "border-white/10 bg-white/5 text-slate-300"
+                    ? "border-red-500/30 bg-red-500/20 text-red-600 dark:text-red-300"
+                    : "border-slate-200 bg-slate-50 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
                 }`}
               >
-                👎 Dislike {dislikeCount}
+                <span className="flex items-center justify-center gap-2">
+                  <ThumbsDown className="h-4 w-4" />
+                  Dislike {dislikeCount}
+                </span>
               </Button>
 
-              <div className="flex h-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-bold text-slate-300">
-                💬 Comments {commentCount}
+              <div className="flex h-11 items-center justify-center gap-2 rounded-xl border border-orange-400/20 bg-orange-400/10 text-sm font-bold text-orange-600 dark:text-orange-300">
+                <Comments className="h-4 w-4" />
+                Comments {commentCount}
               </div>
             </div>
           </div>
         </article>
 
-        <section className="mt-6 rounded-[2rem] border border-white/10 bg-[#101624] p-5 sm:p-6">
-          <h2 className="text-2xl font-black">Comments</h2>
+        <section className="mt-6 rounded-[2rem] border border-slate-200 bg-white p-5 shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624] dark:shadow-black/20 sm:p-6">
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+            Comments
+          </h2>
 
           <div className="mt-5">
             <textarea
@@ -632,7 +675,7 @@ const CommunityForumDetailsClient = ({
               onChange={(event) => setCommentText(event.target.value)}
               rows={4}
               placeholder="Write your comment..."
-              className="w-full resize-none rounded-xl border border-white/10 bg-[#070b14] px-4 py-3 text-sm leading-6 text-white outline-none placeholder:text-slate-500 focus:border-lime-400/40 focus:ring-2 focus:ring-lime-400/10"
+              className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-900 outline-none placeholder:text-slate-400 focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 dark:border-white/10 dark:bg-[#070b14] dark:text-white dark:placeholder:text-slate-500"
             />
 
             <div className="mt-3 flex justify-end">
@@ -640,7 +683,7 @@ const CommunityForumDetailsClient = ({
                 type="button"
                 disabled={isCommenting}
                 onClick={handleComment}
-                className="h-11 rounded-xl border border-lime-400/20 bg-lime-400/10 px-5 text-sm font-bold text-lime-300 disabled:cursor-not-allowed disabled:opacity-60"
+                className="h-11 rounded-xl border border-pink-500/20 bg-pink-500/10 px-5 text-sm font-bold text-pink-600 disabled:cursor-not-allowed disabled:opacity-60 dark:text-pink-300"
               >
                 {isCommenting ? "Posting..." : "Post Comment"}
               </Button>
@@ -648,14 +691,14 @@ const CommunityForumDetailsClient = ({
           </div>
 
           <div className="mt-6 space-y-4">
-            {comments.length === 0 ? (
-              <div className="rounded-2xl border border-white/10 bg-[#070b14] p-6 text-center">
-                <p className="text-sm text-slate-400">
+            {visibleComments.length === 0 ? (
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center dark:border-white/10 dark:bg-[#070b14]">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   No comments yet. Be the first to comment.
                 </p>
               </div>
             ) : (
-              comments.map((comment) => (
+              visibleComments.map((comment) => (
                 <CommentItem
                   key={getCommentId(comment)}
                   comment={comment}
