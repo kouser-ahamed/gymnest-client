@@ -32,6 +32,15 @@ const getStatusStyle = (status) => {
     };
   }
 
+  if (status === "Demoted" || status === "Demote") {
+    return {
+      icon: <CircleXmark className="h-5 w-5" />,
+      badge:
+        "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400",
+      title: "Demoted",
+    };
+  }
+
   return {
     icon: <Clock className="h-5 w-5" />,
     badge:
@@ -98,9 +107,14 @@ const MemberOverview = ({ user, overviewData }) => {
 
   const feedback =
     trainerApplication?.feedback ||
+    trainerApplication?.demoteFeedback ||
     trainerApplication?.adminFeedback ||
     trainerApplication?.rejectionReason ||
     "";
+
+  const isRejected = applicationStatus === "Rejected";
+  const isDemoted =
+    applicationStatus === "Demoted" || applicationStatus === "Demote";
 
   return (
     <section className="space-y-6">
@@ -234,10 +248,10 @@ const MemberOverview = ({ user, overviewData }) => {
                 </div>
               </div>
 
-              {applicationStatus === "Rejected" && feedback && (
+              {(isRejected || isDemoted) && feedback && (
                 <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-center sm:text-left">
                   <p className="text-xs font-black uppercase tracking-[0.14em] text-red-600 dark:text-red-300">
-                    Admin Feedback
+                    {isDemoted ? "Demote Feedback" : "Admin Feedback"}
                   </p>
 
                   <p className="mt-2 text-sm leading-6 text-red-600 dark:text-red-300">
