@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "motion/react";
 import {
   FiMail,
   FiPhone,
@@ -13,6 +14,69 @@ import {
   FiClock,
   FiMapPin,
 } from "react-icons/fi";
+
+const sectionVariants = {
+  hidden: {
+    opacity: 0,
+    y: 70,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.75,
+      ease: "easeOut",
+    },
+  },
+};
+
+const headingVariants = {
+  hidden: {
+    opacity: 0,
+    y: 35,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.65,
+      ease: "easeOut",
+      delay: 0.15,
+    },
+  },
+};
+
+const leftCardVariants = {
+  hidden: {
+    opacity: 0,
+    x: -55,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.7,
+      ease: "easeOut",
+      delay: 0.25,
+    },
+  },
+};
+
+const rightFormVariants = {
+  hidden: {
+    opacity: 0,
+    x: 55,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.7,
+      ease: "easeOut",
+      delay: 0.35,
+    },
+  },
+};
 
 const ContactFeedbackPage = () => {
   const [formData, setFormData] = useState({
@@ -104,7 +168,13 @@ const ContactFeedbackPage = () => {
   };
 
   return (
-    <section className="relative mt-8 min-h-[30vh] overflow-hidden bg-gradient-to-br from-slate-50 via-pink-50/50 to-orange-50/40 px-4 py-16 dark:from-[#050914] dark:via-[#101624] dark:to-[#261425] sm:px-6 lg:px-8">
+    <motion.section
+      variants={sectionVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      className="relative mt-8 min-h-[30vh] overflow-hidden bg-gradient-to-br from-slate-50 via-pink-50/50 to-orange-50/40 px-4 py-16 dark:from-[#050914] dark:via-[#101624] dark:to-[#261425] sm:px-6 lg:px-8"
+    >
       {/* Background Glow */}
       <div className="pointer-events-none absolute inset-0 opacity-70">
         <div className="animate-blob absolute -right-40 -top-40 h-80 w-80 rounded-full bg-pink-400/20 blur-3xl" />
@@ -113,7 +183,7 @@ const ContactFeedbackPage = () => {
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl">
-        <div className="mb-12 text-center">
+        <motion.div variants={headingVariants} className="mb-12 text-center">
           <p className="mb-3 text-xs font-black uppercase tracking-[0.24em] text-pink-500">
             Contact & Feedback
           </p>
@@ -129,11 +199,16 @@ const ContactFeedbackPage = () => {
             Have questions about fitness classes, trainer support, booking, or
             your GymNest experience? Send us a message and share your feedback.
           </p>
-        </div>
+        </motion.div>
 
         {/* Success Message */}
         {submitted && (
-          <div className="animate-slide-down mb-6 flex items-center gap-3 rounded-2xl border border-pink-200 bg-pink-50 p-4 dark:border-pink-500/20 dark:bg-pink-500/10">
+          <motion.div
+            initial={{ opacity: 0, y: -18, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.45, ease: "easeOut" }}
+            className="animate-slide-down mb-6 flex items-center gap-3 rounded-2xl border border-pink-200 bg-pink-50 p-4 dark:border-pink-500/20 dark:bg-pink-500/10"
+          >
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400">
               <FiCheck size={18} className="text-white" />
             </div>
@@ -147,12 +222,17 @@ const ContactFeedbackPage = () => {
                 We will get back to you soon.
               </p>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Error Message */}
         {error && (
-          <div className="animate-slide-down mb-6 flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 dark:border-red-500/20 dark:bg-red-500/10">
+          <motion.div
+            initial={{ opacity: 0, y: -18, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.45, ease: "easeOut" }}
+            className="animate-slide-down mb-6 flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 dark:border-red-500/20 dark:bg-red-500/10"
+          >
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-500">
               <FiAlertCircle size={18} className="text-white" />
             </div>
@@ -162,14 +242,28 @@ const ContactFeedbackPage = () => {
                 {error}
               </p>
             </div>
-          </div>
+          </motion.div>
         )}
 
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
           {/* Contact Info Sidebar */}
-          <div className="space-y-5 lg:col-span-4">
+          <motion.div
+            variants={leftCardVariants}
+            className="space-y-5 lg:col-span-4"
+          >
             {/* Contact Card */}
-            <div className="rounded-[1.6rem] bg-gradient-to-br from-[#101624] via-[#151827] to-[#261425] p-6 text-white shadow-xl shadow-pink-500/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-pink-500/20">
+            <motion.div
+              whileHover={{
+                y: -8,
+                scale: 1.02,
+                transition: {
+                  type: "spring",
+                  stiffness: 260,
+                  damping: 18,
+                },
+              }}
+              className="rounded-[1.6rem] bg-gradient-to-br from-[#101624] via-[#151827] to-[#261425] p-6 text-white shadow-xl shadow-pink-500/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-pink-500/20"
+            >
               <h3 className="mb-5 flex items-center gap-2 text-xl font-black">
                 <span className="h-2 w-2 rounded-full bg-pink-400" />
                 GymNest Support
@@ -230,10 +324,21 @@ const ContactFeedbackPage = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Hours Card */}
-            <div className="rounded-[1.6rem] border border-pink-200/70 bg-gradient-to-br from-white via-pink-50/60 to-orange-50/50 p-6 shadow-lg shadow-slate-900/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-pink-500/10 dark:border-white/10 dark:bg-gradient-to-br dark:from-[#101624] dark:via-[#141827] dark:to-[#261425]">
+            <motion.div
+              whileHover={{
+                y: -8,
+                scale: 1.02,
+                transition: {
+                  type: "spring",
+                  stiffness: 260,
+                  damping: 18,
+                },
+              }}
+              className="rounded-[1.6rem] border border-pink-200/70 bg-gradient-to-br from-white via-pink-50/60 to-orange-50/50 p-6 shadow-lg shadow-slate-900/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-pink-500/10 dark:border-white/10 dark:bg-gradient-to-br dark:from-[#101624] dark:via-[#141827] dark:to-[#261425]"
+            >
               <h3 className="mb-4 flex items-center gap-2 text-lg font-black text-slate-900 dark:text-white">
                 <FiClock size={20} className="text-pink-500" />
                 Support Hours
@@ -270,12 +375,22 @@ const ContactFeedbackPage = () => {
                   </span>
                 </li>
               </ul>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Form Section */}
-          <div className="lg:col-span-8">
-            <div className="rounded-[1.6rem] border border-pink-200/70 bg-white/90 p-6 shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624]/95 dark:shadow-black/20 sm:p-8">
+          <motion.div variants={rightFormVariants} className="lg:col-span-8">
+            <motion.div
+              whileHover={{
+                y: -5,
+                transition: {
+                  type: "spring",
+                  stiffness: 220,
+                  damping: 20,
+                },
+              }}
+              className="rounded-[1.6rem] border border-pink-200/70 bg-white/90 p-6 shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-[#101624]/95 dark:shadow-black/20 sm:p-8"
+            >
               <form
                 onSubmit={handleSubmit}
                 className="grid grid-cols-1 gap-6 md:grid-cols-2"
@@ -428,8 +543,8 @@ const ContactFeedbackPage = () => {
                   </button>
                 </div>
               </form>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
 
@@ -489,7 +604,7 @@ const ContactFeedbackPage = () => {
           animation: slide-down 0.4s ease-out;
         }
       `}</style>
-    </section>
+    </motion.section>
   );
 };
 
