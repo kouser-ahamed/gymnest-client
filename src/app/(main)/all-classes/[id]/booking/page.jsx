@@ -2,6 +2,8 @@ import { getUserSession } from "@/lib/core/session";
 import { redirect } from "next/navigation";
 //import { getClassById } from "@/lib/api/classes";
 import ClassBookingPayment from "./ClassBookingPayment";
+import { getTokenServer } from "@/lib/getTokenServer";
+
 
 const BookingPage = async ({ params }) => {
   const { id } = await params;
@@ -38,11 +40,15 @@ const BookingPage = async ({ params }) => {
   }
 
   //const classDetails = await getClassById(id);
+  const token = await getTokenServer();
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/classes/${id}`,
     {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       cache: "no-store",
     },
   );

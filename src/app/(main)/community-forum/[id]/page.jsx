@@ -1,10 +1,13 @@
 import CommunityForumDetailsClient from "@/components/community/CommunityForumDetailsClient";
 import { getUserSession } from "@/lib/core/session";
 import { redirect } from "next/navigation";
+import { getTokenServer } from "@/lib/getTokenServer";
+
 
 const CommunityForumDetailsPage = async ({ params }) => {
   const user = await getUserSession();
   const { id } = await params;
+   const token = await getTokenServer();
 
   const postId = id;
 
@@ -21,8 +24,12 @@ const CommunityForumDetailsPage = async ({ params }) => {
       postId,
     )}`,
     {
-      cache: "no-store",
-    },
+     method: "GET",
+     cache: "no-store",
+     headers: {
+       Authorization: `Bearer ${token}`,
+     },
+   },
   );
 
   const postData = await postResponse.json();
@@ -51,9 +58,16 @@ const CommunityForumDetailsPage = async ({ params }) => {
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/forum/posts/${encodeURIComponent(
       postId,
     )}/comments`,
+    // {
+    //   cache: "no-store",
+    // },
     {
-      cache: "no-store",
-    },
+     method: "GET",
+     cache: "no-store",
+     headers: {
+       Authorization: `Bearer ${token}`,
+     },
+   },
   );
 
   const commentsData = commentsResponse.ok
@@ -67,8 +81,12 @@ const CommunityForumDetailsPage = async ({ params }) => {
       user?.id || "",
     )}&email=${encodeURIComponent(user?.email || "")}`,
     {
-      cache: "no-store",
+    method: "GET",
+    cache: "no-store",
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
+  },
   );
 
   const voteData = voteResponse.ok ? await voteResponse.json() : null;

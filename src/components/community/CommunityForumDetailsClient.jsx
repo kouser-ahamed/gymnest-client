@@ -6,6 +6,8 @@ import { Button } from "@heroui/react";
 import { Comments, ThumbsDown, ThumbsUp } from "@gravity-ui/icons";
 import { toast, ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getTokenClient } from "@/lib/getTokenClient";
+
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
@@ -50,6 +52,10 @@ const formatDateTime = (value) => {
   });
 };
 
+
+const { data:tokenData } = await getTokenClient();
+
+
 const EditCommentModal = ({ comment, user, onClose, onUpdated }) => {
   const [text, setText] = useState(comment?.comment || "");
   const [isSaving, setIsSaving] = useState(false);
@@ -69,6 +75,7 @@ const EditCommentModal = ({ comment, user, onClose, onUpdated }) => {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            authorization: `Bearer ${tokenData?.token}`, // Use the token from
           },
           body: JSON.stringify({
             userId: user?.id,
@@ -145,6 +152,9 @@ const DeleteCommentModal = ({ comment, user, onClose, onDeleted }) => {
         )}&userEmail=${encodeURIComponent(user?.email || "")}`,
         {
           method: "DELETE",
+          headers: {
+            authorization: `Bearer ${tokenData?.token}`, // Use the token from
+          },
         },
       );
 
@@ -245,6 +255,7 @@ const CommentItem = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            authorization: `Bearer ${tokenData?.token}`, // Use the token from
           },
           body: JSON.stringify({
             userId: user?.id,
@@ -453,7 +464,15 @@ const CommunityForumDetailsClient = ({
     try {
       const response = await fetch(
         `${apiBaseUrl}/api/forum/posts/${postId}/comments`,
+        {
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            authorization: `Bearer ${tokenData?.token}`, // Use the token from
+          },
+        }
       );
+      
 
       const data = await response.json();
 
@@ -478,6 +497,7 @@ const CommunityForumDetailsClient = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            authorization: `Bearer ${tokenData?.token}`, // Use the token from
           },
           body: JSON.stringify({
             userId: user?.id,
@@ -523,6 +543,7 @@ const CommunityForumDetailsClient = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            authorization: `Bearer ${tokenData?.token}`, // Use the token from
           },
           body: JSON.stringify({
             userId: user?.id,
