@@ -8,6 +8,8 @@ import { FiCalendar, FiHeart, FiMessageCircle, FiTrash2 } from "react-icons/fi";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DeleteCommunityForumPostModal from "./DeleteCommunityForumPostModal";
+import { getTokenClient } from "@/lib/getTokenClient";
+
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
@@ -46,11 +48,16 @@ const TrainerCommunityForumCards = ({ posts = [], currentUser = null, onDelete }
         trainerId: currentUser?.id || "",
         trainerEmail: currentUser?.email || "",
       });
+      const { data:tokenData } = await getTokenClient();
+
 
       const response = await fetch(
         `${apiBaseUrl}/api/trainer/community-forum-posts/${postId}?${queryParams.toString()}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${tokenData?.token}`,
+          },
         },
       );
 

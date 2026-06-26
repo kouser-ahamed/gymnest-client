@@ -3,6 +3,8 @@
 import { Button, AlertDialog } from "@heroui/react";
 import { FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
+import { getTokenClient } from "@/lib/getTokenClient";
+
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
@@ -22,9 +24,14 @@ const DeleteClassAlert = ({
   const classId = getClassId(classItem);
 
   const handleDeleteClass = async () => {
+    const { data:tokenData } = await getTokenClient();
+
     try {
       const res = await fetch(`${apiBaseUrl}/api/classes/${classId}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${tokenData?.token}`,
+        },
       });
 
       const data = await res.json();

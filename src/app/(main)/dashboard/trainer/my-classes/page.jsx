@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 //import { getTrainerClasses } from "@/lib/api/classes";
 import TrainerClassesTable from "@/components/dashboard/trainer/TrainerClassesTable";
+import { getTokenServer } from "@/lib/getTokenServer";
 
 const TrainerClassesManagePage = async () => {
   const session = await auth.api.getSession({
@@ -25,12 +26,17 @@ const TrainerClassesManagePage = async () => {
 
   //const classes = await getTrainerClasses(trainerId);
 
+  const token = await getTokenServer();
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/classes?trainerId=${trainerId}`,
     {
-      method: "GET",
-      cache: "no-store",
+   method: "GET",
+    cache: "no-store",
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
+  }
   );
 
   const classes = await response.json();

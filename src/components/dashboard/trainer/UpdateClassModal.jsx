@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import { Button, Modal } from "@heroui/react";
 import { FiEdit3, FiImage } from "react-icons/fi";
 import { toast } from "react-toastify";
+import { getTokenClient } from "@/lib/getTokenClient";
 
 const categories = [
   { id: "yoga", label: "Yoga" },
@@ -160,6 +161,7 @@ const UpdateClassModal = ({
   const handleUpdateClass = async (event) => {
     event.preventDefault();
 
+
     const formData = new FormData(event.currentTarget);
 
     if (selectedDays.length === 0) {
@@ -191,11 +193,14 @@ const UpdateClassModal = ({
         description: formData.get("description"),
         status: classItem?.status || "Pending",
       };
+      const { data:tokenData } = await getTokenClient();
+
 
       const response = await fetch(`${apiBaseUrl}/api/classes/${classId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${tokenData?.token}`,
         },
         body: JSON.stringify(updatedClass),
       });

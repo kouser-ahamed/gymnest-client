@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import TrainerOverview from "@/components/dashboard/trainer/TrainerOverview";
+import { getTokenServer } from "@/lib/getTokenServer";
 
 const TrainerDashboardPage = async () => {
   const session = await auth.api.getSession({
@@ -23,27 +24,29 @@ const TrainerDashboardPage = async () => {
     );
   }
 
+  const token = await getTokenServer();
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/trainer-overview?trainerId=${user.id}`,
     {
       method: "GET",
       cache: "no-store",
-    }
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
   );
 
   const trainerOverviewData = await response.json();
 
   if (!response.ok) {
     throw new Error(
-      trainerOverviewData?.message || "Failed to load trainer dashboard."
+      trainerOverviewData?.message || "Failed to load trainer dashboard.",
     );
   }
 
   return (
-    <TrainerOverview
-      user={user}
-      trainerOverviewData={trainerOverviewData}
-    />
+    <TrainerOverview user={user} trainerOverviewData={trainerOverviewData} />
   );
 };
 

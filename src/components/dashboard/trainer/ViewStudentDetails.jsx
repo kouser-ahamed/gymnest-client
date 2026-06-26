@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Button, Modal } from "@heroui/react";
 import { FiEye, FiMail, FiUser, FiUsers } from "react-icons/fi";
+import { getTokenClient } from "@/lib/getTokenClient";
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
@@ -32,11 +33,18 @@ const ViewStudentDetails = ({
 
     try {
       setIsLoading(true);
+      const { data:tokenData } = await getTokenClient();
 
-      const response = await fetch(`${apiBaseUrl}/api/class-students/${classId}`, {
-        method: "GET",
-        cache: "no-store",
-      });
+      const response = await fetch(
+        `${apiBaseUrl}/api/class-students/${classId}`,
+        {
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            Authorization: `Bearer ${tokenData?.token}`,
+          },
+        },
+      );
 
       const data = await response.json();
 
@@ -137,7 +145,9 @@ const ViewStudentDetails = ({
 
                         <div className="min-w-0">
                           <h4 className="break-words font-bold text-slate-900 dark:text-white">
-                            {student?.userName || student?.name || "Student Name"}
+                            {student?.userName ||
+                              student?.name ||
+                              "Student Name"}
                           </h4>
 
                           <p className="mt-1 flex items-center gap-2 break-all text-sm text-slate-500 dark:text-slate-400">

@@ -17,6 +17,8 @@ import { FilePlus, Picture } from "@gravity-ui/icons";
 import { FiImage, FiSend, FiType, FiUserCheck } from "react-icons/fi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getTokenClient } from "@/lib/getTokenClient";
+
 // import { postCommunityForumPost } from "@/lib/actions/community-forum-post";
 // import { createForumPost } from "@/lib/actions/forum";
 
@@ -120,6 +122,8 @@ const ForumPostForm = ({ user, role, redirectPath }) => {
       //   const res = await createForumPost(newPost);
 
       // const res = await postCommunityForumPost(newPost);
+      const { data:tokenData } = await getTokenClient();
+
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/community-forum-posts`,
@@ -127,6 +131,7 @@ const ForumPostForm = ({ user, role, redirectPath }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenData?.token}`,
           },
           body: JSON.stringify(newPost),
         },

@@ -1,5 +1,6 @@
 import TrainerCommunityForumCards from "@/components/dashboard/trainer/TrainerCommunityForumCards";
 import { getUserSession } from "@/lib/core/session";
+import { getTokenServer } from "@/lib/getTokenServer";
 
 const TrainerCommunityAllForumPage = async () => {
   const user = await getUserSession();
@@ -11,12 +12,18 @@ const TrainerCommunityAllForumPage = async () => {
   const queryParams = new URLSearchParams({
     trainerId: user.id,
     trainerEmail: user.email || "",
+    
   });
+
+  const token = await getTokenServer();
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/trainer/community-forum-posts?${queryParams.toString()}`,
     {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       cache: "no-store",
     },
   );
