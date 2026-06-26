@@ -20,6 +20,7 @@ import { Calendar, CircleDollar, FilePlus, Picture } from "@gravity-ui/icons";
 // import { useSession } from "@/lib/auth-client";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getTokenClient } from "@/lib/getTokenClient";
 
 const categories = [
   { id: "yoga", label: "Yoga" },
@@ -184,6 +185,8 @@ const AddClassPageForm = ({ user }) => {
         trainerName: user.name,
         createdAt: new Date().toISOString(),
       };
+      const { data:tokenData } = await getTokenClient();
+      //console.log("Token from getTokenClient:", tokenData); // Log the token for debugging
 
       //const res = await createClass(newClass);
       const response = await fetch(
@@ -192,6 +195,7 @@ const AddClassPageForm = ({ user }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            authorization: `Bearer ${tokenData?.token}`, // Use the token from getTokenClient
           },
           body: JSON.stringify(newClass),
         },
