@@ -1,5 +1,6 @@
 import ClassDetailsClient from "@/components/classes/ClassDetailsClient";
 import { getUserSession } from "@/lib/core/session";
+import { getTokenServer } from "@/lib/getTokenServer";
 
 const getResponseData = async (response) => {
   const contentType = response.headers.get("content-type") || "";
@@ -18,15 +19,22 @@ const getResponseData = async (response) => {
   );
 };
 
+
 const ClassDetailsPage = async ({ params }) => {
   const { id } = await params;
   const user = await getUserSession();
+
+  const token = await getTokenServer();
+
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/classes/${id}`,
     {
       method: "GET",
       cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
   );
 
