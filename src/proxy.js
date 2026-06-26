@@ -19,5 +19,5 @@ console.log("session", session);
 export const config = {
 //   matcher: ['/add-facility','/all-facilities/:path','/my-bookings','/manage-my-facilities'],
 
-matcher: ['/all-classes/:path','/all-classes/:path/booking','/payment/success','/community-forum/:path','/dashboard/member',],
+matcher: ['/all-classes/:path','/all-classes/:path/booking','/payment/success','/community-forum/:path','/dashboard/member','/dashboard/member/booked-classes','/dashboard/member/apply-trainer','/dashboard/member/favorite-classes','/dashboard/trainer','/dashboard/trainer/add-class','/dashboard/trainer/my-classes','/dashboard/trainer/add-forum','/dashboard/trainer/my-posts','/dashboard/admin','/dashboard/admin/users','/dashboard/admin/applied-trainers','/dashboard/admin/trainers','/dashboard/admin/classes','/dashboard/admin/add-forum','/dashboard/admin/transactions','/dashboard/admin/forum-management','/dashboard/admin/settings'],
 };
