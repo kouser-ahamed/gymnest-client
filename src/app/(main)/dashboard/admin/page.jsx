@@ -40,11 +40,11 @@ const AdminDashboardPage = async () => {
 
   const adminOverviewData = await response.json();
 
-  if (!response.ok) {
-    throw new Error(
-      adminOverviewData?.message || "Failed to load admin dashboard."
-    );
-  }
+  // if (!response.ok) {
+  //   throw new Error(
+  //     adminOverviewData?.message || "Failed to load admin dashboard."
+  //   );
+  // }
 
   return <AdminOverview user={user} adminOverviewData={adminOverviewData} />;
 };

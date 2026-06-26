@@ -39,11 +39,11 @@ const TrainerDashboardPage = async () => {
 
   const trainerOverviewData = await response.json();
 
-  if (!response.ok) {
-    throw new Error(
-      trainerOverviewData?.message || "Failed to load trainer dashboard.",
-    );
-  }
+  // if (!response.ok) {
+  //   throw new Error(
+  //     trainerOverviewData?.message || "Failed to load trainer dashboard.",
+  //   );
+  // }
 
   return (
     <TrainerOverview user={user} trainerOverviewData={trainerOverviewData} />

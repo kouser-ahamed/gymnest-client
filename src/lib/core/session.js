@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { auth } from "../auth";
+import { redirect } from "next/navigation";
 
 
 // server side function to get the user session
@@ -9,4 +10,15 @@ export const getUserSession = async () => {
     });
 
     return session?.user || null;
+}
+
+export const requireRole = async(role)=> {
+    const user = await getUserSession();
+
+    if(user.role !== role) {
+       return redirect("/unauthorized");
+    }
+
+    
+
 }
