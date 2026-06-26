@@ -1,4 +1,6 @@
 import { getUserSession } from "@/lib/core/session";
+import { getTokenServer } from "@/lib/getTokenServer";
+
 
 const getItemId = (item) => {
   if (typeof item?._id === "string") return item._id;
@@ -91,6 +93,7 @@ const TransactionMobileCard = ({ item }) => {
 
 const TransactionsPage = async () => {
   const user = await getUserSession();
+  const token = await getTokenServer(); // Replace with your method to retrieve the token
 
   let transactions = [];
 
@@ -100,6 +103,9 @@ const TransactionsPage = async () => {
       {
         method: "GET",
         cache: "no-store",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
     );
 

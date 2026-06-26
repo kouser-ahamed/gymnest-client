@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { AlertDialog, Button } from "@heroui/react";
 import { toast } from "react-toastify";
+import { getTokenClient } from "@/lib/getTokenClient";
+
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
@@ -36,6 +38,8 @@ const DemoteTrainerAlert = ({
 
     try {
       setLoadingId(`${trainerId}-demote`);
+      const { data:tokenData } = await getTokenClient();
+
 
       const response = await fetch(
         `${apiBaseUrl}/api/admin/trainers/${trainerId}/demote`,
@@ -43,6 +47,7 @@ const DemoteTrainerAlert = ({
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenData?.token}`,
           },
           body: JSON.stringify({
             actorId: currentUser?.id,

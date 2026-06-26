@@ -13,6 +13,8 @@ import {
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DeleteForumPostModal from "./DeleteForumPostModal";
+import { getTokenClient } from "@/lib/getTokenClient";
+
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
@@ -100,11 +102,15 @@ const AdminForumManagementClient = ({ currentUser, posts = [] }) => {
         actorId: currentUser?.id || "",
         actorEmail: currentUser?.email || "",
       });
+      const { data: tokenData } = await getTokenClient();
 
       const response = await fetch(
         `${apiBaseUrl}/api/admin/forum-posts/${postId}?${queryParams.toString()}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${tokenData?.token}`,
+          },
         },
       );
 

@@ -6,6 +6,8 @@ import Image from "next/image";
 import { ShieldCheck, PersonPlus } from "@gravity-ui/icons";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getTokenClient } from "@/lib/getTokenClient";
+
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
@@ -72,9 +74,13 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
 
   const handleStatusChange = async (targetUser, nextStatus) => {
     const userId = getUserId(targetUser);
+    
 
     try {
       setLoadingId(`${userId}-${nextStatus}`);
+      const { data:tokenData } = await getTokenClient();
+
+      
 
       const response = await fetch(
         `${apiBaseUrl}/api/admin/users/${userId}/status`,
@@ -82,6 +88,7 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenData?.token}`,
           },
           body: JSON.stringify({
             status: nextStatus,
@@ -121,6 +128,7 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
 
     try {
       setLoadingId(`${userId}-${nextRole}`);
+      const { data:tokenData } = await getTokenClient();
 
       const response = await fetch(
         `${apiBaseUrl}/api/admin/users/${userId}/role`,
@@ -128,6 +136,7 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenData?.token}`,
           },
           body: JSON.stringify({
             role: nextRole,

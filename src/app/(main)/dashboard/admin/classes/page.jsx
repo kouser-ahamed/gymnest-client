@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import ManageClassesTable from "@/components/dashboard/admin/ManageClassesTable";
+import { getTokenServer } from "@/lib/getTokenServer";
 
 const ManageClassesPage = async () => {
   const session = await auth.api.getSession({
@@ -22,12 +23,16 @@ const ManageClassesPage = async () => {
       </section>
     );
   }
+  const token = await getTokenServer(); // Replace with your method to retrieve the token
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/classes`,
     {
       method: "GET",
       cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
   );
 

@@ -7,6 +7,7 @@ import { Check, Xmark, Magnifier } from "@gravity-ui/icons";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdminDeleteClassAlert from "@/components/dashboard/admin/AdminDeleteClassAlert";
+import { getTokenClient } from "@/lib/getTokenClient";
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
@@ -99,6 +100,7 @@ const ManageClassesTable = ({ classes = [] }) => {
 
   const handleStatusChange = async (classItem, nextStatus) => {
     const classId = getClassId(classItem);
+    const { data: tokenData } = await getTokenClient();
 
     try {
       setLoadingId(`${classId}-${nextStatus}`);
@@ -109,6 +111,7 @@ const ManageClassesTable = ({ classes = [] }) => {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenData?.token}`,
           },
           body: JSON.stringify({
             status: nextStatus,

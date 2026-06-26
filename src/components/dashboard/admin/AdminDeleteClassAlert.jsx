@@ -3,6 +3,7 @@
 import { AlertDialog, Button } from "@heroui/react";
 import { TrashBin } from "@gravity-ui/icons";
 import { toast } from "react-toastify";
+import { getTokenClient } from "@/lib/getTokenClient";
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
@@ -23,6 +24,7 @@ const AdminDeleteClassAlert = ({
   const isDeleting = loadingId === `${classId}-delete`;
 
   const handleAdminDeleteClass = async () => {
+    const { data: tokenData } = await getTokenClient();
     try {
       setLoadingId(`${classId}-delete`);
 
@@ -30,6 +32,9 @@ const AdminDeleteClassAlert = ({
         `${apiBaseUrl}/api/admin/classes/${classId}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${tokenData?.token}`,
+          },
         },
       );
 

@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import AppliedTrainersTable from "@/components/dashboard/admin/AppliedTrainersTable";
+import { getTokenServer } from "@/lib/getTokenServer";
 
 const AppliedTrainersPage = async () => {
   const session = await auth.api.getSession({
@@ -22,12 +23,16 @@ const AppliedTrainersPage = async () => {
       </section>
     );
   }
+  const token = await getTokenServer();
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/applied-trainers?status=Pending`,
     {
       method: "GET",
       cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
   );
 

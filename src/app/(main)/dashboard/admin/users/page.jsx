@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import ManageUsersTable from "@/components/dashboard/admin/ManageUsersTable";
+import { getTokenServer } from "@/lib/getTokenServer";
 
 const ManageUsersPage = async () => {
   const session = await auth.api.getSession({
@@ -23,10 +24,15 @@ const ManageUsersPage = async () => {
     );
   }
 
+  const token = await getTokenServer();
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users`,
     {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       cache: "no-store",
     }
   );

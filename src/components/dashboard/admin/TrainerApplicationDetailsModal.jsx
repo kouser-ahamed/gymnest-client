@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { AlertDialog, Button } from "@heroui/react";
 import { toast } from "react-toastify";
+import { getTokenClient } from "@/lib/getTokenClient";
+
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
@@ -42,6 +44,8 @@ const TrainerApplicationDetailsModal = ({
   const handleApprove = async () => {
     try {
       setLoadingId(`${applicationId}-approve`);
+      const { data:tokenData } = await getTokenClient();
+
 
       const response = await fetch(
         `${apiBaseUrl}/api/admin/applied-trainers/${applicationId}/approve`,
@@ -49,6 +53,7 @@ const TrainerApplicationDetailsModal = ({
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenData?.token}`,
           },
           body: JSON.stringify({
             actorId: currentUser?.id,
@@ -91,6 +96,9 @@ const TrainerApplicationDetailsModal = ({
 
     try {
       setLoadingId(`${applicationId}-reject`);
+      const { data:tokenData } = await getTokenClient();
+
+
 
       const response = await fetch(
         `${apiBaseUrl}/api/admin/applied-trainers/${applicationId}/reject`,
@@ -98,6 +106,7 @@ const TrainerApplicationDetailsModal = ({
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenData?.token}`,
           },
           body: JSON.stringify({
             feedback: feedback.trim(),

@@ -1,6 +1,8 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import AdminOverview from "@/components/dashboard/admin/AdminOverview";
+import { getTokenServer } from "@/lib/getTokenServer";
+
 
 const AdminDashboardPage = async () => {
   const session = await auth.api.getSession({
@@ -23,10 +25,15 @@ const AdminDashboardPage = async () => {
     );
   }
 
+  const token = await getTokenServer();
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin-overview`,
     {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       cache: "no-store",
     }
   );

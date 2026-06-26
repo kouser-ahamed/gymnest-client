@@ -1,13 +1,16 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import TrainerManageTable from "@/components/dashboard/admin/TrainerManageTable";
+import { getTokenServer } from "@/lib/getTokenServer";
 
 const TrainerManagePage = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+  
 
   const user = session?.user;
+  const token = await getTokenServer(); // Replace with your method to retrieve the token
 
   if (!user?.id) {
     return (
@@ -22,12 +25,16 @@ const TrainerManagePage = async () => {
       </section>
     );
   }
+  
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/trainers/active`,
     {
       method: "GET",
       cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
   );
 
