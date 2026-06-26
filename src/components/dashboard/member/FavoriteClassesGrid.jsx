@@ -7,11 +7,14 @@ import { Heart, PersonWorker, Star, TrashBin } from "@gravity-ui/icons";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import { getTokenClient } from "@/lib/getTokenClient";
+
 const getItemId = (item) => {
   if (typeof item?._id === "string") return item._id;
   if (item?._id?.$oid) return item._id.$oid;
   return item?._id?.toString?.() || item?.classId;
 };
+
 
 const FavoriteClassesGrid = ({ favoriteClasses = [], user }) => {
   const [favorites, setFavorites] = useState(favoriteClasses);
@@ -21,10 +24,17 @@ const FavoriteClassesGrid = ({ favoriteClasses = [], user }) => {
     try {
       setRemovingId(item?.classId);
 
+    
+
+       const { data: tokenData } = await getTokenClient();
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/favorite-classes?classId=${item?.classId}&userId=${user?.id}&email=${user?.email}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${tokenData?.token}`,
+          },
         }
       );
 

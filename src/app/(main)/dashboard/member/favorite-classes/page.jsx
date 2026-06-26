@@ -2,19 +2,27 @@ import FavoriteClassesGrid from "@/components/dashboard/member/FavoriteClassesGr
 import { getUserSession } from "@/lib/core/session";
 import { redirect } from "next/navigation";
 import React from "react";
+import { getTokenServer } from "@/lib/getTokenServer";
 
 const FavoriteClassesPage = async () => {
   const user = await getUserSession();
 
   if (!user?.id) {
     redirect("/auth/signin");
+
+    
   }
+
+  const token = await getTokenServer();
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/favorite-classes?userId=${user?.id}&email=${user?.email}`,
     {
-      cache: "no-store",
+     method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
+  }
   );
 
   if (!response.ok) {

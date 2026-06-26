@@ -23,6 +23,9 @@ import {
   Star,
 } from "@gravity-ui/icons";
 
+import { getTokenClient } from "@/lib/getTokenClient";
+const { data: tokenData } = await getTokenClient();
+
 const specialties = [
   { id: "Yoga", label: "Yoga" },
   { id: "Weights", label: "Weights" },
@@ -97,7 +100,9 @@ const ApplicationStatusCard = ({ application, onNewApply }) => {
       <div
         className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border ${statusStyle.iconStyle}`}
       >
-        {status === "Rejected" || status === "Demoted" || status === "Demote" ? (
+        {status === "Rejected" ||
+        status === "Demoted" ||
+        status === "Demote" ? (
           <CircleXmark className="h-9 w-9" />
         ) : (
           <CircleCheck className="h-9 w-9" />
@@ -183,7 +188,10 @@ const ApplyTrainerForm = ({ user }) => {
             user?.id || "",
           )}&email=${encodeURIComponent(user?.email || "")}`,
           {
-            cache: "no-store",
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${tokenData.token}`,
+            },
           },
         );
 
@@ -251,6 +259,7 @@ const ApplyTrainerForm = ({ user }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenData.token}`
           },
           body: JSON.stringify(applyData),
         },
