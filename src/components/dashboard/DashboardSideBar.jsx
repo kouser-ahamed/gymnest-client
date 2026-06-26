@@ -28,14 +28,15 @@ import { signOut } from "@/lib/auth-client";
 
 export default function DashboardSideBar({ user }) {
   const pathname = usePathname();
-  const route = useRouter();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const roll = user?.role || "member";
 
   const handleLogout = async () => {
     await signOut();
-    route.push("/");
+    router.refresh();
+    // route.push("/");
   };
 
   const dashboardItems = {
