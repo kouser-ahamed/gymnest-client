@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Button, Card } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -87,6 +88,74 @@ const getFeaturedClasses = async () => {
     .slice(0, 3);
 };
 
+const FeaturedClassesLoader = () => {
+  return (
+    <section className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="animate-pulse">
+          <div className="mb-3 h-4 w-40 rounded-full bg-gradient-to-r from-fuchsia-200 via-pink-200 to-orange-200 dark:from-fuchsia-500/20 dark:via-pink-500/20 dark:to-orange-400/20" />
+
+          <div className="h-10 w-80 max-w-full rounded-2xl bg-gradient-to-r from-slate-200 via-pink-100 to-orange-100 dark:from-white/10 dark:via-pink-500/10 dark:to-orange-400/10" />
+
+          <div className="mt-4 h-4 w-full max-w-2xl rounded-full bg-slate-200 dark:bg-white/10" />
+
+          <div className="mt-2 h-4 w-full max-w-xl rounded-full bg-slate-100 dark:bg-white/10" />
+        </div>
+
+        <div className="h-11 w-40 animate-pulse rounded-full bg-pink-100 dark:bg-pink-500/20" />
+      </div>
+
+      <div className="mb-8 flex items-center justify-center">
+        <div className="flex items-center gap-3 rounded-full border border-pink-500/20 bg-white/80 px-5 py-3 shadow-lg shadow-pink-500/10 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-pink-200 border-t-pink-500 dark:border-white/10 dark:border-t-pink-400" />
+
+          <span className="text-xs font-black uppercase tracking-[0.2em] text-pink-500 dark:text-pink-300">
+            Loading Classes
+          </span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div
+            key={index}
+            className="overflow-hidden rounded-[1.6rem] border border-pink-200/70 bg-gradient-to-br from-white via-pink-50/60 to-orange-50/50 shadow-sm dark:border-white/10 dark:bg-gradient-to-br dark:from-[#101624] dark:via-[#141827] dark:to-[#261425]"
+          >
+            <div className="mx-3 mt-3 h-52 animate-pulse rounded-[1.25rem] bg-gradient-to-br from-fuchsia-100 via-pink-100 to-orange-100 dark:from-fuchsia-500/20 dark:via-pink-500/20 dark:to-orange-400/20" />
+
+            <div className="space-y-5 p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 space-y-3">
+                  <div className="h-6 w-3/4 animate-pulse rounded-full bg-slate-200 dark:bg-white/10" />
+                  <div className="h-4 w-40 animate-pulse rounded-full bg-slate-100 dark:bg-white/10" />
+                </div>
+
+                <div className="h-8 w-24 animate-pulse rounded-full bg-pink-100 dark:bg-pink-500/20" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="h-20 animate-pulse rounded-2xl border border-pink-100/80 bg-white/80 dark:border-white/10 dark:bg-[#070b14]/80" />
+                <div className="h-20 animate-pulse rounded-2xl border border-pink-100/80 bg-white/80 dark:border-white/10 dark:bg-[#070b14]/80" />
+              </div>
+
+              <div className="h-24 animate-pulse rounded-2xl border border-pink-100/80 bg-gradient-to-br from-white via-pink-50/80 to-orange-50/60 dark:border-white/10 dark:from-[#070b14] dark:via-[#120d18] dark:to-pink-500/10" />
+            </div>
+
+            <div className="flex items-center justify-between border-t border-pink-100/80 bg-white/45 p-5 dark:border-white/10 dark:bg-black/10">
+              <div className="space-y-2">
+                <div className="h-3 w-14 animate-pulse rounded-full bg-slate-200 dark:bg-white/10" />
+                <div className="h-7 w-24 animate-pulse rounded-full bg-pink-100 dark:bg-pink-500/20" />
+              </div>
+
+              <div className="h-11 w-36 animate-pulse rounded-full bg-gradient-to-r from-fuchsia-200 via-pink-200 to-orange-200 dark:from-fuchsia-500/20 dark:via-pink-500/20 dark:to-orange-400/20" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
 const FeaturedClassCard = ({ classItem, isLoggedIn }) => {
   const classId = getClassId(classItem);
   const bookingCount = getBookingCount(classItem);
@@ -109,7 +178,6 @@ const FeaturedClassCard = ({ classItem, isLoggedIn }) => {
 
   return (
     <Card className="group overflow-hidden rounded-[1.6rem] border border-pink-200/70 bg-gradient-to-br from-white via-pink-50/60 to-orange-50/50 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-pink-500/40 hover:shadow-2xl hover:shadow-pink-500/15 dark:border-white/10 dark:bg-gradient-to-br dark:from-[#101624] dark:via-[#141827] dark:to-[#261425] dark:hover:border-pink-500/40 dark:hover:shadow-pink-500/20">
-      {/* Image */}
       <div className="relative mx-3 mt-3 h-52 w-[calc(100%-1.5rem)] overflow-hidden rounded-[1.25rem] bg-pink-50 dark:bg-[#070b14]">
         {image ? (
           <Image
@@ -127,7 +195,6 @@ const FeaturedClassCard = ({ classItem, isLoggedIn }) => {
 
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-transparent" />
 
-        {/* Category Badge */}
         <div className="absolute left-4 top-4">
           <span className="rounded-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-white shadow-lg shadow-pink-500/25">
             {category || "Fitness"}
@@ -143,7 +210,6 @@ const FeaturedClassCard = ({ classItem, isLoggedIn }) => {
                 {className || "Class Name"}
               </Card.Title>
 
-              {/* Trainer Name */}
               <div className="mt-2 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-pink-500/10 text-pink-600 dark:bg-pink-500/15 dark:text-pink-300">
                   <PersonWorker className="h-4 w-4" />
@@ -235,7 +301,7 @@ const FeaturedClassCard = ({ classItem, isLoggedIn }) => {
   );
 };
 
-const FeaturedClasses = async () => {
+const FeaturedClassesContent = async () => {
   const featuredClasses = await getFeaturedClasses();
   const user = await getUserSession();
   const isLoggedIn = !!user;
@@ -293,6 +359,14 @@ const FeaturedClasses = async () => {
         </div>
       )}
     </section>
+  );
+};
+
+const FeaturedClasses = () => {
+  return (
+    <Suspense fallback={<FeaturedClassesLoader />}>
+      <FeaturedClassesContent />
+    </Suspense>
   );
 };
 

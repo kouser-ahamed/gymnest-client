@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import {
   Comments,
@@ -76,7 +77,70 @@ const getLatestForumPosts = async () => {
     .slice(0, 3);
 };
 
-const LatestForumPosts = async () => {
+const LatestForumPostsLoader = () => {
+  return (
+    <section className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="animate-pulse">
+          <div className="mb-3 h-4 w-44 rounded-full bg-gradient-to-r from-fuchsia-200 via-pink-200 to-orange-200 dark:from-fuchsia-500/20 dark:via-pink-500/20 dark:to-orange-400/20" />
+
+          <div className="h-10 w-96 max-w-full rounded-2xl bg-gradient-to-r from-slate-200 via-pink-100 to-orange-100 dark:from-white/10 dark:via-pink-500/10 dark:to-orange-400/10" />
+
+          <div className="mt-4 h-4 w-full max-w-2xl rounded-full bg-slate-200 dark:bg-white/10" />
+
+          <div className="mt-2 h-4 w-full max-w-xl rounded-full bg-slate-100 dark:bg-white/10" />
+        </div>
+
+        <div className="h-11 w-40 animate-pulse rounded-full bg-pink-100 dark:bg-pink-500/20" />
+      </div>
+
+      <div className="mb-8 flex items-center justify-center">
+        <div className="flex items-center gap-3 rounded-full border border-pink-500/20 bg-white/80 px-5 py-3 shadow-lg shadow-pink-500/10 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-pink-200 border-t-pink-500 dark:border-white/10 dark:border-t-pink-400" />
+
+          <span className="text-xs font-black uppercase tracking-[0.2em] text-pink-500 dark:text-pink-300">
+            Loading Posts
+          </span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <article
+            key={index}
+            className="flex min-h-[470px] flex-col overflow-hidden rounded-[1.6rem] border border-pink-200/70 bg-gradient-to-br from-white via-pink-50/50 to-orange-50/40 shadow-xl shadow-slate-900/5 dark:border-white/10 dark:bg-gradient-to-br dark:from-[#101624] dark:via-[#141827] dark:to-[#261425]"
+          >
+            <div className="mx-3 mt-3 h-64 animate-pulse rounded-[1.25rem] bg-gradient-to-br from-fuchsia-100 via-pink-100 to-orange-100 dark:from-fuchsia-500/20 dark:via-pink-500/20 dark:to-orange-400/20" />
+
+            <div className="flex flex-1 flex-col p-5">
+              <div className="space-y-3">
+                <div className="h-7 w-4/5 animate-pulse rounded-full bg-slate-200 dark:bg-white/10" />
+                <div className="h-7 w-3/5 animate-pulse rounded-full bg-slate-100 dark:bg-white/10" />
+              </div>
+
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="h-16 animate-pulse rounded-2xl border border-pink-100/80 bg-white/80 dark:border-white/10 dark:bg-[#070b14]/80" />
+                <div className="h-16 animate-pulse rounded-2xl border border-pink-100/80 bg-white/80 dark:border-white/10 dark:bg-[#070b14]/80" />
+              </div>
+
+              <div className="mt-auto">
+                <div className="mt-5 grid grid-cols-3 gap-2">
+                  <div className="h-11 animate-pulse rounded-2xl border border-pink-500/20 bg-pink-500/10" />
+                  <div className="h-11 animate-pulse rounded-2xl border border-red-500/20 bg-red-500/10" />
+                  <div className="h-11 animate-pulse rounded-2xl border border-orange-400/20 bg-orange-400/10" />
+                </div>
+
+                <div className="mt-5 h-11 animate-pulse rounded-full bg-gradient-to-r from-fuchsia-200 via-pink-200 to-orange-200 dark:from-fuchsia-500/20 dark:via-pink-500/20 dark:to-orange-400/20" />
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const LatestForumPostsContent = async () => {
   const posts = await getLatestForumPosts();
 
   return (
@@ -223,6 +287,14 @@ const LatestForumPosts = async () => {
         </div>
       )}
     </section>
+  );
+};
+
+const LatestForumPosts = () => {
+  return (
+    <Suspense fallback={<LatestForumPostsLoader />}>
+      <LatestForumPostsContent />
+    </Suspense>
   );
 };
 
