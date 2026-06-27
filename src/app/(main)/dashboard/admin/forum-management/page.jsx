@@ -25,7 +25,7 @@ const AdminForumManagemenPage = async () => {
     {
       cache: "no-store",
       headers: {
-        Authorization: `Bearer ${token}`,
+        authorization: `Bearer ${token}`,
       },
     },
   );

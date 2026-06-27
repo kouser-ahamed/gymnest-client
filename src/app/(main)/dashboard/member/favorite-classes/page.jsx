@@ -20,7 +20,7 @@ const FavoriteClassesPage = async () => {
     {
      method: "GET",
     headers: {
-      Authorization: `Bearer ${token}`,
+      authorization: `Bearer ${token}`,
     },
   }
   );

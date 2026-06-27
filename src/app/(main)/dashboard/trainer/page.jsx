@@ -32,7 +32,7 @@ const TrainerDashboardPage = async () => {
       method: "GET",
       cache: "no-store",
       headers: {
-        Authorization: `Bearer ${token}`,
+        authorization: `Bearer ${token}`,
       },
     },
   );

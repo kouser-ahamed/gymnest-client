@@ -30,7 +30,7 @@ const DeleteClassAlert = ({
       const res = await fetch(`${apiBaseUrl}/api/classes/${classId}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${tokenData?.token}`,
+          authorization: `Bearer ${tokenData?.token}`,
         },
       });
 

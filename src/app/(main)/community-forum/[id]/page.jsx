@@ -27,7 +27,7 @@ const CommunityForumDetailsPage = async ({ params }) => {
      method: "GET",
      cache: "no-store",
      headers: {
-       Authorization: `Bearer ${token}`,
+       authorization: `Bearer ${token}`,
      },
    },
   );
@@ -65,7 +65,7 @@ const CommunityForumDetailsPage = async ({ params }) => {
      method: "GET",
      cache: "no-store",
      headers: {
-       Authorization: `Bearer ${token}`,
+       authorization: `Bearer ${token}`,
      },
    },
   );
@@ -84,7 +84,7 @@ const CommunityForumDetailsPage = async ({ params }) => {
     method: "GET",
     cache: "no-store",
     headers: {
-      Authorization: `Bearer ${token}`,
+      authorization: `Bearer ${token}`,
     },
   },
   );

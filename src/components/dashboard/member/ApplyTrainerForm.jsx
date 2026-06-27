@@ -190,7 +190,7 @@ const ApplyTrainerForm = ({ user }) => {
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${tokenData.token}`,
+              authorization: `Bearer ${tokenData.token}`,
             },
           },
         );
@@ -259,7 +259,7 @@ const ApplyTrainerForm = ({ user }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${tokenData.token}`
+            authorization: `Bearer ${tokenData.token}`
           },
           body: JSON.stringify(applyData),
         },

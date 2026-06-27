@@ -53,7 +53,7 @@ const TrainerApplicationDetailsModal = ({
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${tokenData?.token}`,
+            authorization: `Bearer ${tokenData?.token}`,
           },
           body: JSON.stringify({
             actorId: currentUser?.id,
@@ -106,7 +106,7 @@ const TrainerApplicationDetailsModal = ({
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${tokenData?.token}`,
+            authorization: `Bearer ${tokenData?.token}`,
           },
           body: JSON.stringify({
             feedback: feedback.trim(),

@@ -41,7 +41,7 @@ const ViewStudentDetails = ({
           method: "GET",
           cache: "no-store",
           headers: {
-            Authorization: `Bearer ${tokenData?.token}`,
+            authorization: `Bearer ${tokenData?.token}`,
           },
         },
       );

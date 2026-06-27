@@ -131,7 +131,7 @@ const ForumPostForm = ({ user, role, redirectPath }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${tokenData?.token}`,
+            authorization: `Bearer ${tokenData?.token}`,
           },
           body: JSON.stringify(newPost),
         },

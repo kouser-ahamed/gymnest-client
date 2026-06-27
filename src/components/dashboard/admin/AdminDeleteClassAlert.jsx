@@ -33,7 +33,7 @@ const AdminDeleteClassAlert = ({
         {
           method: "DELETE",
           headers: {
-            Authorization: `Bearer ${tokenData?.token}`,
+            authorization: `Bearer ${tokenData?.token}`,
           },
         },
       );

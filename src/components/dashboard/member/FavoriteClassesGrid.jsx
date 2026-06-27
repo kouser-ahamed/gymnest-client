@@ -33,7 +33,7 @@ const FavoriteClassesGrid = ({ favoriteClasses = [], user }) => {
         {
           method: "DELETE",
           headers: {
-            Authorization: `Bearer ${tokenData?.token}`,
+            authorization: `Bearer ${tokenData?.token}`,
           },
         }
       );

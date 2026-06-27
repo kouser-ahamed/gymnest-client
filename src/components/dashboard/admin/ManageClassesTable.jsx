@@ -111,7 +111,7 @@ const ManageClassesTable = ({ classes = [] }) => {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${tokenData?.token}`,
+            authorization: `Bearer ${tokenData?.token}`,
           },
           body: JSON.stringify({
             status: nextStatus,

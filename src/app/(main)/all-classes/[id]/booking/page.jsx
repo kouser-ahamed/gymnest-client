@@ -47,7 +47,7 @@ const BookingPage = async ({ params }) => {
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+        authorization: `Bearer ${token}`,
       },
       cache: "no-store",
     },

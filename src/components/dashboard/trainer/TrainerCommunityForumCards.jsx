@@ -56,7 +56,7 @@ const TrainerCommunityForumCards = ({ posts = [], currentUser = null, onDelete }
         {
           method: "DELETE",
           headers: {
-            Authorization: `Bearer ${tokenData?.token}`,
+            authorization: `Bearer ${tokenData?.token}`,
           },
         },
       );

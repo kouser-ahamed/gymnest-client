@@ -33,7 +33,7 @@ const ClassDetailsPage = async ({ params }) => {
       method: "GET",
       cache: "no-store",
       headers: {
-        Authorization: `Bearer ${token}`,
+        authorization: `Bearer ${token}`,
       },
     },
   );
