@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
-import { Lock, House, ArrowLeft,FromSquare } from "@gravity-ui/icons";
+import { Lock, House, ArrowLeft } from "@gravity-ui/icons";
 
 const UnauthorizedPage = () => {
   const router = useRouter();
@@ -33,9 +32,8 @@ const UnauthorizedPage = () => {
 
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button
-            as={Link}
-            href="/"
             size="lg"
+            onPress={() => router.push("/")}
             className="w-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 font-bold text-white shadow-lg shadow-pink-500/25 sm:w-auto"
           >
             <House className="h-5 w-5" />
@@ -53,10 +51,9 @@ const UnauthorizedPage = () => {
           </Button>
 
           <Button
-            as={Link}
-            href="/auth/signin"
             size="lg"
             variant="flat"
+            onPress={() => router.push("/auth/signin")}
             className="w-full font-bold text-slate-700 dark:text-slate-200 sm:w-auto"
           >
             Login Again
