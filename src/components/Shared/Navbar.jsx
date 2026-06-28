@@ -129,7 +129,7 @@ export default function Navbar() {
                 <div className="flex min-w-0 items-center gap-3">
                   <Avatar className="h-8 w-8 shrink-0">
                     {user?.image ? (
-                      <Avatar.Image alt={userName} src={user.image} />
+                      <Avatar.Image referrerPolicy="no-referrer" alt={userName} src={user.image} />
                     ) : null}
                     <Avatar.Fallback>{userInitial}</Avatar.Fallback>
                   </Avatar>
@@ -150,7 +150,7 @@ export default function Navbar() {
                     <div className="flex items-center gap-3">
                       <Avatar className="h-10 w-10 shrink-0">
                         {user?.image ? (
-                          <Avatar.Image alt={userName} src={user.image} />
+                          <Avatar.Image referrerPolicy="no-referrer" alt={userName} src={user.image} />
                         ) : null}
                         <Avatar.Fallback>{userInitial}</Avatar.Fallback>
                       </Avatar>
@@ -232,7 +232,7 @@ export default function Navbar() {
                 <div className="flex items-center gap-3">
                   <Avatar className="h-12 w-12 shrink-0">
                     {user?.image ? (
-                      <Avatar.Image alt={userName} src={user.image} />
+                      <Avatar.Image referrerPolicy="no-referrer" alt={userName} src={user.image} />
                     ) : null}
                     <Avatar.Fallback>{userInitial}</Avatar.Fallback>
                   </Avatar>
