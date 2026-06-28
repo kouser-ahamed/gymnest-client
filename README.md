@@ -564,6 +564,7 @@ The **backend also validates** user block status on every state-changing API cal
 | ![](./public/assets/gymnestUi/i14.png) |
 | ![](./public/assets/gymnestUi/i15.png) |
 | ![](./public/assets/gymnestUi/i16.png) |
+| ![](./public/assets/gymnestUi/16.png) |
 
 ---
 
@@ -575,7 +576,7 @@ A full-stack web development capstone project built with **JavaScript**, **React
 
 ---
 
-## 📝 Submission Information
+## 📝 Project Information: 
 
 ```
 Project Name  :  GymNest — Fitness & Gym Management Platform
