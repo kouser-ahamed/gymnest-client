@@ -7,7 +7,7 @@ import { Button, Input } from "@heroui/react";
 import { CircleCheck, CircleXmark, Eye, EyeSlash } from "@gravity-ui/icons";
 import { authClient } from "@/lib/auth-client";
 import { FcGoogle } from "react-icons/fc";
-import { DEMO_CREDENTIALS, getDashboardRouteByRole } from "@/lib/demoMode";
+import { DEMO_CREDENTIALS, resolvePostLoginRedirect } from "@/lib/demoMode";
 
 // 1. This fallback skeleton renders on the server while the client loads the query params
 const LoginPageLoading = () => {
@@ -27,7 +27,14 @@ const LoginPageLoading = () => {
 const LoginPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/";
+  const rawCallbackUrl =
+    searchParams.get("callbackUrl") ||
+    searchParams.get("callbackURL") ||
+    searchParams.get("redirect") ||
+    searchParams.get("from") ||
+    searchParams.get("returnUrl") ||
+    "/";
+  const redirectTo = rawCallbackUrl;
 
   const [formData, setFormData] = useState({
     email: "",
@@ -40,7 +47,7 @@ const LoginPageContent = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [demoRoleLoading, setDemoRoleLoading] = useState("");
 
-  // 1. Standard Form Login: Inspect user role and route to role-based dashboard
+  // 1. Standard Form Login: Inspect user role and route to callback URL or role dashboard
   const handleNormalLogin = async (e) => {
     e.preventDefault();
     setMessage({ type: "", text: "" });
@@ -93,14 +100,14 @@ const LoginPageContent = () => {
         }
       }
 
-      const targetRoute = getDashboardRouteByRole(userRole);
+      const targetRoute = resolvePostLoginRedirect(searchParams, userRole);
 
       setMessage({
         type: "success",
-        text: "Logged in successfully! Redirecting to dashboard...",
+        text: "Logged in successfully! Redirecting...",
       });
 
-      // Immediately navigate to the matched role dashboard route
+      // Immediately navigate to the destination route
       router.replace(targetRoute);
       router.refresh();
     } catch (error) {
@@ -114,7 +121,7 @@ const LoginPageContent = () => {
 
   const handleLogin = handleNormalLogin;
 
-  // 2. Guest / Demo Login: Route immediately to matched dashboard
+  // 2. Guest / Demo Login: Route immediately to destination callback URL if allowed, or role dashboard
   const handleGuestLogin = async (roleKey) => {
     const creds = DEMO_CREDENTIALS[roleKey];
     if (!creds) return;
@@ -144,14 +151,15 @@ const LoginPageContent = () => {
         return;
       }
 
-      const targetRoute = getDashboardRouteByRole(creds.role || roleKey);
+      const role = creds.role || roleKey;
+      const targetRoute = resolvePostLoginRedirect(searchParams, role);
 
       setMessage({
         type: "success",
-        text: `Signed in as ${creds.label}! Redirecting to dashboard...`,
+        text: `Signed in as ${creds.label}! Redirecting...`,
       });
 
-      // Route immediately based on selected demo role
+      // Route immediately based on callback URL or role default dashboard
       router.replace(targetRoute);
       router.refresh();
     } catch (error) {
@@ -166,16 +174,27 @@ const LoginPageContent = () => {
 
   const handleDemoLogin = handleGuestLogin;
 
-  // 3. Google OAuth Login: Delegate callback to dedicated auth callback page
+  // 3. Google OAuth Login: Delegate callback to dedicated auth callback page with destination preservation
   const handleGoogleLogin = async () => {
     setMessage({ type: "", text: "" });
     setIsGoogleLoading(true);
 
     try {
-      const callbackURL =
+      const candidateParam =
+        searchParams.get("callbackUrl") ||
+        searchParams.get("callbackURL") ||
+        searchParams.get("redirect") ||
+        searchParams.get("from") ||
+        searchParams.get("returnUrl");
+
+      let callbackURL =
         typeof window !== "undefined"
           ? `${window.location.origin}/auth/callback`
           : "/auth/callback";
+
+      if (candidateParam) {
+        callbackURL += `?redirect=${encodeURIComponent(candidateParam)}`;
+      }
 
       await authClient.signIn.social({
         provider: "google",

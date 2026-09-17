@@ -93,3 +93,102 @@ export const getDashboardRouteByRole = (role) => {
   return "/dashboard/member";
 };
 
+/**
+ * Checks if a target path is allowed for a user role.
+ */
+export const isRouteAllowedForRole = (targetPath, role) => {
+  if (!targetPath || typeof targetPath !== "string") return false;
+
+  // Strip query parameters and hashes for permission checking
+  const path = targetPath.split("?")[0].split("#")[0].toLowerCase().trim();
+
+  // If path is empty, root, or an auth route, it is not a destination protected route
+  if (!path || path === "/" || path.startsWith("/auth/")) {
+    return false;
+  }
+
+  // Dashboard role-specific checks
+  if (path.startsWith("/dashboard/admin")) {
+    return role === "admin";
+  }
+
+  if (path.startsWith("/dashboard/trainer")) {
+    return role === "trainer";
+  }
+
+  if (path.startsWith("/dashboard/member")) {
+    return role === "member";
+  }
+
+  // Root /dashboard route
+  if (path === "/dashboard") {
+    return true;
+  }
+
+  // General authenticated routes (e.g. /all-classes/.../booking, /payment/..., /community-forum/...)
+  return true;
+};
+
+/**
+ * Resolves the destination URL after login:
+ * 1. Inspects destination callback URL parameters (callbackUrl, redirect, from, returnUrl).
+ * 2. If present, decodes and checks if user role has permission for that target route.
+ * 3. If authorized, returns the callback URL; otherwise falls back to the role's default dashboard.
+ */
+export const resolvePostLoginRedirect = (searchParamsOrUrl, role) => {
+  const defaultDashboard = getDashboardRouteByRole(role);
+
+  if (!searchParamsOrUrl) return defaultDashboard;
+
+  let candidate = "";
+
+  if (typeof searchParamsOrUrl === "string") {
+    candidate = searchParamsOrUrl;
+  } else if (typeof searchParamsOrUrl.get === "function") {
+    candidate =
+      searchParamsOrUrl.get("callbackUrl") ||
+      searchParamsOrUrl.get("callbackURL") ||
+      searchParamsOrUrl.get("redirect") ||
+      searchParamsOrUrl.get("from") ||
+      searchParamsOrUrl.get("returnUrl") ||
+      "";
+  }
+
+  if (!candidate) return defaultDashboard;
+
+  try {
+    candidate = decodeURIComponent(candidate.trim());
+  } catch (_) {
+    candidate = candidate.trim();
+  }
+
+  // Disallow external absolute URLs (e.g. https://, http://, //, ://) to prevent open redirects
+  if (
+    candidate.startsWith("http://") ||
+    candidate.startsWith("https://") ||
+    candidate.startsWith("//") ||
+    candidate.includes("://")
+  ) {
+    return defaultDashboard;
+  }
+
+  if (!candidate.startsWith("/")) {
+    candidate = "/" + candidate;
+  }
+
+  // Ensure candidate is a valid internal relative application path
+  if (!candidate || candidate === "/" || candidate.startsWith("//")) {
+    return defaultDashboard;
+  }
+
+  // Verify permission for target route
+  if (isRouteAllowedForRole(candidate, role)) {
+    return candidate;
+  }
+
+  // Fallback to role's default dashboard if route requires a different role
+  return defaultDashboard;
+};
+
+
+

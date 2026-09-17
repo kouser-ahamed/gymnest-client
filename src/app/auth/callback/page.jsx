@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import { getDashboardRouteByRole } from "@/lib/demoMode";
+import { resolvePostLoginRedirect } from "@/lib/demoMode";
 
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [statusText, setStatusText] = useState("Securing session and resolving role...");
   const hasRedirectedRef = useRef(false);
 
@@ -24,8 +25,8 @@ export default function AuthCallbackPage() {
         if (user && !isCancelled) {
           hasRedirectedRef.current = true;
           const role = user?.role || "member";
-          const targetRoute = getDashboardRouteByRole(role);
-          setStatusText(`Redirecting to ${role} dashboard...`);
+          const targetRoute = resolvePostLoginRedirect(searchParams, role);
+          setStatusText("Redirecting to destination...");
           router.replace(targetRoute);
           router.refresh();
           return;
@@ -42,8 +43,8 @@ export default function AuthCallbackPage() {
           if (retryUser) {
             hasRedirectedRef.current = true;
             const role = retryUser?.role || "member";
-            const targetRoute = getDashboardRouteByRole(role);
-            setStatusText(`Redirecting to ${role} dashboard...`);
+            const targetRoute = resolvePostLoginRedirect(searchParams, role);
+            setStatusText("Redirecting to destination...");
             router.replace(targetRoute);
             router.refresh();
             return;
@@ -54,7 +55,8 @@ export default function AuthCallbackPage() {
         if (!isCancelled && !hasRedirectedRef.current) {
           hasRedirectedRef.current = true;
           setStatusText("Redirecting to dashboard...");
-          router.replace("/dashboard/member");
+          const targetRoute = resolvePostLoginRedirect(searchParams, "member");
+          router.replace(targetRoute);
           router.refresh();
         }
       } catch (err) {
@@ -71,7 +73,7 @@ export default function AuthCallbackPage() {
     return () => {
       isCancelled = true;
     };
-  }, [router]);
+  }, [router, searchParams]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-white px-4 py-12 dark:bg-[#0c1220]">
@@ -91,5 +93,19 @@ export default function AuthCallbackPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-white px-4 dark:bg-[#0c1220]">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-pink-500/20 border-t-pink-500 dark:border-pink-400/20 dark:border-t-pink-400" />
+        </div>
+      }
+    >
+      <AuthCallbackContent />
+    </Suspense>
   );
 }
