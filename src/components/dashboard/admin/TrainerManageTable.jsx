@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Table } from "@heroui/react";
 import Image from "next/image";
 import { Magnifier } from "@gravity-ui/icons";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DemoteTrainerAlert from "@/components/dashboard/admin/DemoteTrainerAlert";
+import { isDemoAdmin } from "@/lib/demoMode";
 
 
 const getUserId = (item) => {
@@ -39,6 +40,15 @@ const TrainerManageTable = ({ currentUser, trainers = [] }) => {
   const [trainerList, setTrainerList] = useState(trainers);
   const [searchText, setSearchText] = useState("");
   const [loadingId, setLoadingId] = useState("");
+  const isGuestAdmin = isDemoAdmin(currentUser);
+
+  const getTrainerDisplayEmail = useCallback((item) => {
+    if (!item) return "";
+    if (isGuestAdmin) {
+      return "trainerguest@gmail.com";
+    }
+    return item?.email || "trainer@example.com";
+  }, [isGuestAdmin]);
 
   const filteredTrainers = useMemo(() => {
     const text = searchText.toLowerCase();
@@ -46,17 +56,19 @@ const TrainerManageTable = ({ currentUser, trainers = [] }) => {
     return trainerList.filter((item) => {
       const name = item?.name?.toLowerCase() || "";
       const email = item?.email?.toLowerCase() || "";
+      const maskedEmail = (isGuestAdmin ? getTrainerDisplayEmail(item) : "").toLowerCase();
       const role = item?.role?.toLowerCase() || "";
       const status = item?.status?.toLowerCase() || "";
 
       return (
         name.includes(text) ||
         email.includes(text) ||
+        maskedEmail.includes(text) ||
         role.includes(text) ||
         status.includes(text)
       );
     });
-  }, [trainerList, searchText]);
+  }, [trainerList, searchText, isGuestAdmin, getTrainerDisplayEmail]);
 
   const removeTrainerFromState = (trainerId) => {
     setTrainerList((prev) =>
@@ -159,7 +171,7 @@ const TrainerManageTable = ({ currentUser, trainers = [] }) => {
                         </h3>
 
                         <p className="mt-1 break-all text-sm text-slate-500 dark:text-slate-400">
-                          {item?.email || "trainer@example.com"}
+                          {getTrainerDisplayEmail(item)}
                         </p>
                       </div>
                     </div>
@@ -248,7 +260,7 @@ const TrainerManageTable = ({ currentUser, trainers = [] }) => {
 
                             <Table.Cell>
                               <span className="text-sm text-slate-600 dark:text-slate-300">
-                                {item?.email || "trainer@example.com"}
+                                {getTrainerDisplayEmail(item)}
                               </span>
                             </Table.Cell>
 

@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Button, Table } from "@heroui/react";
 import Image from "next/image";
 import { ShieldCheck, PersonPlus, TrashBin, CircleExclamation, Xmark } from "@gravity-ui/icons";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getTokenClient } from "@/lib/getTokenClient";
+import { isDemoAdmin, getMaskedUserEmail } from "@/lib/demoMode";
 
 
 const apiBaseUrl =
@@ -54,6 +55,15 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
 
   const currentUserId = currentUser?.id;
   const currentUserEmail = currentUser?.email;
+  const isGuestAdmin = isDemoAdmin(currentUser);
+
+  const getUserDisplayEmail = useCallback((item) => {
+    if (!item) return "";
+    if (isGuestAdmin) {
+      return getMaskedUserEmail(item, item?.role || "member");
+    }
+    return item?.email || "user@example.com";
+  }, [isGuestAdmin]);
 
   const filteredUsers = useMemo(() => {
     const text = searchText.toLowerCase();
@@ -61,10 +71,11 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
     return userList.filter((item) => {
       const name = item?.name?.toLowerCase() || "";
       const email = item?.email?.toLowerCase() || "";
+      const maskedEmail = (isGuestAdmin ? getUserDisplayEmail(item) : "").toLowerCase();
 
-      return name.includes(text) || email.includes(text);
+      return name.includes(text) || email.includes(text) || maskedEmail.includes(text);
     });
-  }, [userList, searchText]);
+  }, [userList, searchText, isGuestAdmin, getUserDisplayEmail]);
 
   const updateUserInState = (userId, updateData) => {
     setUserList((prev) =>
@@ -390,7 +401,7 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
                         </h3>
 
                         <p className="mt-1 break-all text-sm text-slate-500 dark:text-slate-400">
-                          {item?.email || "user@example.com"}
+                          {getUserDisplayEmail(item)}
                         </p>
                       </div>
                     </div>
@@ -468,7 +479,7 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
                                   </h3>
 
                                   <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                                    {item?.email || "user@example.com"}
+                                    {getUserDisplayEmail(item)}
                                   </p>
                                 </div>
                               </div>
@@ -579,7 +590,7 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
                     </div>
 
                     <p className="truncate text-xs text-slate-500 dark:text-slate-400">
-                      {userToDelete?.email || "No email available"}
+                      {getUserDisplayEmail(userToDelete)}
                     </p>
                   </div>
                 </div>

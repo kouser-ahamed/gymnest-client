@@ -20,6 +20,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getTokenClient } from "@/lib/getTokenClient";
+import { isDemoUser } from "@/lib/demoMode";
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
@@ -35,6 +36,9 @@ export default function SettingsView({ initialUser = null, role = "member" }) {
   // User state
   const [user, setUser] = useState(initialUser);
   const [isUserLoading, setIsUserLoading] = useState(!initialUser);
+
+  const isDemo = isDemoUser(user);
+  const displayedEmail = user?.email || "";
 
   // 1. Profile Edit Toggle State
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -157,6 +161,11 @@ export default function SettingsView({ initialUser = null, role = "member" }) {
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
 
+    if (isDemo) {
+      toast.info("Action disabled in demo/guest mode.");
+      return;
+    }
+
     if (!name.trim() || name.trim().length < 2) {
       toast.error("Name must be at least 2 characters long.");
       return;
@@ -222,6 +231,11 @@ export default function SettingsView({ initialUser = null, role = "member" }) {
   // 2. Password Set or Change Handler
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
+
+    if (isDemo) {
+      toast.info("Action disabled in demo/guest mode.");
+      return;
+    }
 
     if (!isNewPasswordValid) {
       toast.error("Please fulfill all password requirements.");
@@ -296,6 +310,11 @@ export default function SettingsView({ initialUser = null, role = "member" }) {
   // 3A. Email Step 1: Verify Current Password
   const handleVerifyPasswordForEmail = async (e) => {
     e.preventDefault();
+
+    if (isDemo) {
+      toast.info("Action disabled in demo/guest mode.");
+      return;
+    }
 
     if (!emailCurrentPassword) {
       toast.error("Please enter your current password.");
@@ -452,9 +471,14 @@ export default function SettingsView({ initialUser = null, role = "member" }) {
                 <span className="rounded-full bg-pink-500/10 px-2.5 py-0.5 text-xs font-semibold capitalize text-pink-600 dark:text-pink-400 border border-pink-500/20">
                   {roleTitle}
                 </span>
+                {isDemo && (
+                  <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                    Demo Mode
+                  </span>
+                )}
               </div>
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                {user?.email}
+                {displayedEmail}
               </p>
             </div>
           </div>
@@ -463,7 +487,12 @@ export default function SettingsView({ initialUser = null, role = "member" }) {
           <div>
             <button
               type="button"
+              disabled={isDemo}
               onClick={() => {
+                if (isDemo) {
+                  toast.info("Action disabled in demo/guest mode.");
+                  return;
+                }
                 setIsEditingProfile((prev) => !prev);
                 if (!isEditingProfile) {
                   setName(user?.name || "");
@@ -471,7 +500,12 @@ export default function SettingsView({ initialUser = null, role = "member" }) {
                   setImageFile(null);
                 }
               }}
-              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-100 hover:border-slate-300 dark:border-white/10 dark:bg-white/5 dark:text-neutral-200 dark:hover:bg-white/10"
+              title={isDemo ? "Action disabled in demo/guest mode" : "Edit Profile"}
+              className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-xs font-bold shadow-xs transition ${
+                isDemo
+                  ? "cursor-not-allowed opacity-50 border-slate-200 bg-slate-100 text-slate-400 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
+                  : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 hover:border-slate-300 dark:border-white/10 dark:bg-white/5 dark:text-neutral-200 dark:hover:bg-white/10"
+              }`}
             >
               <Pencil className="h-3.5 w-3.5 text-pink-500" />
               {isEditingProfile ? "Cancel Editing" : "Edit Profile"}
@@ -869,13 +903,24 @@ export default function SettingsView({ initialUser = null, role = "member" }) {
             )}
 
             {/* Save Password Button */}
-            <div className="flex justify-end pt-2">
+            <div className="flex flex-col sm:flex-row items-end sm:items-center justify-between gap-3 pt-2">
+              {isDemo ? (
+                <p className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                  Password modification is disabled in demo mode.
+                </p>
+              ) : <div />}
+
               <button
                 type="submit"
                 disabled={
-                  isSavingPassword || !isNewPasswordValid || !passwordsMatch
+                  isDemo || isSavingPassword || !isNewPasswordValid || !passwordsMatch
                 }
-                className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-rose-500 px-6 py-2.5 text-sm font-bold text-white shadow-md shadow-pink-500/20 transition-all hover:opacity-95 hover:shadow-pink-500/30 active:scale-95 disabled:opacity-50"
+                title={isDemo ? "Action disabled in demo/guest mode" : "Save Password"}
+                className={`flex items-center gap-2 rounded-2xl px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all ${
+                  isDemo
+                    ? "cursor-not-allowed opacity-50 bg-slate-400 dark:bg-slate-700 shadow-none"
+                    : "bg-gradient-to-r from-fuchsia-500 via-pink-500 to-rose-500 shadow-pink-500/20 hover:opacity-95 hover:shadow-pink-500/30 active:scale-95 disabled:opacity-50"
+                }`}
               >
                 {isSavingPassword ? (
                   <>
@@ -929,14 +974,25 @@ export default function SettingsView({ initialUser = null, role = "member" }) {
                   Current Email Address
                 </span>
                 <p className="mt-1 font-mono text-base font-bold text-slate-900 dark:text-white">
-                  {user?.email}
+                  {displayedEmail}
                 </p>
+                {isDemo && (
+                  <p className="mt-1 text-xs text-amber-600 dark:text-amber-400 font-medium">
+                    Email changes are disabled in demo mode.
+                  </p>
+                )}
               </div>
 
               <div>
                 <button
                   type="button"
+                  disabled={isDemo}
+                  title={isDemo ? "Action disabled in demo/guest mode" : "Change Email"}
                   onClick={() => {
+                    if (isDemo) {
+                      toast.info("Action disabled in demo/guest mode.");
+                      return;
+                    }
                     if (!user?.hasPassword) {
                       toast.info(
                         "Please set a password in Password Management first to verify your identity."
@@ -947,7 +1003,11 @@ export default function SettingsView({ initialUser = null, role = "member" }) {
                     }
                     setEmailStep("verify");
                   }}
-                  className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 via-pink-500 to-rose-500 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-orange-500/20 transition-all hover:opacity-95 hover:shadow-orange-500/30 active:scale-95"
+                  className={`flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-bold text-white shadow-md transition-all ${
+                    isDemo
+                      ? "cursor-not-allowed opacity-50 bg-slate-400 dark:bg-slate-700 shadow-none"
+                      : "bg-gradient-to-r from-orange-500 via-pink-500 to-rose-500 shadow-orange-500/20 hover:opacity-95 hover:shadow-orange-500/30 active:scale-95"
+                  }`}
                 >
                   Change Email <ArrowRight className="h-3.5 w-3.5" />
                 </button>
@@ -1040,7 +1100,7 @@ export default function SettingsView({ initialUser = null, role = "member" }) {
                     Current Email:
                   </span>
                   <p className="font-mono text-sm font-bold text-slate-900 dark:text-white">
-                    {user?.email}
+                    {displayedEmail}
                   </p>
                 </div>
                 <span className="self-start sm:self-center flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">

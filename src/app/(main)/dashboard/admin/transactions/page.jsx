@@ -1,5 +1,6 @@
 import { getUserSession } from "@/lib/core/session";
 import { getTokenServer } from "@/lib/getTokenServer";
+import { isDemoAdmin, getMaskedTransactionEmail } from "@/lib/demoMode";
 
 
 const getItemId = (item) => {
@@ -25,7 +26,7 @@ const formatCurrency = (amount) => {
   })}`;
 };
 
-const TransactionMobileCard = ({ item }) => {
+const TransactionMobileCard = ({ item, displayedEmail }) => {
   return (
     <div className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm transition hover:border-pink-500/30 hover:bg-pink-500/5 dark:border-white/10 dark:bg-[#070b14]">
       <div className="mb-4 flex items-start justify-between gap-3">
@@ -35,7 +36,7 @@ const TransactionMobileCard = ({ item }) => {
           </p>
 
           <p className="mt-1 break-all text-sm font-black text-slate-900 dark:text-white">
-            {item?.userEmail || "N/A"}
+            {displayedEmail || item?.userEmail || "N/A"}
           </p>
         </div>
 
@@ -94,6 +95,7 @@ const TransactionMobileCard = ({ item }) => {
 const TransactionsPage = async () => {
   const user = await getUserSession();
   const token = await getTokenServer(); // Replace with your method to retrieve the token
+  const isGuestAdmin = isDemoAdmin(user);
 
   let transactions = [];
 
@@ -184,8 +186,14 @@ const TransactionsPage = async () => {
           <>
             {/* Small & Medium Device Card View */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:hidden">
-              {transactions.map((item) => (
-                <TransactionMobileCard key={getItemId(item)} item={item} />
+              {transactions.map((item, index) => (
+                <TransactionMobileCard
+                  key={getItemId(item)}
+                  item={item}
+                  displayedEmail={
+                    isGuestAdmin ? getMaskedTransactionEmail(index) : item?.userEmail
+                  }
+                />
               ))}
             </div>
 
@@ -217,14 +225,16 @@ const TransactionsPage = async () => {
                 </thead>
 
                 <tbody>
-                  {transactions.map((item) => (
+                  {transactions.map((item, index) => (
                     <tr
                       key={getItemId(item)}
                       className="border-b border-slate-100 transition hover:bg-pink-500/5 dark:border-white/5"
                     >
                       <td className="px-4 py-5">
                         <p className="break-all text-sm font-bold text-slate-800 dark:text-slate-100">
-                          {item?.userEmail || "N/A"}
+                          {isGuestAdmin
+                            ? getMaskedTransactionEmail(index)
+                            : item?.userEmail || "N/A"}
                         </p>
                       </td>
 

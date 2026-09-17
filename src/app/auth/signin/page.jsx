@@ -7,6 +7,7 @@ import { Button, Input } from "@heroui/react";
 import { CircleCheck, CircleXmark, Eye, EyeSlash } from "@gravity-ui/icons";
 import { authClient } from "@/lib/auth-client";
 import { FcGoogle } from "react-icons/fc";
+import { DEMO_CREDENTIALS } from "@/lib/demoMode";
 
 // 1. This fallback skeleton renders on the server while the client loads the query params
 const LoginPageLoading = () => {
@@ -80,6 +81,55 @@ const LoginPageContent = () => {
         text: error.message || "Something went wrong. Please try again.",
       });
       setIsLoading(false);
+    }
+  };
+
+  const [demoRoleLoading, setDemoRoleLoading] = useState("");
+
+  const handleDemoLogin = async (roleKey) => {
+    const creds = DEMO_CREDENTIALS[roleKey];
+    if (!creds) return;
+
+    setMessage({ type: "", text: "" });
+    setDemoRoleLoading(roleKey);
+    setIsLoading(true);
+
+    try {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("gymnest_demo_mode", "true");
+        sessionStorage.setItem("gymnest_demo_role", roleKey);
+      }
+
+      const result = await authClient.signIn.email({
+        email: creds.email,
+        password: creds.password,
+      });
+
+      if (result?.error) {
+        setMessage({
+          type: "error",
+          text: result.error.message || `Failed to sign in as ${creds.label}.`,
+        });
+        setIsLoading(false);
+        setDemoRoleLoading("");
+        return;
+      }
+
+      setMessage({
+        type: "success",
+        text: `Signed in as ${creds.label}! Redirecting...`,
+      });
+
+      setTimeout(() => {
+        window.location.replace(redirectTo);
+      }, 600);
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: error.message || "Something went wrong. Please try again.",
+      });
+      setIsLoading(false);
+      setDemoRoleLoading("");
     }
   };
 
@@ -171,12 +221,53 @@ const LoginPageContent = () => {
 
           <Button
             type="submit"
-            isLoading={isLoading}
-            disabled={isGoogleLoading}
+            isLoading={isLoading && !demoRoleLoading}
+            disabled={isGoogleLoading || !!demoRoleLoading}
             className="h-12 w-full rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 font-bold text-white shadow-lg shadow-pink-500/30 transition-opacity hover:opacity-90 dark:shadow-pink-500/10"
           >
-            {isLoading ? "Signing In..." : "Sign In"}
+            {isLoading && !demoRoleLoading ? "Signing In..." : "Sign In"}
           </Button>
+
+          {/* Row of 3 Demo/Guest Buttons directly below Sign In */}
+          <div className="pt-2">
+            <div className="mb-2.5 flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                Demo Accounts
+              </span>
+              <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
+                1-Click Sign In
+              </span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                type="button"
+                disabled={isLoading || isGoogleLoading}
+                onClick={() => handleDemoLogin("member")}
+                className="flex-1 rounded-xl border border-emerald-500/30 bg-emerald-500/10 py-2.5 px-2 text-center text-xs font-bold text-emerald-600 transition hover:bg-emerald-500/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400"
+              >
+                {demoRoleLoading === "member" ? "Signing In..." : "Guest Member"}
+              </button>
+
+              <button
+                type="button"
+                disabled={isLoading || isGoogleLoading}
+                onClick={() => handleDemoLogin("trainer")}
+                className="flex-1 rounded-xl border border-blue-500/30 bg-blue-500/10 py-2.5 px-2 text-center text-xs font-bold text-blue-600 transition hover:bg-blue-500/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400"
+              >
+                {demoRoleLoading === "trainer" ? "Signing In..." : "Guest Trainer"}
+              </button>
+
+              <button
+                type="button"
+                disabled={isLoading || isGoogleLoading}
+                onClick={() => handleDemoLogin("admin")}
+                className="flex-1 rounded-xl border border-pink-500/30 bg-pink-500/10 py-2.5 px-2 text-center text-xs font-bold text-pink-600 transition hover:bg-pink-500/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-400"
+              >
+                {demoRoleLoading === "admin" ? "Signing In..." : "Guest Admin"}
+              </button>
+            </div>
+          </div>
         </form>
 
         <div className="my-5 flex items-center justify-between text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500">
