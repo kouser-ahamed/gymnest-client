@@ -231,7 +231,6 @@ export default function DashboardSideBar({ user }) {
 
   const dashboardItems = {
     member: [
-      { label: "Home", href: "/", icon: House },
       { label: "Overview", href: "/dashboard/member", icon: SquareChartBar },
       { label: "Booked Classes", href: "/dashboard/member/booked-classes", icon: Calendar },
       { label: "Apply as Trainer", href: "/dashboard/member/apply-trainer", icon: PersonPlus },
@@ -240,7 +239,6 @@ export default function DashboardSideBar({ user }) {
     ],
 
     trainer: [
-      { label: "Home", href: "/", icon: House },
       { label: "Overview", href: "/dashboard/trainer", icon: SquareChartBar },
       { label: "Add Class", href: "/dashboard/trainer/add-class", icon: FilePlus },
       { label: "My Classes", href: "/dashboard/trainer/my-classes", icon: Paperclip },
@@ -250,7 +248,6 @@ export default function DashboardSideBar({ user }) {
     ],
 
     admin: [
-      { label: "Home", href: "/", icon: House },
       { label: "Overview", href: "/dashboard/admin", icon: ShieldCheck },
       { label: "Manage Users", href: "/dashboard/admin/users", icon: PersonsLock },
       { label: "Applied Trainers", href: "/dashboard/admin/applied-trainers", icon: PersonPlus },
@@ -266,83 +263,105 @@ export default function DashboardSideBar({ user }) {
   const navItems = dashboardItems[role] || dashboardItems.member;
 
   const navContent = (
-    <nav className="flex flex-col gap-1">
-      <Link href="/" className="flex items-center gap-2 px-2 py-2">
-        <Image
-          src="/assets/logox.png"
-          alt="GymNest Logo"
-          width={42}
-          height={42}
-          className="object-contain"
-          priority
-        />
-
-        <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Gym
-          <span className="bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
-            Nest
-          </span>
-        </h1>
-      </Link>
-
-      <div className="border-y border-slate-200 p-4 dark:border-white/10">
-        <div className="flex items-center gap-3">
-          <Image referrerPolicy="no-referrer"
-            src={user?.image || "/assets/default-user.png"}
-            alt={user?.name || "User"}
-            width={44}
-            height={44}
-            className="rounded-full border border-pink-500 object-cover"
+    <nav className="flex h-full flex-col justify-between">
+      {/* Top & Middle Section */}
+      <div className="flex flex-col gap-1 min-h-0">
+        <Link href="/" className="flex items-center gap-2 px-2 py-2 shrink-0">
+          <Image
+            src="/assets/logox.png"
+            alt="GymNest Logo"
+            width={42}
+            height={42}
+            className="object-contain"
+            priority
           />
 
-          <div>
-            <h3 className="font-semibold text-slate-900 dark:text-white">
-              {user?.name || "User"}
-            </h3>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Gym
+            <span className="bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
+              Nest
+            </span>
+          </h1>
+        </Link>
 
-            <div className="mt-1 flex flex-wrap gap-1">
-              <span className="rounded-full bg-pink-500/10 px-2 py-1 text-xs text-pink-600 dark:text-pink-400">
-                {role}
-              </span>
+        {/* User Profile Summary */}
+        <div className="border-y border-slate-200 p-4 dark:border-white/10 shrink-0">
+          <div className="flex items-center gap-3">
+            <Image
+              referrerPolicy="no-referrer"
+              src={user?.image || "/assets/default-user.png"}
+              alt={user?.name || "User"}
+              width={44}
+              height={44}
+              className="rounded-full border border-pink-500 object-cover"
+            />
 
-              {user?.status === "blocked" && (
-                <span className="rounded-full bg-red-500/10 px-2 py-1 text-xs text-red-600 dark:text-red-400">
-                  blocked
+            <div>
+              <h3 className="font-semibold text-slate-900 dark:text-white">
+                {user?.name || "User"}
+              </h3>
+
+              <div className="mt-1 flex flex-wrap gap-1">
+                <span className="rounded-full bg-pink-500/10 px-2 py-1 text-xs text-pink-600 dark:text-pink-400">
+                  {role}
                 </span>
-              )}
+
+                {user?.status === "blocked" && (
+                  <span className="rounded-full bg-red-500/10 px-2 py-1 text-xs text-red-600 dark:text-red-400">
+                    blocked
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Middle: Main Navigation Links */}
+        <div className="mt-2 flex flex-col gap-1 overflow-y-auto pr-1">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            const Icon = item.icon;
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-3 rounded-xl px-4 py-3 transition ${
+                  isActive
+                    ? "bg-gradient-to-r from-fuchsia-500/15 to-orange-500/15 text-pink-600 dark:text-pink-400"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-neutral-300 dark:hover:bg-white/5 dark:hover:text-white"
+                }`}
+              >
+                <Icon className="h-5 w-5 text-current" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
 
-      {navItems.map((item) => {
-        const isActive = pathname === item.href;
-        const Icon = item.icon;
+      {/* Bottom Container: Home directly above Logout */}
+      <div className="mt-auto border-t border-slate-200 pt-3 dark:border-white/10 flex flex-col gap-1 shrink-0">
+        <Link
+          href="/"
+          onClick={() => setIsOpen(false)}
+          className={`flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-2.5 transition ${
+            pathname === "/"
+              ? "border-pink-500/30 bg-gradient-to-r from-fuchsia-500/15 to-orange-500/15 text-pink-600 dark:text-pink-400"
+              : "border-transparent text-slate-600 hover:border-slate-200 hover:bg-slate-100 hover:text-slate-900 dark:text-neutral-300 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-white"
+          }`}
+        >
+          <House className="h-5 w-5 text-current" />
+          <span>Home</span>
+        </Link>
 
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={() => setIsOpen(false)}
-            className={`flex items-center gap-3 rounded-xl px-4 py-3 transition ${
-              isActive
-                ? "bg-gradient-to-r from-fuchsia-500/15 to-orange-500/15 text-pink-600 dark:text-pink-400"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-neutral-300 dark:hover:bg-white/5 dark:hover:text-white"
-            }`}
-          >
-            <Icon className="h-5 w-5 text-current" />
-            <span>{item.label}</span>
-          </Link>
-        );
-      })}
-
-      <div className="mt-2 border-t border-slate-200 p-4 dark:border-white/10">
         <button
           onClick={handleLogout}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 px-4 py-3 text-red-600 transition hover:bg-red-500/10 dark:text-red-400"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 px-4 py-2.5 text-red-600 transition hover:bg-red-500/10 dark:text-red-400"
         >
           <ArrowRightFromSquare className="h-5 w-5" />
-          Logout
+          <span>Logout</span>
         </button>
       </div>
     </nav>
@@ -350,7 +369,7 @@ export default function DashboardSideBar({ user }) {
 
   return (
     <>
-      <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-[#070b14] lg:block">
+      <aside className="hidden h-full w-64 shrink-0 border-r border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-[#070b14] lg:block">
         {navContent}
       </aside>
 
@@ -365,9 +384,9 @@ export default function DashboardSideBar({ user }) {
       <Drawer isOpen={isOpen} onOpenChange={setIsOpen}>
         <Drawer.Backdrop>
           <Drawer.Content placement="left">
-            <Drawer.Dialog>
+            <Drawer.Dialog className="h-full">
               <Drawer.CloseTrigger />
-              <Drawer.Body>{navContent}</Drawer.Body>
+              <Drawer.Body className="h-full p-4">{navContent}</Drawer.Body>
             </Drawer.Dialog>
           </Drawer.Content>
         </Drawer.Backdrop>

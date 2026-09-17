@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react";
 import { Button, Table } from "@heroui/react";
 import Image from "next/image";
-import { ShieldCheck, PersonPlus } from "@gravity-ui/icons";
+import { ShieldCheck, PersonPlus, TrashBin, CircleExclamation, Xmark } from "@gravity-ui/icons";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getTokenClient } from "@/lib/getTokenClient";
@@ -49,6 +49,8 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
   const [userList, setUserList] = useState(users);
   const [searchText, setSearchText] = useState("");
   const [loadingId, setLoadingId] = useState("");
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const currentUserId = currentUser?.id;
   const currentUserEmail = currentUser?.email;
@@ -176,6 +178,51 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
     }
   };
 
+  const handleConfirmDelete = async () => {
+    if (!userToDelete) return;
+    const userId = getUserId(userToDelete);
+
+    try {
+      setIsDeleting(true);
+      setLoadingId(`${userId}-delete`);
+      const { data: tokenData } = await getTokenClient();
+
+      const response = await fetch(`${apiBaseUrl}/api/admin/users/${userId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${tokenData?.token}`,
+        },
+        body: JSON.stringify({
+          actorId: currentUserId,
+          actorEmail: currentUserEmail,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result?.message || "Failed to delete user.");
+      }
+
+      setUserList((prev) => prev.filter((item) => getUserId(item) !== userId));
+      setUserToDelete(null);
+
+      toast.success(result?.message || "User permanently deleted.", {
+        position: "top-right",
+        autoClose: 1800,
+      });
+    } catch (error) {
+      toast.error(error.message || "Something went wrong.", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    } finally {
+      setIsDeleting(false);
+      setLoadingId("");
+    }
+  };
+
   const renderActions = (item) => {
     const userId = getUserId(item);
     const isParentAdmin = item?.parentRole === "parentAdmin";
@@ -231,6 +278,16 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
         >
           <PersonPlus className="mr-1 h-4 w-4" />
           {loadingId === `${userId}-${nextRole}` ? "Saving..." : roleText}
+        </Button>
+
+        <Button
+          type="button"
+          disabled={loadingId === `${userId}-delete` || isDeleting}
+          onClick={() => setUserToDelete(item)}
+          className="h-9 rounded-xl border border-rose-500/25 bg-rose-500/10 px-3 text-xs font-bold text-rose-600 transition hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-60 dark:border-rose-400/25 dark:bg-rose-500/15 dark:text-rose-400 dark:hover:bg-rose-500/25"
+        >
+          <TrashBin className="mr-1 h-3.5 w-3.5" />
+          {loadingId === `${userId}-delete` ? "Deleting..." : "Delete"}
         </Button>
       </div>
     );
@@ -449,6 +506,123 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
           </>
         )}
       </div>
+
+      {/* Confirmation Modal */}
+      {userToDelete && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-dialog-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !isDeleting) {
+              setUserToDelete(null);
+            }
+          }}
+        >
+          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#101624]">
+            {/* Top accent line */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-red-500 via-rose-500 to-orange-400" />
+
+            <div className="p-6">
+              {/* Close icon button */}
+              <button
+                type="button"
+                aria-label="Close dialog"
+                disabled={isDeleting}
+                onClick={() => setUserToDelete(null)}
+                className="absolute right-4 top-4 rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/5 dark:hover:text-white"
+              >
+                <Xmark className="h-5 w-5" />
+              </button>
+
+              <div className="flex flex-col items-center text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400 shadow-sm shadow-red-500/10">
+                  <CircleExclamation className="h-7 w-7" />
+                </div>
+
+                <h2
+                  id="delete-dialog-title"
+                  className="mt-4 text-xl font-bold text-slate-900 dark:text-white"
+                >
+                  Delete User Account
+                </h2>
+
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                  Are you sure you want to delete this user? This action cannot be undone.
+                </p>
+
+                {/* User Info Card */}
+                <div className="mt-4 flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-left dark:border-white/10 dark:bg-[#070b14]">
+                  {userToDelete?.image ? (
+                    <Image
+                      src={userToDelete.image}
+                      alt={userToDelete.name || "User"}
+                      width={44}
+                      height={44}
+                      className="h-11 w-11 rounded-xl object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 text-sm font-bold text-white">
+                      {userToDelete?.name?.charAt(0)?.toUpperCase() || "U"}
+                    </div>
+                  )}
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="truncate text-sm font-bold text-slate-900 dark:text-white">
+                        {userToDelete?.name || "Unnamed User"}
+                      </h4>
+                      <span className="rounded-full bg-slate-200/80 px-2 py-0.5 text-[10px] font-bold capitalize text-slate-700 dark:bg-white/10 dark:text-slate-300">
+                        {userToDelete?.role || "member"}
+                      </span>
+                    </div>
+
+                    <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                      {userToDelete?.email || "No email available"}
+                    </p>
+                  </div>
+                </div>
+
+                <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">
+                  This user&apos;s login access and associated profile data will be permanently removed.
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="mt-6 flex gap-3">
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  onClick={() => setUserToDelete(null)}
+                  className="flex-1 rounded-xl border border-slate-200 bg-slate-100 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  onClick={handleConfirmDelete}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-500/30 bg-red-600 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-500/20 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isDeleting ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      <span>Deleting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <TrashBin className="h-4 w-4" />
+                      <span>Yes, Delete User</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
