@@ -236,6 +236,7 @@ export default function DashboardSideBar({ user }) {
       { label: "Booked Classes", href: "/dashboard/member/booked-classes", icon: Calendar },
       { label: "Apply as Trainer", href: "/dashboard/member/apply-trainer", icon: PersonPlus },
       { label: "Favorite Classes", href: "/dashboard/member/favorite-classes", icon: Star },
+      { label: "Settings", href: "/dashboard/member/settings", icon: GearDot },
     ],
 
     trainer: [
@@ -245,6 +246,7 @@ export default function DashboardSideBar({ user }) {
       { label: "My Classes", href: "/dashboard/trainer/my-classes", icon: Paperclip },
       { label: "Add Forum Post", href: "/dashboard/trainer/add-forum", icon: Comment },
       { label: "My Forum Posts", href: "/dashboard/trainer/my-posts", icon: BookOpen },
+      { label: "Settings", href: "/dashboard/trainer/settings", icon: GearDot },
     ],
 
     admin: [

@@ -1,8 +1,10 @@
-import { Suspense } from "react";
+'use client';
+
+import { Suspense, useEffect, useState } from "react";
 import { Button, Card } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
-import { getUserSession } from "@/lib/core/session";
+import { useSession } from "@/lib/auth-client";
 import {
   Calendar,
   CircleDollar,
@@ -301,10 +303,38 @@ const FeaturedClassCard = ({ classItem, isLoggedIn }) => {
   );
 };
 
-const FeaturedClassesContent = async () => {
-  const featuredClasses = await getFeaturedClasses();
-  const user = await getUserSession();
-  const isLoggedIn = !!user;
+const FeaturedClassesContent = () => {
+  const { data: session } = useSession();
+  const isLoggedIn = !!session?.user;
+  const [featuredClasses, setFeaturedClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    getFeaturedClasses()
+      .then((classes) => {
+        if (isMounted) {
+          setFeaturedClasses(classes || []);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch featured classes:", error);
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (loading) {
+    return <FeaturedClassesLoader />;
+  }
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
