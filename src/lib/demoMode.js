@@ -79,3 +79,17 @@ export const getMaskedUserEmail = getMaskedAdminListEmail;
 export const getMaskedTransactionEmail = (index = 0) => {
   return `member${index + 1}@gmail.com`;
 };
+
+/**
+ * Resolves the destination dashboard route based on user role.
+ * - admin -> /dashboard/admin
+ * - trainer -> /dashboard/trainer
+ * - member (or default) -> /dashboard/member
+ */
+export const getDashboardRouteByRole = (role) => {
+  const normalized = (role || "").toLowerCase().trim();
+  if (normalized === "admin") return "/dashboard/admin";
+  if (normalized === "trainer") return "/dashboard/trainer";
+  return "/dashboard/member";
+};
+

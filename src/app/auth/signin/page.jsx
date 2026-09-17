@@ -2,12 +2,12 @@
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import { CircleCheck, CircleXmark, Eye, EyeSlash } from "@gravity-ui/icons";
 import { authClient } from "@/lib/auth-client";
 import { FcGoogle } from "react-icons/fc";
-import { DEMO_CREDENTIALS } from "@/lib/demoMode";
+import { DEMO_CREDENTIALS, getDashboardRouteByRole } from "@/lib/demoMode";
 
 // 1. This fallback skeleton renders on the server while the client loads the query params
 const LoginPageLoading = () => {
@@ -25,6 +25,7 @@ const LoginPageLoading = () => {
 
 // 2. The form layout isolated so useSearchParams doesn't break the entire page generation
 const LoginPageContent = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/";
 
@@ -37,8 +38,10 @@ const LoginPageContent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [demoRoleLoading, setDemoRoleLoading] = useState("");
 
-  const handleLogin = async (e) => {
+  // 1. Standard Form Login: Inspect user role and route to role-based dashboard
+  const handleNormalLogin = async (e) => {
     e.preventDefault();
     setMessage({ type: "", text: "" });
 
@@ -67,14 +70,39 @@ const LoginPageContent = () => {
         return;
       }
 
+      // Inspect the user object's role
+      let userRole = result?.data?.user?.role;
+
+      // Fallback: check session if role was not directly on data.user
+      if (!userRole) {
+        try {
+          const sessionRes = await authClient.getSession();
+          userRole = sessionRes?.data?.user?.role;
+        } catch (_) {}
+      }
+
+      // Fallback: verify against demo credentials or default to member
+      if (!userRole) {
+        const emailLower = (formData.email || "").toLowerCase().trim();
+        if (emailLower === DEMO_CREDENTIALS.admin.email.toLowerCase()) {
+          userRole = "admin";
+        } else if (emailLower === DEMO_CREDENTIALS.trainer.email.toLowerCase()) {
+          userRole = "trainer";
+        } else {
+          userRole = "member";
+        }
+      }
+
+      const targetRoute = getDashboardRouteByRole(userRole);
+
       setMessage({
         type: "success",
-        text: "Logged in successfully! Redirecting...",
+        text: "Logged in successfully! Redirecting to dashboard...",
       });
 
-      setTimeout(() => {
-        window.location.replace(redirectTo);
-      }, 600);
+      // Immediately navigate to the matched role dashboard route
+      router.replace(targetRoute);
+      router.refresh();
     } catch (error) {
       setMessage({
         type: "error",
@@ -84,9 +112,10 @@ const LoginPageContent = () => {
     }
   };
 
-  const [demoRoleLoading, setDemoRoleLoading] = useState("");
+  const handleLogin = handleNormalLogin;
 
-  const handleDemoLogin = async (roleKey) => {
+  // 2. Guest / Demo Login: Route immediately to matched dashboard
+  const handleGuestLogin = async (roleKey) => {
     const creds = DEMO_CREDENTIALS[roleKey];
     if (!creds) return;
 
@@ -115,14 +144,16 @@ const LoginPageContent = () => {
         return;
       }
 
+      const targetRoute = getDashboardRouteByRole(creds.role || roleKey);
+
       setMessage({
         type: "success",
-        text: `Signed in as ${creds.label}! Redirecting...`,
+        text: `Signed in as ${creds.label}! Redirecting to dashboard...`,
       });
 
-      setTimeout(() => {
-        window.location.replace(redirectTo);
-      }, 600);
+      // Route immediately based on selected demo role
+      router.replace(targetRoute);
+      router.refresh();
     } catch (error) {
       setMessage({
         type: "error",
@@ -133,14 +164,22 @@ const LoginPageContent = () => {
     }
   };
 
+  const handleDemoLogin = handleGuestLogin;
+
+  // 3. Google OAuth Login: Delegate callback to dedicated auth callback page
   const handleGoogleLogin = async () => {
     setMessage({ type: "", text: "" });
     setIsGoogleLoading(true);
 
     try {
+      const callbackURL =
+        typeof window !== "undefined"
+          ? `${window.location.origin}/auth/callback`
+          : "/auth/callback";
+
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: redirectTo,
+        callbackURL,
       });
     } catch (error) {
       setMessage({
