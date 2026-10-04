@@ -257,7 +257,7 @@ const UpdateClassModal = ({
 
       <Modal.Backdrop>
         <Modal.Container>
-          <Modal.Dialog className="sm:max-w-[760px]">
+          <Modal.Dialog className="mx-2 sm:mx-4 w-full max-w-[95vw] sm:max-w-[760px]">
             <div className="h-1 w-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400" />
 
             <Modal.CloseTrigger />
@@ -464,7 +464,7 @@ const UpdateClassModal = ({
                       )}
                     </div>
 
-                    <div className="mt-5 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+                    <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[1fr_1fr_auto] gap-3">
                       <div>
                         <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                           Hour
@@ -505,18 +505,18 @@ const UpdateClassModal = ({
                         </select>
                       </div>
 
-                      <div>
+                      <div className="sm:col-span-2 md:col-span-1">
                         <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                           Period
                         </label>
 
-                        <div className="mt-2 flex rounded-xl border border-slate-200 bg-white p-1 dark:border-white/10 dark:bg-[#101624]">
+                        <div className="mt-2 flex w-full rounded-xl border border-slate-200 bg-white p-1 dark:border-white/10 dark:bg-[#101624]">
                           {["AM", "PM"].map((item) => (
                             <button
                               key={item}
                               type="button"
                               onClick={() => setPeriod(item)}
-                              className={`rounded-lg px-5 py-2.5 text-sm font-bold transition ${
+                              className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-bold transition text-center ${
                                 period === item
                                   ? "bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 text-white shadow-sm"
                                   : "text-slate-500 hover:text-pink-600 dark:text-slate-400 dark:hover:text-pink-400"

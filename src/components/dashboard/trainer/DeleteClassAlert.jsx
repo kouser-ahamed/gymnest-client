@@ -72,7 +72,7 @@ const DeleteClassAlert = ({
 
       <AlertDialog.Backdrop>
         <AlertDialog.Container>
-          <AlertDialog.Dialog className="sm:max-w-[420px]">
+          <AlertDialog.Dialog className="mx-2 sm:mx-4 w-full max-w-[95vw] sm:max-w-[420px]">
             <AlertDialog.CloseTrigger />
 
             <AlertDialog.Header>

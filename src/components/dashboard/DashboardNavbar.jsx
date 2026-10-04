@@ -77,30 +77,30 @@ const DashboardNavbar = ({ user }) => {
     role === "admin" ? "Admin" : role === "trainer" ? "Trainer" : "Member";
 
   return (
-    <header className="border-b border-slate-200 bg-white px-6 py-6 dark:border-white/10 dark:bg-[#070b14]">
+    <header className="border-b border-slate-200 bg-white px-4 py-4 sm:px-6 sm:py-6 pl-16 sm:pl-20 lg:pl-6 dark:border-white/10 dark:bg-[#070b14]">
       <div className="mx-auto flex max-w-5xl flex-col items-center justify-center text-center">
-        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+        <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
           {greeting}, {user?.name || "User"}!
         </p>
 
-        <h1 className="mt-2 text-md font-extrabold tracking-tight text-slate-900 dark:text-white md:text-xl">
+        <h1 className="mt-1 sm:mt-2 text-base sm:text-lg md:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">
           {roleTitle}{" "}
           <span className="bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400 bg-clip-text text-transparent">
             Dashboard
           </span>
         </h1>
 
-        <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600 dark:text-neutral-300">
+        <p className="mt-2 sm:mt-3 max-w-xl text-xs sm:text-sm leading-5 sm:leading-6 text-slate-600 dark:text-neutral-300">
           Here's what's happening in your dashboard today.
         </p>
 
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-          <div className="rounded-full border border-pink-500/20 bg-pink-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-pink-600 dark:text-pink-400">
+        <div className="mt-3 sm:mt-4 flex flex-wrap items-center justify-center gap-2">
+          <div className="rounded-full border border-pink-500/20 bg-pink-500/10 px-3 sm:px-4 py-1 text-xs font-semibold uppercase tracking-wide text-pink-600 dark:text-pink-400">
             {role} panel
           </div>
 
           {user?.status === "blocked" && (
-            <div className="rounded-full border border-red-500/20 bg-red-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-red-600 dark:text-red-400">
+            <div className="rounded-full border border-red-500/20 bg-red-500/10 px-3 sm:px-4 py-1 text-xs font-semibold uppercase tracking-wide text-red-600 dark:text-red-400">
               blocked
             </div>
           )}

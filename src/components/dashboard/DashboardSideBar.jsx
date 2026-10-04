@@ -206,6 +206,7 @@ import {
   Calendar,
   Star,
   BookOpen,
+  Bars,
 } from "@gravity-ui/icons";
 
 import { Drawer } from "@heroui/react";
@@ -375,18 +376,18 @@ export default function DashboardSideBar({ user }) {
 
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed left-4 top-4 z-50 flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-md transition hover:bg-slate-100 dark:border-white/10 dark:bg-[#070b14] dark:text-neutral-300 dark:hover:bg-white/5 lg:hidden"
+        aria-label="Open navigation menu"
+        className="fixed left-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/80 bg-white/90 text-slate-800 shadow-md backdrop-blur-md transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700/60 dark:bg-slate-800/80 dark:text-white dark:hover:bg-slate-700/80 lg:hidden"
       >
-        <LayoutSideContentLeft className="h-5 w-5" />
-        Menu
+        <Bars className="h-5 w-5" />
       </button>
 
       <Drawer isOpen={isOpen} onOpenChange={setIsOpen}>
         <Drawer.Backdrop>
           <Drawer.Content placement="left">
-            <Drawer.Dialog className="h-full">
+            <Drawer.Dialog className="h-full w-[280px] max-w-[85vw]">
               <Drawer.CloseTrigger />
-              <Drawer.Body className="h-full p-4">{navContent}</Drawer.Body>
+              <Drawer.Body className="h-full p-4 overflow-y-auto">{navContent}</Drawer.Body>
             </Drawer.Dialog>
           </Drawer.Content>
         </Drawer.Backdrop>

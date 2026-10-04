@@ -178,18 +178,18 @@ const ManageClassesTable = ({ classes = [] }) => {
       currentStatus === "Approved" ? "Cancel Approve" : "Approve";
 
     return (
-      <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-3 lg:flex lg:w-auto lg:flex-wrap lg:items-center lg:justify-end">
+      <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-3 lg:flex lg:w-auto lg:flex-wrap lg:items-center lg:justify-end">
         <Button
           type="button"
           disabled={loadingId === `${classId}-${approveNextStatus}`}
           onClick={() => handleStatusChange(item, approveNextStatus)}
-          className={`flex h-10 w-full items-center justify-center rounded-xl border px-3 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-60 lg:h-9 lg:w-auto ${
+          className={`flex h-10 w-full items-center justify-center rounded-xl border px-2.5 sm:px-3 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-60 lg:h-9 lg:w-auto ${
             currentStatus === "Approved"
               ? "border-orange-500/20 bg-orange-500/10 text-orange-600 hover:bg-orange-500/15 dark:text-orange-400"
               : "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/15 dark:text-emerald-400"
           }`}
         >
-          <Check className="mr-1 h-4 w-4" />
+          <Check className="mr-1 h-3.5 w-3.5 sm:h-4 sm:w-4" />
           {loadingId === `${classId}-${approveNextStatus}`
             ? "Saving..."
             : approveButtonText}
@@ -341,12 +341,12 @@ const ManageClassesTable = ({ classes = [] }) => {
               })}
             </div>
 
-            <div className="hidden lg:block">
+            <div className="hidden lg:block w-full overflow-x-auto">
               <Table className="bg-transparent">
                 <Table.ScrollContainer>
                   <Table.Content
                     aria-label="Manage classes table"
-                    className="min-w-[1000px]"
+                    className="min-w-[1000px] w-full"
                   >
                     <Table.Header>
                       <Table.Column isRowHeader>Class</Table.Column>

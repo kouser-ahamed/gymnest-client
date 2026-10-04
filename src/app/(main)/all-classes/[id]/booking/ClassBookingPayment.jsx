@@ -203,13 +203,13 @@ const ClassBookingPayment = ({ classDetails, user }) => {
               </div>
             </div>
 
-            <div className="mt-8 rounded-[2rem] border border-pink-500/25 bg-gradient-to-br from-fuchsia-500/20 via-pink-500/10 to-orange-400/10 p-6">
+            <div className="mt-8 rounded-[2rem] border border-pink-500/25 bg-gradient-to-br from-fuchsia-500/20 via-pink-500/10 to-orange-400/10 p-5 sm:p-6">
               <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
                 Total Amount
               </p>
 
-              <p className="mt-2 flex items-center text-6xl font-black text-pink-500 dark:text-pink-300">
-                <CircleDollar className="mr-1 h-10 w-10" />
+              <p className="mt-2 flex items-center text-4xl sm:text-5xl lg:text-6xl font-black text-pink-500 dark:text-pink-300">
+                <CircleDollar className="mr-1 h-8 w-8 sm:h-10 sm:w-10" />
                 {price || 0}
               </p>
             </div>

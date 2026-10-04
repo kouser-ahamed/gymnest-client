@@ -78,10 +78,10 @@ const DashboardLayout = async ({ children }) => {
       <div className="flex flex-1 overflow-hidden">
         <DashboardSideBar user={user} />
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto min-w-0">
           <DashboardNavbar user={user} />
 
-          <main className="p-5">{children}</main>
+          <main className="p-3 sm:p-5 lg:p-6 w-full max-w-7xl mx-auto min-w-0">{children}</main>
         </div>
       </div>
     </div>

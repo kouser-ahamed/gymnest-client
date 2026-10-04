@@ -79,7 +79,7 @@ const ViewStudentDetails = ({
 
       <Modal.Backdrop>
         <Modal.Container>
-          <Modal.Dialog className="sm:max-w-[520px]">
+          <Modal.Dialog className="mx-2 sm:mx-4 w-full max-w-[95vw] sm:max-w-[520px]">
             <div className="h-1 w-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400" />
 
             <Modal.CloseTrigger />

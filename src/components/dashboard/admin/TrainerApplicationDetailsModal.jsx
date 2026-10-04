@@ -150,7 +150,7 @@ const TrainerApplicationDetailsModal = ({
 
       <AlertDialog.Backdrop>
         <AlertDialog.Container>
-          <AlertDialog.Dialog className="mx-4 max-h-[90vh] overflow-y-auto sm:max-w-[520px]">
+          <AlertDialog.Dialog className="mx-2 sm:mx-4 w-full max-w-[95vw] max-h-[90vh] overflow-y-auto sm:max-w-[520px]">
             <AlertDialog.CloseTrigger />
 
             <div className="h-1 w-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400" />

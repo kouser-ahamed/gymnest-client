@@ -222,10 +222,10 @@ export default function Navbar() {
         </button>
       </header>
 
-      {/* MOBILE / TABLET MENU */}
+      {/* MOBILE / TABLET MENU (FLOATING OVERLAY) */}
       {isMenuOpen && (
-        <div className="border-t border-black/10 bg-white px-4 py-5 lg:hidden dark:border-white/10 dark:bg-[#070b14]">
-          <div className="mx-auto flex max-w-md flex-col gap-4">
+        <div className="absolute left-0 right-0 top-full z-50 border-b border-black/10 bg-white px-4 py-5 shadow-2xl dark:border-white/10 dark:bg-[#070b14] lg:hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="mx-auto flex w-full max-w-md flex-col gap-4">
             {/* USER INFO MOBILE */}
             {user && (
               <div className="rounded-2xl border border-black/10 bg-slate-50 p-4 dark:border-white/10 dark:bg-[#0c1220]">
@@ -273,9 +273,9 @@ export default function Navbar() {
               })}
             </div>
 
-            {/* AUTH ACTIONS MOBILE */}
+            {/* AUTH ACTIONS MOBILE / TABLET */}
             {user ? (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="flex flex-col gap-3">
                 <NextLink
                   href={dashboardHref}
                   onClick={() => setIsMenuOpen(false)}
@@ -293,7 +293,7 @@ export default function Navbar() {
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="flex flex-col gap-3">
                 <NextLink
                   href="/auth/signin"
                   onClick={() => setIsMenuOpen(false)}

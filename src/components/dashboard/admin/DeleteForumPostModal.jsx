@@ -11,8 +11,8 @@ const DeleteForumPostModal = ({
   if (!post) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 text-slate-900 shadow-2xl dark:border-white/10 dark:bg-[#101624] dark:text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4">
+      <div className="w-full max-w-[95vw] sm:max-w-md rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 text-slate-900 shadow-2xl dark:border-white/10 dark:bg-[#101624] dark:text-white">
         <div className="h-1 w-full rounded-full bg-gradient-to-r from-fuchsia-500 via-pink-500 to-orange-400" />
 
         <h2 className="mt-5 text-xl font-black text-red-600 dark:text-red-300">

@@ -267,12 +267,12 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
     const roleText = currentRole === "admin" ? "Remove Admin" : "Make Admin";
 
     return (
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
         <Button
           type="button"
           disabled={loadingId === `${userId}-${nextStatus}`}
           onClick={() => handleStatusChange(item, nextStatus)}
-          className={`h-9 rounded-xl border px-3 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-60 ${
+          className={`h-8 sm:h-9 rounded-xl border px-2.5 sm:px-3 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-60 ${
             currentStatus === "blocked"
               ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/15 dark:text-emerald-400"
               : "border-red-500/20 bg-red-500/10 text-red-600 hover:bg-red-500/15 dark:text-red-400"
@@ -285,9 +285,9 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
           type="button"
           disabled={loadingId === `${userId}-${nextRole}`}
           onClick={() => handleRoleChange(item, nextRole)}
-          className="h-9 rounded-xl border border-pink-500/20 bg-pink-500/10 px-3 text-xs font-bold text-pink-600 transition hover:bg-pink-500/15 disabled:cursor-not-allowed disabled:opacity-60 dark:text-pink-400"
+          className="h-8 sm:h-9 rounded-xl border border-pink-500/20 bg-pink-500/10 px-2.5 sm:px-3 text-xs font-bold text-pink-600 transition hover:bg-pink-500/15 disabled:cursor-not-allowed disabled:opacity-60 dark:text-pink-400"
         >
-          <PersonPlus className="mr-1 h-4 w-4" />
+          <PersonPlus className="mr-1 h-3.5 w-3.5 sm:h-4 sm:w-4" />
           {loadingId === `${userId}-${nextRole}` ? "Saving..." : roleText}
         </Button>
 
@@ -295,7 +295,7 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
           type="button"
           disabled={loadingId === `${userId}-delete` || isDeleting}
           onClick={() => setUserToDelete(item)}
-          className="h-9 rounded-xl border border-rose-500/25 bg-rose-500/10 px-3 text-xs font-bold text-rose-600 transition hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-60 dark:border-rose-400/25 dark:bg-rose-500/15 dark:text-rose-400 dark:hover:bg-rose-500/25"
+          className="h-8 sm:h-9 rounded-xl border border-rose-500/25 bg-rose-500/10 px-2.5 sm:px-3 text-xs font-bold text-rose-600 transition hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-60 dark:border-rose-400/25 dark:bg-rose-500/15 dark:text-rose-400 dark:hover:bg-rose-500/25"
         >
           <TrashBin className="mr-1 h-3.5 w-3.5" />
           {loadingId === `${userId}-delete` ? "Deleting..." : "Delete"}
@@ -524,18 +524,18 @@ const ManageUsersTable = ({ currentUser, users = [] }) => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-dialog-title"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-sm animate-in fade-in duration-200"
           onClick={(e) => {
             if (e.target === e.currentTarget && !isDeleting) {
               setUserToDelete(null);
             }
           }}
         >
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#101624]">
+          <div className="relative w-full max-w-[95vw] sm:max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#101624]">
             {/* Top accent line */}
             <div className="h-1.5 w-full bg-gradient-to-r from-red-500 via-rose-500 to-orange-400" />
 
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               {/* Close icon button */}
               <button
                 type="button"
